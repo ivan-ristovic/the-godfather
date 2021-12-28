@@ -14,6 +14,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Modules.Administration
 {
@@ -26,7 +27,7 @@ namespace TheGodfather.Modules.Administration
         #region actionhistory
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-user")] DiscordUser user)
+                                     [Description(TranslationKey.desc_user)] DiscordUser user)
             => this.ListAsync(ctx, user);
 
         [GroupCommand, Priority(0)]
@@ -38,14 +39,14 @@ namespace TheGodfather.Modules.Administration
         [Command("add")]
         [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("desc-user")] DiscordUser user,
-                                  [RemainingText, Description("desc-rsn")] string notes)
+                                  [Description(TranslationKey.desc_user)] DiscordUser user,
+                                  [RemainingText, Description(TranslationKey.desc_rsn)] string notes)
         {
             if (string.IsNullOrWhiteSpace(notes))
-                throw new InvalidCommandUsageException(ctx, "rsn-none");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.rsn_none);
 
             if (notes.Length > ActionHistoryEntry.NoteLimit)
-                throw new CommandFailedException(ctx, "cmd-err-ah-note", ActionHistoryEntry.NoteLimit);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_ah_note(ActionHistoryEntry.NoteLimit));
 
             await this.Service.LimitedAddAsync(new ActionHistoryEntry {
                 Type = ActionHistoryEntry.Action.CustomNote,
@@ -55,9 +56,9 @@ namespace TheGodfather.Modules.Administration
                 UserId = user.Id,
             });
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "evt-ah-add");
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, TranslationKey.evt_ah_add);
                 emb.WithDescription(user.ToDiscriminatorString());
-                emb.AddLocalizedField("str-notes", notes, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_notes, notes, unknown: false);
             });
             await ctx.InfoAsync(this.ModuleColor);
         }
@@ -71,7 +72,7 @@ namespace TheGodfather.Modules.Administration
             #region actionhistory delete
             [GroupCommand]
             public Task DeleteAsync(CommandContext ctx,
-                                   [RemainingText, Description("desc-users")] params DiscordUser[] users)
+                                   [RemainingText, Description(TranslationKey.desc_users)] params DiscordUser[] users)
                 => this.DeleteUsersAsync(ctx, users);
             #endregion
 
@@ -79,12 +80,12 @@ namespace TheGodfather.Modules.Administration
             [Command("users")]
             [Aliases("members", "member", "mem", "user", "usr", "m", "u")]
             public async Task DeleteUsersAsync(CommandContext ctx,
-                                              [Description("desc-users")] params DiscordUser[] users)
+                                              [Description(TranslationKey.desc_users)] params DiscordUser[] users)
             {
                 foreach (DiscordUser user in users.Distinct())
                     await this.Service.ClearAsync((ctx.Guild.Id, user.Id));
 
-                await ctx.InfoAsync(this.ModuleColor, "str-ah-del-all");
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_ah_del_all);
             }
             #endregion
 
@@ -92,16 +93,16 @@ namespace TheGodfather.Modules.Administration
             [Command("before")]
             [Aliases("due", "b")]
             public async Task DeleteBeforeAsync(CommandContext ctx,
-                                               [Description("desc-datetime")] DateTimeOffset when)
+                                               [Description(TranslationKey.desc_datetime)] DateTimeOffset when)
             {
                 int removed = await this.Service.RemoveBeforeAsync(ctx.Guild.Id, when);
 
                 await ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-ah-del");
-                    emb.AddLocalizedField("str-count", removed);
+                    emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, TranslationKey.evt_ah_del);
+                    emb.AddLocalizedField(TranslationKey.str_count, removed);
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, "str-ah-del", removed);
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_ah_del(removed));
             }
             #endregion
 
@@ -109,16 +110,16 @@ namespace TheGodfather.Modules.Administration
             [Command("after")]
             [Aliases("aft", "a")]
             public async Task DeleteAfterAsync(CommandContext ctx,
-                                               [Description("desc-datetime")] DateTimeOffset when)
+                                               [Description(TranslationKey.desc_datetime)] DateTimeOffset when)
             {
                 int removed = await this.Service.RemoveAfterAsync(ctx.Guild.Id, when);
 
                 await ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-ah-del");
-                    emb.AddLocalizedField("str-count", removed);
+                    emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, TranslationKey.evt_ah_del);
+                    emb.AddLocalizedField(TranslationKey.str_count, removed);
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, "str-ah-del", removed);
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_ah_del(removed));
             }
             #endregion
         }
@@ -129,12 +130,12 @@ namespace TheGodfather.Modules.Administration
         [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
         public async Task DeleteAllAsync(CommandContext ctx)
         {
-            if (!await ctx.WaitForBoolReplyAsync("q-ah-rem-all"))
+            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_ah_rem_all))
                 return;
 
             await this.Service.ClearAsync(ctx.Guild.Id);
-            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, "evt-ah-del-all"));
-            await ctx.InfoAsync(this.ModuleColor, "evt-ah-del-all");
+            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, TranslationKey.evt_ah_del_all));
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_ah_del_all);
         }
         #endregion
 
@@ -142,11 +143,11 @@ namespace TheGodfather.Modules.Administration
         [Command("list"), Priority(1)]
         [Aliases("print", "show", "view", "ls", "l", "p")]
         public async Task ListAsync(CommandContext ctx,
-                                   [Description("desc-user")] DiscordUser user)
+                                   [Description(TranslationKey.desc_user)] DiscordUser user)
         {
             IReadOnlyList<ActionHistoryEntry> history = await this.Service.GetAllAsync((ctx.Guild.Id, user.Id));
             if (!history.Any())
-                throw new CommandFailedException(ctx, "cmd-err-ah-none");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_ah_none);
 
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithTitle(user.ToDiscriminatorString());
@@ -157,10 +158,13 @@ namespace TheGodfather.Modules.Administration
                     .Take(DiscordLimits.EmbedFieldLimit)
                     ;
                 foreach (ActionHistoryEntry e in orderedHistory) {
-                    string title = e.Type.ToLocalizedKey();
-                    string content = this.Localization.GetString(ctx.Guild.Id, "fmt-ah-emb", 
-                        this.Localization.GetLocalizedTimeString(ctx.Guild.Id, e.Time),
-                        e.Notes
+                    TranslationKey title = e.Type.ToLocalizedKey();
+                    string content = this.Localization.GetString(
+                        ctx.Guild.Id, 
+                        TranslationKey.fmt_ah_emb(
+                            this.Localization.GetLocalizedTimeString(ctx.Guild.Id, e.Time),
+                            e.Notes
+                        )
                     );
                     emb.AddLocalizedField(title, content);
                 }
@@ -173,7 +177,7 @@ namespace TheGodfather.Modules.Administration
         {
             IReadOnlyList<ActionHistoryEntry> history = await this.Service.GetAllAsync(ctx.Guild.Id);
             if (!history.Any())
-                throw new CommandFailedException(ctx, "cmd-err-ah-none-match");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_ah_none_match);
 
             var users = new Dictionary<ulong, DiscordUser>();
             foreach (ActionHistoryEntry e in history) {
@@ -188,7 +192,7 @@ namespace TheGodfather.Modules.Administration
                 emb.WithLocalizedTitle(e.Type.ToLocalizedKey());
                 DiscordUser? user = users.GetValueOrDefault(e.UserId);
                 emb.WithDescription(user?.ToDiscriminatorString() ?? e.UserId.ToString());
-                emb.AddLocalizedField("str-notes", e.Notes, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_notes, e.Notes, unknown: false);
                 emb.WithLocalizedTimestamp(e.Time, user?.AvatarUrl);
                 return emb;
             }, this.ModuleColor);

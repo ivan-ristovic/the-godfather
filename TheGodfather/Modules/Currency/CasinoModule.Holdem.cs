@@ -24,16 +24,16 @@ namespace TheGodfather.Modules.Currency
             #region casino holdem
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("desc-gamble-balance")] int balance = HoldemGame.DefaultBalance)
+                                               [Description(TranslationKey.desc_gamble_balance)] int balance = HoldemGame.DefaultBalance)
             {
                 if (balance is < 1 or > (int)MaxBid)
-                    throw new CommandFailedException(ctx, "cmd-err-gamble-bid", MaxBid);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_gamble_bid(MaxBid));
 
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id)) {
                     if (this.Service.GetEventInChannel(ctx.Channel.Id) is HoldemGame)
                         await this.JoinAsync(ctx);
                     else
-                        throw new CommandFailedException(ctx, "cmd-err-evt-dup");
+                        throw new CommandFailedException(ctx, TranslationKey.cmd_err_evt_dup);
                     return;
                 }
 
@@ -41,8 +41,10 @@ namespace TheGodfather.Modules.Currency
                 var game = new HoldemGame(ctx.Client.GetInteractivity(), ctx.Channel, balance);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "str-casino-holdem-start", 
-                        HoldemGame.MaxParticipants, HoldemGame.DefaultBalance, currency
+                    await ctx.ImpInfoAsync(
+                        this.ModuleColor, 
+                        Emojis.Clock1, 
+                        TranslationKey.str_casino_holdem_start(HoldemGame.MaxParticipants, HoldemGame.DefaultBalance, currency)
                     );
                     await this.JoinAsync(ctx);
                     await Task.Delay(TimeSpan.FromSeconds(30));
@@ -51,9 +53,9 @@ namespace TheGodfather.Modules.Currency
                     if (game.Participants.Count > 1) {
                         await game.RunAsync(this.Localization);
                         if (game.Winner is { })
-                            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], "fmt-winners", game.Winner.Mention);
+                            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], TranslationKey.fmt_winners(game.Winner.Mention));
                     } else {
-                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "str-casino-holdem-none");
+                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, TranslationKey.str_casino_holdem_none);
                     }
 
                     foreach (HoldemGame.Participant participant in game.Participants)
@@ -70,33 +72,33 @@ namespace TheGodfather.Modules.Currency
             public async Task JoinAsync(CommandContext ctx)
             {
                 if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out HoldemGame? game) || game is null)
-                    throw new CommandFailedException(ctx, "cmd-err-casino-holdem-none");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_casino_holdem_none);
 
                 if (game.Started)
-                    throw new CommandFailedException(ctx, "cmd-err-casino-holdem-started");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_casino_holdem_started);
 
                 if (game.Participants.Count >= HoldemGame.MaxParticipants)
-                    throw new CommandFailedException(ctx, "cmd-err-casino-holdem-full", HoldemGame.MaxParticipants);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_casino_holdem_full(HoldemGame.MaxParticipants));
 
                 if (game.IsParticipating(ctx.User))
-                    throw new CommandFailedException(ctx, "cmd-err-casino-holdem-dup");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_casino_holdem_dup);
 
                 if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, game.MaxBalance))
-                    throw new CommandFailedException(ctx, "cmd-err-funds-insuf");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_funds_insuf);
 
                 DiscordMessage handle;
                 try {
                     DiscordDmChannel? dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id);
                     if (dm is null)
-                        throw new CommandFailedException(ctx, "cmd-err-dm-create");
-                    handle = await dm.LocalizedEmbedAsync(this.Localization, Emojis.Cards.Suits[0], this.ModuleColor, "str-casino-holdem-dm");
+                        throw new CommandFailedException(ctx, TranslationKey.cmd_err_dm_create);
+                    handle = await dm.LocalizedEmbedAsync(this.Localization, Emojis.Cards.Suits[0], this.ModuleColor, TranslationKey.str_casino_holdem_dm);
                 } catch {
-                    throw new CommandFailedException(ctx, "cmd-err-dm-create");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_dm_create);
                 }
 
                 game.AddParticipant(ctx.User, handle);
 
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], "fmt-casino-holdem-join", ctx.User.Mention);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], TranslationKey.fmt_casino_holdem_join(ctx.User.Mention));
             }
             #endregion
 
@@ -104,7 +106,7 @@ namespace TheGodfather.Modules.Currency
             [Command("rules")]
             [Aliases("help", "h", "ruling", "rule")]
             public Task RulesAsync(CommandContext ctx)
-                => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "str-casino-holdem");
+                => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, TranslationKey.str_casino_holdem);
             #endregion
         }
     }

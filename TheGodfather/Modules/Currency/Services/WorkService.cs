@@ -37,7 +37,7 @@ namespace TheGodfather.Modules.Currency.Services
                 _ => this.rng.Next(WorkEarnLimit) + 1,
             };
             await this.bas.IncreaseBankAccountAsync(gid, uid, earned);
-            return this.lcs.GetString(gid, $"fmt-work-{(int)workType}-{(int)tod}", earned, currency);
+            return this.lcs.GetStringUnsafe(gid, $"fmt-work-{(int)workType}-{(int)tod}", earned, currency);
         }
 
         public async Task<string> CrimeAsync(ulong gid, ulong uid, string currency)
@@ -47,10 +47,10 @@ namespace TheGodfather.Modules.Currency.Services
             int change = this.rng.Next(CrimeEarnLimit) + 1;
             if (this.rng.NextBool(9 - (int)tod * 2)) {
                 await this.bas.ModifyBankAccountAsync(gid, uid, v => v - change);
-                return this.lcs.GetString(gid, $"fmt-work-crime-fail-{(int)crimeType}", change, currency);
+                return this.lcs.GetStringUnsafe(gid, $"fmt-work-crime-fail-{(int)crimeType}", change, currency);
             } else {
                 await this.bas.IncreaseBankAccountAsync(gid, uid, change);
-                return this.lcs.GetString(gid, $"fmt-work-crime-{(int)crimeType}", change, currency);
+                return this.lcs.GetStringUnsafe(gid, $"fmt-work-crime-{(int)crimeType}", change, currency);
             }
         }
 
@@ -61,11 +61,11 @@ namespace TheGodfather.Modules.Currency.Services
             if (this.rng.NextBool(tod == TimeOfDay.Night ? 2 : 1)) {
                 NegativeStreetWorkType streetType = this.rng.ChooseRandomEnumValue<NegativeStreetWorkType>();
                 await this.bas.ModifyBankAccountAsync(gid, uid, v => v - change);
-                return this.lcs.GetString(gid, $"fmt-work-streets-fail-{(int)streetType}", change, currency);
+                return this.lcs.GetStringUnsafe(gid, $"fmt-work-streets-fail-{(int)streetType}", change, currency);
             } else {
                 PositiveStreetWorkType streetType = this.rng.ChooseRandomEnumValue<PositiveStreetWorkType>();
                 await this.bas.IncreaseBankAccountAsync(gid, uid, change);
-                return this.lcs.GetString(gid, $"fmt-work-streets-{(int)streetType}", change, currency);
+                return this.lcs.GetStringUnsafe(gid, $"fmt-work-streets-{(int)streetType}", change, currency);
             }
         }
 

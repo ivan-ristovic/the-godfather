@@ -20,6 +20,7 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Misc.Common;
 using TheGodfather.Services;
+using TheGodfather.Services.Extensions;
 
 namespace TheGodfather
 {
@@ -156,21 +157,10 @@ namespace TheGodfather
             Log.Debug("Checking command translations...");
             LocalizationService lcs = this.Services.GetRequiredService<LocalizationService>();
             CommandService cs = this.Services.GetRequiredService<CommandService>();
-            foreach (Command cmd in cnext.Values.First().GetRegisteredCommands()) {
-                try {
-                    _ = lcs.GetCommandDescription(0, cmd.QualifiedName);
-                    if (cmd is not CommandGroup group || group.IsExecutableWithoutSubcommands) {
-                        _ = cs.GetCommandDescription(0, cmd.QualifiedName);
-                        _ = cs.GetCommandUsageExamples(0, cmd.QualifiedName);
-                        IEnumerable<CommandArgument> args = cmd.Overloads.SelectMany(o => o.Arguments).Distinct();
-                        foreach (CommandArgument arg in args)
-                            _ = lcs.GetString(null, arg.Description);
-                    }
-                } catch (LocalizationException e) {
-                    Log.Warning(e, "Translation not found");
-                }
-            }
-            Log.Debug("Found translations for all commands and arguments");
+            if (cs.TranslationsPresentForRegisteredCommands(lcs, cnext.Values.First().GetRegisteredCommands()))
+                Log.Debug("Found translations for all commands and arguments");
+            else
+                Log.Error("Failed to find translations for some commands/arguments");
 
             return cnext;
         }

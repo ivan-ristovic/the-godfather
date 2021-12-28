@@ -85,7 +85,7 @@ namespace TheGodfather.Services
                         info.Module = module;
                         foreach (string arg in info.UsageExamples.SelectMany(e => e)) {
                             try {
-                                this.lcs.GetString(null, arg);
+                                this.lcs.GetStringUnsafe(null, arg);
                                 Log.Verbose("Checked {Argument}", arg);
                             } catch (LocalizationException) {
                                 Log.Warning("Failed to find translation for command argument {Argument} in examples of command {Command}", arg, cmd);
@@ -118,7 +118,7 @@ namespace TheGodfather.Services
                 foreach (List<string> args in cmdInfo.UsageExamples) {
                     string cmd = $"{this.gcs.GetGuildPrefix(gid)}{command}";
                     if (args.Any())
-                        examples.Add($"{cmd} {args.Select(arg => this.lcs.GetString(gid, arg)).JoinWith(" ")}");
+                        examples.Add($"{cmd} {args.Select(arg => this.lcs.GetStringUnsafe(gid, arg)).JoinWith(" ")}");
                     else
                         examples.Add(cmd);
                 }

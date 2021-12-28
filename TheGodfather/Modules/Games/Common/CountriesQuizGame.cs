@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Games.Common
                 string question = questions.Dequeue();
 
                 var emb = new LocalizedEmbedBuilder(lcs, this.Channel.GuildId);
-                emb.WithLocalizedDescription("fmt-game-quiz-q", i + 1);
+                emb.WithLocalizedDescription(TranslationKey.fmt_game_quiz_q(i + 1));
 
                 using (var fs = new FileStream(question, FileMode.Open)) {
                     await this.Channel.SendMessageAsync(new DiscordMessageBuilder()
@@ -98,9 +98,9 @@ namespace TheGodfather.Modules.Games.Common
                     } else {
                         timeouts = 0;
                     }
-                    await this.Channel.LocalizedEmbedAsync(lcs, Emojis.AlarmClock, DiscordColor.Teal, "fmt-game-quiz-timeout", _countries[question]);
+                    await this.Channel.LocalizedEmbedAsync(lcs, Emojis.AlarmClock, DiscordColor.Teal, TranslationKey.fmt_game_quiz_timeout(_countries[question]));
                 } else {
-                    await this.Channel.LocalizedEmbedAsync(lcs, Emojis.CheckMarkSuccess, DiscordColor.Teal, "fmt-game-quiz-correct", res.Result.Author.Mention);
+                    await this.Channel.LocalizedEmbedAsync(lcs, Emojis.CheckMarkSuccess, DiscordColor.Teal, TranslationKey.fmt_game_quiz_correct(res.Result.Author.Mention));
                     this.results.AddOrUpdate(res.Result.Author, u => 1, (u, v) => v + 1);
                 }
 

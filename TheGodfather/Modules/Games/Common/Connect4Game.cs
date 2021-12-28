@@ -47,12 +47,12 @@ namespace TheGodfather.Modules.Games.Common
                     try {
                         await mctx.Result.DeleteAsync();
                     } catch (UnauthorizedException) {
-                        await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, "cmd-err-game-perms"));
+                        await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, TranslationKey.cmd_err_game_perms));
                         this.deleteErrored = true;
                     }
                 }
             } else {
-                await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, "cmd-err-game-move", col));
+                await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, TranslationKey.cmd_err_game_move(col)));
             }
         }
 
@@ -127,7 +127,7 @@ namespace TheGodfather.Modules.Games.Common
             }
 
             sb.AppendLine()
-              .Append(lcs.GetString(this.Channel.GuildId, "str-game-move"))
+              .Append(lcs.GetString(this.Channel.GuildId, TranslationKey.str_game_move))
               .AppendLine(this.move % 2 == 0 ? this.player1.Mention : this.player2.Mention);
 
             return this.msgHandle.ModifyOrResendAsync(this.Channel, new DiscordEmbedBuilder {

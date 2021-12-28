@@ -2,18 +2,27 @@
   "blockedchannels": {
     "usage": [
       [],
-      [ "arg-chn-text" ]
+      [
+        "arg-chn-text"
+      ]
     ]
   },
   "blockedchannels add": {
     "usage": [
-      [ "arg-chn-text" ],
-      [ "arg-chn-text", "arg-rsn" ]
+      [
+        "arg-chn-text"
+      ],
+      [
+        "arg-chn-text",
+        "arg-rsn"
+      ]
     ]
   },
   "blockedchannels delete": {
     "usage": [
-      [ "arg-chn-text" ]
+      [
+        "arg-chn-text"
+      ]
     ]
   },
   "blockedchannels list": {
@@ -24,18 +33,27 @@
   "blockedguilds": {
     "usage": [
       [],
-      [ "arg-gld" ]
+      [
+        "arg-gld"
+      ]
     ]
   },
   "blockedguilds add": {
     "usage": [
-      [ "arg-gld" ],
-      [ "arg-gld", "arg-rsn" ]
+      [
+        "arg-gld"
+      ],
+      [
+        "arg-gld",
+        "arg-rsn"
+      ]
     ]
   },
   "blockedguilds delete": {
     "usage": [
-      [ "arg-gld" ]
+      [
+        "arg-gld"
+      ]
     ]
   },
   "blockedguilds list": {
@@ -46,18 +64,27 @@
   "blockedusers": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "blockedusers add": {
     "usage": [
-      [ "arg-usr" ],
-      [ "arg-usr", "arg-rsn" ]
+      [
+        "arg-usr"
+      ],
+      [
+        "arg-usr",
+        "arg-rsn"
+      ]
     ]
   },
   "blockedusers delete": {
     "usage": [
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "blockedusers list": {
@@ -72,12 +99,16 @@
   },
   "commands add": {
     "usage": [
-      [ "arg-code" ]
+      [
+        "arg-code"
+      ]
     ]
   },
   "commands delete": {
     "usage": [
-      [ "arg-cmd" ]
+      [
+        "arg-cmd"
+      ]
     ]
   },
   "commands list": {
@@ -87,22 +118,30 @@
   },
   "owner announce": {
     "usage": [
-      [ "arg-announcement" ]
+      [
+        "arg-announcement"
+      ]
     ]
   },
   "owner avatar": {
     "usage": [
-      [ "arg-url-image" ]
+      [
+        "arg-url-image"
+      ]
     ]
   },
   "owner dbquery": {
     "usage": [
-      [ "arg-sql" ]
+      [
+        "arg-sql"
+      ]
     ]
   },
   "owner eval": {
     "usage": [
-      [ "arg-code" ]
+      [
+        "arg-code"
+      ]
     ]
   },
   "owner generatecommandlist": {
@@ -112,20 +151,30 @@
   },
   "owner leaveguilds": {
     "usage": [
-      [ "arg-gld" ],
-      [ "arg-ulong" ]
+      [
+        "arg-gld"
+      ],
+      [
+        "arg-ulong"
+      ]
     ]
   },
   "owner log": {
     "usage": [
       [],
-      [ "arg-level" ],
-      [ "arg-string" ]
+      [
+        "arg-level"
+      ],
+      [
+        "arg-string"
+      ]
     ]
   },
   "owner name": {
     "usage": [
-      [ "arg-name" ]
+      [
+        "arg-name"
+      ]
     ]
   },
   "owner restart": {
@@ -135,22 +184,37 @@
   },
   "owner sendmessage": {
     "usage": [
-      [ "arg-send-uc" ],
-      [ "arg-ulong" ],
-      [ "arg-msg" ]
+      [
+        "arg-send-uc"
+      ],
+      [
+        "arg-ulong"
+      ],
+      [
+        "arg-msg"
+      ]
     ]
   },
   "owner shutdown": {
     "usage": [
       [],
-      [ "arg-timespan", "arg-five" ],
-      [ "arg-timespan" ]
+      [
+        "arg-timespan",
+        "arg-five"
+      ],
+      [
+        "arg-timespan"
+      ]
     ]
   },
   "owner sudo": {
     "usage": [
-      [ "arg-mem" ],
-      [ "arg-cmd" ]
+      [
+        "arg-mem"
+      ],
+      [
+        "arg-cmd"
+      ]
     ]
   },
   "owner toggleignore": {
@@ -175,12 +239,16 @@
   },
   "privilegedusers add": {
     "usage": [
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "privilegedusers delete": {
     "usage": [
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "privilegedusers list": {
@@ -191,17 +259,25 @@
   "status": {
     "usage": [
       [],
-      [ "arg-activity", "arg-status" ]
+      [
+        "arg-activity",
+        "arg-status"
+      ]
     ]
   },
   "status add": {
     "usage": [
-      [ "arg-activity", "arg-status" ]
+      [
+        "arg-activity",
+        "arg-status"
+      ]
     ]
   },
   "status delete": {
     "usage": [
-      [ "arg-five" ]
+      [
+        "arg-five"
+      ]
     ]
   },
   "status list": {
@@ -211,13 +287,20 @@
   },
   "status set": {
     "usage": [
-      [ "arg-five" ],
-      [ "arg-activity", "arg-status" ]
+      [
+        "arg-five"
+      ],
+      [
+        "arg-activity",
+        "arg-status"
+      ]
     ]
   },
   "status setrotation": {
     "usage": [
-      [ "arg-bool" ]
+      [
+        "arg-bool"
+      ]
     ]
   }
 }

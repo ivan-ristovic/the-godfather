@@ -23,14 +23,14 @@ namespace TheGodfather.Modules.Search
         [Command("rss")]
         [Aliases("feed")]
         public Task RssAsync(CommandContext ctx,
-                            [Description("desc-rss-url")] Uri url)
+                            [Description(TranslationKey.desc_rss_url)] Uri url)
         {
             if (!RssFeedsService.IsValidFeedURL(url.AbsoluteUri))
-                throw new CommandFailedException(ctx, "cmd-err-rss");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_rss);
 
             IReadOnlyList<SyndicationItem>? res = RssFeedsService.GetFeedResults(url.AbsoluteUri);
             if (res is null)
-                throw new CommandFailedException(ctx, "cmd-err-sub-fail", url);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_fail(url));
 
             return ctx.PaginateAsync(res, (emb, r) => {
                 emb.WithTitle(r.Title.Text);
@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Search
                 if (r.Links.Any())
                     emb.WithUrl(r.Links.First().Uri);
                 if (r.Authors.Any())
-                    emb.AddLocalizedField("str-author", r.Authors.First().Name, inline: true, unknown: false);
+                    emb.AddLocalizedField(TranslationKey.str_author, r.Authors.First().Name, inline: true, unknown: false);
                 emb.WithLocalizedTimestamp(r.LastUpdatedTime);
                 return emb;
             }, this.ModuleColor);
@@ -54,16 +54,16 @@ namespace TheGodfather.Modules.Search
             #region subscribe
             [GroupCommand, Priority(2)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("desc-sub-chn")] DiscordChannel chn,
-                                               [Description("desc-rss-url")] Uri url,
-                                               [RemainingText, Description("desc-name-f")] string? name = null)
+                                               [Description(TranslationKey.desc_sub_chn)] DiscordChannel chn,
+                                               [Description(TranslationKey.desc_rss_url)] Uri url,
+                                               [RemainingText, Description(TranslationKey.desc_name_f)] string? name = null)
             {
                 chn ??= ctx.Channel;
                 if (chn.Type != ChannelType.Text)
-                    throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-text");
+                    throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
 
                 if (!RssFeedsService.IsValidFeedURL(url.AbsoluteUri))
-                    throw new CommandFailedException(ctx, "cmd-err-rss");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_rss);
                 
                 await this.Service.SubscribeAsync(ctx.Guild.Id, chn.Id, url.AbsoluteUri, name);
                 await ctx.InfoAsync(this.ModuleColor);
@@ -71,14 +71,14 @@ namespace TheGodfather.Modules.Search
 
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("desc-rss-url")] Uri url,
-                                         [Description("desc-sub-chn")] DiscordChannel? chn = null,
-                                         [RemainingText, Description("desc-name-f")] string? name = null)
+                                         [Description(TranslationKey.desc_rss_url)] Uri url,
+                                         [Description(TranslationKey.desc_sub_chn)] DiscordChannel? chn = null,
+                                         [RemainingText, Description(TranslationKey.desc_name_f)] string? name = null)
                 => this.ExecuteGroupAsync(ctx, chn ?? ctx.Channel, url, name);
 
             [GroupCommand, Priority(0)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("desc-sub-chn")] DiscordChannel? chn = null)
+                                         [Description(TranslationKey.desc_sub_chn)] DiscordChannel? chn = null)
                 => this.ListAsync(ctx, chn);
             #endregion
 
@@ -86,26 +86,25 @@ namespace TheGodfather.Modules.Search
             [Command("list")]
             [Aliases("ls", "listsubs", "listfeeds")]
             public async Task ListAsync(CommandContext ctx,
-                                       [Description("desc-sub-chn")] DiscordChannel? chn = null)
+                                       [Description(TranslationKey.desc_sub_chn)] DiscordChannel? chn = null)
             {
                 chn ??= ctx.Channel;
                 if (chn.Type != ChannelType.Text)
-                    throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-text");
+                    throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
 
                 IReadOnlyList<RssSubscription> subs = await this.Service.Subscriptions.GetAllAsync((ctx.Guild.Id, chn.Id));
                 if (!subs.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-subs-none", chn.Name);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_subs_none(chn.Name));
 
                 await ctx.PaginateAsync(
-                    "str-subs",
+                    TranslationKey.str_subs(chn.Mention),
                     subs,
                     sub => {
                         string? qname = sub.Name;
                         return $"{Formatter.InlineCode($"{sub.Id:D4}")} | {(string.IsNullOrWhiteSpace(qname) ? sub.Feed.Url : qname)}";
                     },
                     this.ModuleColor,
-                    5,
-                    chn.Mention
+                    5
                 );
             }
             #endregion
@@ -114,14 +113,14 @@ namespace TheGodfather.Modules.Search
             [Command("reddit"), Priority(1)]
             [Aliases("r")]
             public Task RedditAsync(CommandContext ctx,
-                                   [Description("desc-sub-chn")] DiscordChannel chn,
-                                   [Description("desc-sub")] string sub)
+                                   [Description(TranslationKey.desc_sub_chn)] DiscordChannel chn,
+                                   [Description(TranslationKey.desc_sub)] string sub)
                 => ctx.ExecuteOtherCommandAsync("reddit subscribe", chn.Mention, sub);
             
             [Command("reddit"), Priority(0)]
             public Task RedditAsync(CommandContext ctx,
-                                   [Description("desc-sub")] string sub,
-                                   [Description("desc-sub-chn")] DiscordChannel? chn = null)
+                                   [Description(TranslationKey.desc_sub)] string sub,
+                                   [Description(TranslationKey.desc_sub_chn)] DiscordChannel? chn = null)
                 => this.RedditAsync(ctx, chn ?? ctx.Channel, sub);
             #endregion
 
@@ -129,22 +128,22 @@ namespace TheGodfather.Modules.Search
             [Command("youtube"), Priority(2)]
             [Aliases("y", "yt", "ytube")]
             public Task YoutubeAsync(CommandContext ctx,
-                                    [Description("desc-sub-chn")] DiscordChannel chn,
-                                    [Description("desc-sub-url")] Uri url,
-                                    [RemainingText, Description("desc-name-f")] string? name = null)
+                                    [Description(TranslationKey.desc_sub_chn)] DiscordChannel chn,
+                                    [Description(TranslationKey.desc_sub_url)] Uri url,
+                                    [RemainingText, Description(TranslationKey.desc_name_f)] string? name = null)
                 => ctx.ExecuteOtherCommandAsync("youtube subscribe", chn.Mention, url.ToString(), name);
 
             [Command("youtube"), Priority(1)]
             public Task YoutubeAsync(CommandContext ctx,
-                                    [Description("desc-sub-url")] Uri url,
-                                    [Description("desc-sub-chn")] DiscordChannel chn,
-                                    [RemainingText, Description("desc-name-f")] string? name = null)
+                                    [Description(TranslationKey.desc_sub_url)] Uri url,
+                                    [Description(TranslationKey.desc_sub_chn)] DiscordChannel chn,
+                                    [RemainingText, Description(TranslationKey.desc_name_f)] string? name = null)
                 => this.YoutubeAsync(ctx, chn, url, name);
 
             [Command("youtube"), Priority(0)]
             public Task YoutubeAsync(CommandContext ctx,
-                                    [Description("desc-sub-url")] Uri url,
-                                    [RemainingText, Description("desc-name-f")] string? name = null)
+                                    [Description(TranslationKey.desc_sub_url)] Uri url,
+                                    [RemainingText, Description(TranslationKey.desc_name_f)] string? name = null)
                 => this.YoutubeAsync(ctx, ctx.Channel, url, name);
             #endregion
         }
@@ -159,25 +158,25 @@ namespace TheGodfather.Modules.Search
             #region unsubscribe
             [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("desc-ids")] params int[] ids)
+                                               [Description(TranslationKey.desc_ids)] params int[] ids)
             {
                 if (ids is null || !ids.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-ids-none");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_ids_none);
 
                 int removed = await this.Service.Subscriptions.RemoveAsync((ctx.Guild.Id, ctx.Channel.Id), ids);
-                await ctx.InfoAsync(this.ModuleColor, "fmt-unsub", removed);
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_unsub(removed));
             }
 
             [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [RemainingText, Description("desc-name-f")] string name)
+                                               [RemainingText, Description(TranslationKey.desc_name_f)] string name)
             {
                 RssSubscription? sub = await this.Service.Subscriptions.GetByNameAsync((ctx.Guild.Id, ctx.Channel.Id), name);
                 if (sub is null)
-                    throw new CommandFailedException(ctx, "cmd-err-sub-name", ctx.Channel.Mention);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_name(ctx.Channel.Mention));
 
                 int removed = await this.Service.Subscriptions.RemoveAsync(sub);
-                await ctx.InfoAsync(this.ModuleColor, "fmt-unsub", removed);
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_unsub(removed));
             }
             #endregion
 
@@ -185,11 +184,11 @@ namespace TheGodfather.Modules.Search
             [Command("all"), UsesInteractivity]
             [Aliases("a")]
             public async Task AllAsync(CommandContext ctx,
-                                      [Description("desc-sub-chn")] DiscordChannel? chn = null)
+                                      [Description(TranslationKey.desc_sub_chn)] DiscordChannel? chn = null)
             {
                 chn ??= ctx.Channel;
 
-                if (!await ctx.WaitForBoolReplyAsync("q-unsub", args: chn.Mention))
+                if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_unsub(chn.Mention)))
                     return;
 
                 await this.Service.Subscriptions.ClearAsync((ctx.Guild.Id, ctx.Channel.Id));
@@ -201,7 +200,7 @@ namespace TheGodfather.Modules.Search
             [Command("reddit")]
             [Aliases("r")]
             public Task RedditAsync(CommandContext ctx,
-                                   [Description("desc-sub")] string sub)
+                                   [Description(TranslationKey.desc_sub)] string sub)
                 => ctx.ExecuteOtherCommandAsync("reddit unsubscribe", sub);
             #endregion
 
@@ -209,10 +208,10 @@ namespace TheGodfather.Modules.Search
             [Command("youtube")]
             [Aliases("y", "yt", "ytube")]
             public Task UnsubscribeAsync(CommandContext ctx,
-                                        [RemainingText, Description("desc-sub-name-url")] string name_url)
+                                        [RemainingText, Description(TranslationKey.desc_sub_name_url)] string name_url)
             {
                 if (string.IsNullOrWhiteSpace(name_url))
-                    throw new InvalidCommandUsageException(ctx, "cmd-err-name-404");
+                    throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_name_404);
 
                 return ctx.ExecuteOtherCommandAsync("youtube unsubscribe", name_url);
             }

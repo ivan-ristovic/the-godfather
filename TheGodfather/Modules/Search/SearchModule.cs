@@ -29,7 +29,7 @@ namespace TheGodfather.Modules.Search
         {
             string? url = await PetImagesService.GetRandomCatImageAsync();
             if (url is null)
-                throw new CommandFailedException(ctx, "cmd-err-image");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_image);
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Description = Emojis.Animals.All[1],
@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Search
         {
             string? fact = await ctx.Services.GetRequiredService<CatFactsService>().GetFactAsync();
             if (fact is null)
-                throw new CommandFailedException(ctx, "cmd-err-res-none");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_res_none);
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Description = $"{Emojis.Animals.All[1]} {fact}",
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Search
         {
             string? url = await PetImagesService.GetRandomDogImageAsync();
             if (url is null)
-                throw new CommandFailedException(ctx, "cmd-err-image");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_image);
 
             await ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Description = DiscordEmoji.FromName(ctx.Client, ":dog:"),
@@ -76,21 +76,21 @@ namespace TheGodfather.Modules.Search
         [Command("ip")]
         [Aliases("ipstack", "geolocation", "iplocation", "iptracker", "iptrack", "trackip", "iplocate", "geoip")]
         public async Task IpAsync(CommandContext ctx,
-                                 [Description("desc-ip")] IPAddress ip)
+                                 [Description(TranslationKey.desc_ip)] IPAddress ip)
         {
             IpInfo? info = await IpGeolocationService.GetInfoForIpAsync(ip);
             if (info is null || !info.Success)
-                throw new CommandFailedException(ctx, "cmd-err-geoloc");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_geoloc);
 
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithTitle(info.Ip);
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedField("str-location", $"{info.City}, {info.RegionName} {info.RegionCode}, {info.CountryName} {info.CountryCode}");
-                emb.AddLocalizedField("str-location-exact", $"({info.Latitude} , {info.Longitude})", inline: true);
-                emb.AddLocalizedField("str-isp", info.Isp, inline: true);
-                emb.AddLocalizedField("str-org", info.Organization, inline: true);
-                emb.AddLocalizedField("str-as", info.As, inline: true);
-                emb.WithLocalizedFooter("fmt-powered-by", null, "ip-api");
+                emb.AddLocalizedField(TranslationKey.str_location, $"{info.City}, {info.RegionName} {info.RegionCode}, {info.CountryName} {info.CountryCode}");
+                emb.AddLocalizedField(TranslationKey.str_location_exact, $"({info.Latitude} , {info.Longitude})", inline: true);
+                emb.AddLocalizedField(TranslationKey.str_isp, info.Isp, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_org, info.Organization, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_as, info.As, inline: true);
+                emb.WithLocalizedFooter(TranslationKey.fmt_powered_by("ip-api"), null);
             });
         }
         #endregion
@@ -99,14 +99,14 @@ namespace TheGodfather.Modules.Search
         [Command("news")]
         [Aliases("worldnews")]
         public Task NewsRssAsync(CommandContext ctx,
-                                [Description("str-topic")] string topic = "world")
+                                [Description(TranslationKey.desc_topic)] string topic = "world")
         {
             IReadOnlyList<SyndicationItem>? res = NewsService.FetchNews(this.Localization.GetGuildCulture(ctx.Guild.Id), topic);
             if (res is null || !res.Any())
-                throw new CommandFailedException(ctx, "cmd-err-news");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_news);
 
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
-                emb.WithLocalizedTitle("fmt-news", Emojis.Globe, topic);
+                emb.WithLocalizedTitle(TranslationKey.fmt_news(Emojis.Globe, topic));
                 emb.WithColor(this.ModuleColor);
                 var sb = new StringBuilder();
                 foreach (SyndicationItem r in res)
@@ -120,22 +120,22 @@ namespace TheGodfather.Modules.Search
         [Command("quoteoftheday")]
         [Aliases("qotd", "qod", "quote", "q")]
         public async Task QotdAsync(CommandContext ctx,
-                                   [Description("str-topic")] string? category = null)
+                                   [Description(TranslationKey.desc_topic)] string? category = null)
         {
             Quote? quote = await QuoteService.GetQuoteOfTheDayAsync(category);
             if (quote is null)
-                throw new CommandFailedException(ctx, "cmd-err-quote");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_quote);
 
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
                 if (string.IsNullOrWhiteSpace(category))
-                    emb.WithLocalizedTitle("str-qotd");
+                    emb.WithLocalizedTitle(TranslationKey.str_qotd);
                 else
-                    emb.WithLocalizedTitle("str-qotd-cat", category);
+                    emb.WithLocalizedTitle(TranslationKey.str_qotd_cat(category));
                 emb.WithColor(this.ModuleColor);
-                emb.WithLocalizedDescription("fmt-qotd", quote.Content, quote.Author);
+                emb.WithLocalizedDescription(TranslationKey.fmt_qotd(quote.Content, quote.Author));
                 emb.WithImageUrl(quote.BackgroundImageUrl);
                 emb.WithUrl(quote.Permalink);
-                emb.WithLocalizedFooter("fmt-powered-by", null, "theysaidso.com");
+                emb.WithLocalizedFooter(TranslationKey.fmt_powered_by("theysaidso.com"), null);
             });
         }
         #endregion

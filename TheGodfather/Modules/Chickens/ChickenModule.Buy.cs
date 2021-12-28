@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Chickens
             #region chicken buy
             [GroupCommand]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [RemainingText, Description("desc-chicken-name")] string name)
+                                         [RemainingText, Description(TranslationKey.desc_chicken_name)] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.Default, name);
             #endregion
 
@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("default")]
             [Aliases("d", "def")]
             public Task DefaultAsync(CommandContext ctx,
-                                    [RemainingText, Description("desc-chicken-name")] string name)
+                                    [RemainingText, Description(TranslationKey.desc_chicken_name)] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.Default, name);
             #endregion
 
@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("wellfed")]
             [Aliases("wf", "fed")]
             public Task WellFedAsync(CommandContext ctx,
-                                    [RemainingText, Description("desc-chicken-name")] string name)
+                                    [RemainingText, Description(TranslationKey.desc_chicken_name)] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.WellFed, name);
             #endregion
 
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("trained")]
             [Aliases("tr", "train")]
             public Task TrainedAsync(CommandContext ctx,
-                                    [RemainingText, Description("desc-chicken-name")] string name)
+                                    [RemainingText, Description(TranslationKey.desc_chicken_name)] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.Trained, name);
             #endregion
 
@@ -58,7 +58,7 @@ namespace TheGodfather.Modules.Chickens
             [Aliases("s", "steroid", "empowered")]
 
             public Task EmpoweredAsync(CommandContext ctx,
-                                      [RemainingText, Description("desc-chicken-name")] string name)
+                                      [RemainingText, Description(TranslationKey.desc_chicken_name)] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.SteroidEmpowered, name);
             #endregion
 
@@ -66,7 +66,7 @@ namespace TheGodfather.Modules.Chickens
             [Command("alien")]
             [Aliases("a", "extraterrestrial")]
             public Task AlienAsync(CommandContext ctx,
-                                  [RemainingText, Description("desc-chicken-name")] string name)
+                                  [RemainingText, Description(TranslationKey.desc_chicken_name)] string name)
                 => this.TryBuyInternalAsync(ctx, ChickenType.Alien, name);
             #endregion
 
@@ -77,10 +77,12 @@ namespace TheGodfather.Modules.Chickens
             {
                 CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
                 return ctx.RespondWithLocalizedEmbedAsync(emb => {
-                    emb.WithLocalizedTitle("str-chicken-types");
+                    emb.WithLocalizedTitle(TranslationKey.str_chicken_types);
                     emb.WithColor(this.ModuleColor);
-                    foreach (((ChickenType type, ChickenStats stats), int i) in Chicken.StartingStats.Select((kvp, i) => (kvp, i)))
-                        emb.AddLocalizedField($"str-chicken-type-{i}", stats, titleArgs: new object[] { Chicken.Price(type), gcfg.Currency });
+                    foreach (((ChickenType type, ChickenStats stats), int i) in Chicken.StartingStats.Select((kvp, i) => (kvp, i))) {
+                        string title = this.Localization.GetStringUnsafe(ctx.Guild?.Id, $"str-chicken-type-{i}", Chicken.Price(type), gcfg.Currency);
+                        emb.AddField(title, stats.ToString());
+                    }
                 });
             }
             #endregion
@@ -90,25 +92,25 @@ namespace TheGodfather.Modules.Chickens
             private async Task TryBuyInternalAsync(CommandContext ctx, ChickenType type, string name)
             {
                 if (string.IsNullOrWhiteSpace(name))
-                    throw new InvalidCommandUsageException(ctx, "cmd-err-missing-name");
+                    throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_missing_name);
 
                 if (name.Length > Chicken.NameLimit)
-                    throw new InvalidCommandUsageException(ctx, "cmd-err-name", Chicken.NameLimit);
+                    throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_name(Chicken.NameLimit));
 
                 if (!name.All(c => char.IsLetterOrDigit(c) || char.IsWhiteSpace(c)))
-                    throw new InvalidCommandUsageException(ctx, "cmd-err-name-alnum");
+                    throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_name_alnum);
 
                 if (await this.Service.ContainsAsync(ctx.Guild.Id, ctx.User.Id))
-                    throw new CommandFailedException(ctx, "cmd-err-chicken-dup");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_chicken_dup);
 
                 CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
 
                 long price = Chicken.Price(type);
-                if (!await ctx.WaitForBoolReplyAsync("q-chicken-buy", args: new object[] { ctx.User.Mention, price, gcfg.Currency }))
+                if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_chicken_buy(ctx.User.Mention, price, gcfg.Currency)))
                     return;
 
                 if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, price))
-                    throw new CommandFailedException(ctx, "cmd-err-funds", gcfg.Currency, price);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_funds(gcfg.Currency, price));
 
                 await this.Service.AddAsync(new Chicken(type) {
                     GuildId = ctx.Guild.Id,
@@ -116,7 +118,7 @@ namespace TheGodfather.Modules.Chickens
                     UserId = ctx.User.Id,
                 });
 
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Chicken, "fmt-chicken-buy", ctx.User.Mention, type.Humanize(LetterCasing.LowerCase), name);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Chicken, TranslationKey.fmt_chicken_buy(ctx.User.Mention, type.Humanize(LetterCasing.LowerCase), name));
             }
             #endregion
         }

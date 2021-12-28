@@ -17,8 +17,8 @@ namespace TheGodfather.Modules.Games.Extensions
         {
             LocalizationService lcs = ctx.Services.GetRequiredService<LocalizationService>();
 
-            await ctx.ImpInfoAsync(DiscordColor.Orange, Emojis.Question, "q-game", ctx.User.Mention);
-            string acceptStr = lcs.GetString(ctx.Guild?.Id, "str-challenge");
+            string acceptStr = lcs.GetString(ctx.Guild?.Id, TranslationKey.str_challenge);
+            await ctx.ImpInfoAsync(DiscordColor.Orange, Emojis.Question, TranslationKey.q_game(ctx.User.Mention, acceptStr));
 
             InteractivityResult<DiscordMessage> mctx = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                 xm => {

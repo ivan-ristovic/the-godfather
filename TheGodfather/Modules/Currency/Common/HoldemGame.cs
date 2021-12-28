@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Currency.Common
         {
             this.Started = true;
 
-            DiscordMessage msg = await this.Channel.EmbedAsync(lcs.GetString(this.Channel.GuildId, "str-casino-holdem-starting"));
+            DiscordMessage msg = await this.Channel.EmbedAsync(lcs.GetString(this.Channel.GuildId, TranslationKey.str_casino_holdem_starting));
 
             foreach (Participant participant in this.Participants) {
                 participant.Card1 = this.deck.GetNextCard();
@@ -64,7 +64,7 @@ namespace TheGodfather.Modules.Currency.Common
                         Color = DiscordColor.DarkGreen,
                     }.Build());
                 } catch {
-                    await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, "str-casino-holdem-dm-fail", participant.User.Mention));
+                    await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, TranslationKey.str_casino_holdem_dm_fail(participant.User.Mention)));
                 }
             }
 
@@ -82,7 +82,7 @@ namespace TheGodfather.Modules.Currency.Common
                         await this.PrintGameAsync(lcs, msg, bet, participant);
 
                         if (await this.Interactivity.WaitForBoolReplyAsync(this.Channel, participant.User)) {
-                            await this.Channel.LocalizedEmbedAsync(lcs, "q-casino-holdem", participant.User.Mention, participant.Balance - bet);
+                            await this.Channel.LocalizedEmbedAsync(lcs, TranslationKey.q_casino_holdem(participant.User.Mention, participant.Balance - bet));
                             if (await this.Interactivity.WaitForBoolReplyAsync(this.Channel, participant.User)) {
                                 int raise = 0;
                                 InteractivityResult<DiscordMessage> mctx = await this.Interactivity.WaitForMessageAsync(
@@ -133,19 +133,19 @@ namespace TheGodfather.Modules.Currency.Common
             var sb = new StringBuilder();
 
             sb.AppendJoin(' ', this.drawn).AppendLine();
-            sb.Append(lcs.GetString(this.Channel.GuildId, "str-casino-holdem-pot")).Append(' ')
+            sb.Append(lcs.GetString(this.Channel.GuildId, TranslationKey.str_casino_holdem_pot)).Append(' ')
               .AppendLine(Formatter.Bold(this.Pot.ToString())).AppendLine();
-            sb.Append(lcs.GetString(this.Channel.GuildId, "str-casino-holdem-cv")).Append(' ')
+            sb.Append(lcs.GetString(this.Channel.GuildId, TranslationKey.str_casino_holdem_cv)).Append(' ')
               .AppendLine(Formatter.Bold(bet.ToString())).AppendLine();
 
             foreach (Participant participant in this.Participants) {
                 sb.Append(participant.User.Mention)
-                  .Append(" | ").Append(lcs.GetString(this.Channel.GuildId, "str-casino-holdem-chips")).Append(' ')
+                  .Append(" | ").Append(lcs.GetString(this.Channel.GuildId, TranslationKey.str_casino_holdem_chips)).Append(' ')
                   .Append(Formatter.Bold(participant.Balance.ToString()))
-                  .Append(" | ").Append(lcs.GetString(this.Channel.GuildId, "str-casino-holdem-bet")).Append(' ')
+                  .Append(" | ").Append(lcs.GetString(this.Channel.GuildId, TranslationKey.str_casino_holdem_bet)).Append(' ')
                   .Append(Formatter.Bold(participant.Bet.ToString()));
                 if (participant.HasFolded) {
-                    sb.AppendLine(Formatter.Bold(lcs.GetString(this.Channel.GuildId, "str-casino-holdem-fold"))).AppendLine();
+                    sb.AppendLine(Formatter.Bold(lcs.GetString(this.Channel.GuildId, TranslationKey.str_casino_holdem_fold))).AppendLine();
                 }
                 sb.AppendLine().AppendLine();
                 if (showhands) {
@@ -160,12 +160,12 @@ namespace TheGodfather.Modules.Currency.Common
             }
 
             var emb = new LocalizedEmbedBuilder(lcs, this.Channel.GuildId);
-            emb.WithLocalizedTitle("fmt-casino-holdem", Emojis.Cards.Suits[0], Emojis.Cards.Suits[0]);
+            emb.WithLocalizedTitle(TranslationKey.fmt_casino_holdem(Emojis.Cards.Suits[0], Emojis.Cards.Suits[0]));
             emb.WithColor(DiscordColor.DarkGreen);
             emb.WithDescription(sb);
 
             if (!this.gameOver && toMove is { })
-                emb.AddLocalizedField("str-casino-holdem-call", toMove.User.Mention);
+                emb.AddLocalizedField(TranslationKey.str_casino_holdem_call, toMove.User.Mention);
 
             return msg.ModifyAsync(embed: emb.Build());
         }

@@ -13,6 +13,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Modules.Administration
 {
@@ -25,12 +26,12 @@ namespace TheGodfather.Modules.Administration
         #region commandrules
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-cr-list-chn")] DiscordChannel? channel = null)
+                                     [Description(TranslationKey.desc_cr_list_chn)] DiscordChannel? channel = null)
             => this.PrintRulesAsync(ctx, chn: channel);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [RemainingText, Description("desc-cr-cmd")] string command)
+                                     [RemainingText, Description(TranslationKey.desc_cr_cmd)] string command)
             => this.PrintRulesAsync(ctx, cmd: command);
         #endregion
 
@@ -38,14 +39,14 @@ namespace TheGodfather.Modules.Administration
         [Command("allow"), Priority(1)]
         [Aliases("only", "register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public async Task AllowAsync(CommandContext ctx,
-                                    [Description("desc-cr-chn")] DiscordChannel channel,
-                                    [RemainingText, Description("desc-cr-allow")] string command)
+                                    [Description(TranslationKey.desc_cr_chn)] DiscordChannel channel,
+                                    [RemainingText, Description(TranslationKey.desc_cr_allow)] string command)
             => await this.AddRuleAsync(ctx, command, true, channel);
 
         [Command("allow"), Priority(0)]
         public async Task AllowAsync(CommandContext ctx,
-                                    [Description("desc-cr-allow")] string command,
-                                    [Description("desc-cr-chn")] params DiscordChannel[] channels)
+                                    [Description(TranslationKey.desc_cr_allow)] string command,
+                                    [Description(TranslationKey.desc_cr_chn)] params DiscordChannel[] channels)
             => await this.AddRuleAsync(ctx, command, true, channels);
         #endregion
 
@@ -53,14 +54,14 @@ namespace TheGodfather.Modules.Administration
         [Command("forbid")]
         [Aliases("f", "deny", "unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task ForbidAsync(CommandContext ctx,
-                                     [Description("desc-cr-forbid")] string command,
-                                     [Description("desc-cr-chn")] params DiscordChannel[] channels)
+                                     [Description(TranslationKey.desc_cr_forbid)] string command,
+                                     [Description(TranslationKey.desc_cr_chn)] params DiscordChannel[] channels)
             => await this.AddRuleAsync(ctx, command, false, channels);
 
         [Command("forbid"), Priority(0)]
         public async Task ForbidAsync(CommandContext ctx,
-                                     [Description("desc-cr-chn")] DiscordChannel channel,
-                                     [Description("desc-cr-forbid")] string command)
+                                     [Description(TranslationKey.desc_cr_chn)] DiscordChannel channel,
+                                     [Description(TranslationKey.desc_cr_forbid)] string command)
             => await this.AddRuleAsync(ctx, command, false, channel);
         #endregion
 
@@ -69,12 +70,12 @@ namespace TheGodfather.Modules.Administration
         [Aliases("reset", "removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
         public async Task RemoveAllAsync(CommandContext ctx)
         {
-            if (!await ctx.WaitForBoolReplyAsync("q-cr-rem-all"))
+            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_cr_rem_all))
                 return;
 
             await this.Service.ClearAsync(ctx.Guild.Id);
-            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle("str-cr-clear").WithColor(this.ModuleColor));
-            await ctx.InfoAsync(this.ModuleColor, "str-cr-clear");
+            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle(TranslationKey.str_cr_clear).WithColor(this.ModuleColor));
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_cr_clear);
         }
         #endregion
 
@@ -82,12 +83,12 @@ namespace TheGodfather.Modules.Administration
         [Command("list"), Priority(1)]
         [Aliases("print", "show", "view", "ls", "l", "p")]
         public Task ListAsync(CommandContext ctx,
-                             [RemainingText, Description("desc-cr-cmd")] string command)
+                             [RemainingText, Description(TranslationKey.desc_cr_cmd)] string command)
             => this.PrintRulesAsync(ctx, cmd: command);
 
         [Command("list"), Priority(0)]
         public Task ListAsync(CommandContext ctx,
-                             [Description("desc-cr-list-chn")] DiscordChannel? channel = null)
+                             [Description(TranslationKey.desc_cr_list_chn)] DiscordChannel? channel = null)
             => this.PrintRulesAsync(ctx, chn: channel);
         #endregion
 
@@ -97,29 +98,29 @@ namespace TheGodfather.Modules.Administration
         {
             Command? cmd = ctx.CommandsNext.FindCommand(command, out _);
             if (cmd is null)
-                throw new CommandFailedException(ctx, "cmd-404", Formatter.Strip(command));
+                throw new CommandFailedException(ctx, TranslationKey.cmd_404(Formatter.Strip(command)));
 
             IEnumerable<DiscordChannel> validChannels = channels.Where(c => c.Type == ChannelType.Text);
 
             await this.Service.AddRuleAsync(ctx.Guild.Id, command, allow, validChannels.Select(c => c.Id));
             if (channels.Any()) {
                 if (allow)
-                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-allowed", Formatter.InlineCode(cmd.QualifiedName), validChannels.JoinWith());
+                    await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_cr_allowed(Formatter.InlineCode(cmd.QualifiedName), validChannels.JoinWith()));
                 else
-                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-denied", Formatter.InlineCode(cmd.QualifiedName), validChannels.JoinWith());
+                    await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_cr_denied(Formatter.InlineCode(cmd.QualifiedName), validChannels.JoinWith()));
             } else {
                 if (allow)
-                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-allowed-global", Formatter.InlineCode(cmd.QualifiedName));
+                    await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_cr_allowed_global(Formatter.InlineCode(cmd.QualifiedName)));
                 else
-                    await ctx.InfoAsync(this.ModuleColor, "fmt-cr-denied-global", Formatter.InlineCode(cmd.QualifiedName));
+                    await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_cr_denied_global(Formatter.InlineCode(cmd.QualifiedName)));
             }
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle("evt-cr-change");
+                emb.WithLocalizedTitle(TranslationKey.evt_cr_change);
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedField("str-cmd", command, inline: true);
-                emb.AddLocalizedField("str-allowed", allow, inline: true);
-                emb.AddLocalizedField("str-chns", channels.Select(c => c.Mention).JoinWith(" "), inline: false);
+                emb.AddLocalizedField(TranslationKey.str_cmd, command, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_allowed, allow, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_chns, channels.Select(c => c.Mention).JoinWith(" "), inline: false);
             });
         }
 
@@ -133,27 +134,26 @@ namespace TheGodfather.Modules.Administration
 
             return crs.Any()
                 ? ctx.PaginateAsync(
-                    "fmt-cr-list",
+                    TranslationKey.fmt_cr_list(ctx.Guild.Name),
                     crs.OrderBy(cr => cr.ChannelId),
                     cr => MakeListItem(cr),
-                    this.ModuleColor,
-                    args: ctx.Guild.Name
+                    this.ModuleColor
                 )
-                : ctx.InfoAsync(this.ModuleColor, "cmd-err-cr-none");
+                : ctx.InfoAsync(this.ModuleColor, TranslationKey.cmd_err_cr_none);
 
 
             string MakeListItem(CommandRule cr)
             {
                 DiscordEmoji mark = cr.Allowed ? Emojis.CheckMarkSuccess : Emojis.X;
 
-                string location = this.Localization.GetString(ctx.Guild.Id, "str-global");
+                string location = this.Localization.GetString(ctx.Guild.Id, TranslationKey.str_global);
                 if (cr.ChannelId != 0) {
                     DiscordChannel? chn = ctx.Guild.GetChannel(cr.ChannelId);
                     if (chn is { })
                         location = chn.Mention;
                 }
 
-                return this.Localization.GetString(ctx.Guild.Id, "fmt-cr-list-item", mark, location, Formatter.InlineCode(cr.Command));
+                return this.Localization.GetString(ctx.Guild.Id, TranslationKey.fmt_cr_list_item(mark, location, Formatter.InlineCode(cr.Command)));
             }
         }
         #endregion

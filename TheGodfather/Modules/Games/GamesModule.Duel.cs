@@ -26,20 +26,20 @@ namespace TheGodfather.Modules.Games
             #region game duel
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("desc-member")] DiscordMember opponent)
+                                               [Description(TranslationKey.desc_member)] DiscordMember opponent)
             {
                 if (opponent == ctx.User)
-                    throw new InvalidCommandUsageException(ctx, "cmd-err-self-action");
+                    throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_self_action);
                 
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
-                    throw new CommandFailedException(ctx, "cmd-err-evt-dup");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_evt_dup);
 
                 if (opponent == ctx.Client.CurrentUser) {
                     await ctx.RespondWithLocalizedEmbedAsync(emb => {
                         emb.WithDescription(DuelGame.AgainstBot(ctx.User.Mention, opponent.Mention));
                         emb.WithColor(this.ModuleColor);
                     });
-                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.DuelSwords, "fmt-winners", opponent.Mention);
+                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.DuelSwords, TranslationKey.fmt_winners(opponent.Mention));
                     return;
                 }
 
@@ -52,7 +52,7 @@ namespace TheGodfather.Modules.Games
                         await gss.UpdateStatsAsync(game.Winner.Id, s => s.DuelsWon++);
                         await gss.UpdateStatsAsync(game.Winner == ctx.User ? opponent.Id : ctx.User.Id, s => s.DuelsLost++);
                     } else {
-                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Joystick, "str-game-draw");
+                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Joystick, TranslationKey.str_game_draw);
                     }
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
@@ -64,30 +64,30 @@ namespace TheGodfather.Modules.Games
             [Command("rules")]
             [Aliases("help", "h", "ruling", "rule")]
             public Task RulesAsync(CommandContext ctx)
-                => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "str-game-duel");
+                => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, TranslationKey.str_game_duel);
             #endregion
 
             #region game duel stats
             [Command("stats"), Priority(1)]
             [Aliases("s")]
             public Task StatsAsync(CommandContext ctx,
-                                  [Description("desc-member")] DiscordMember? member = null)
+                                  [Description(TranslationKey.desc_member)] DiscordMember? member = null)
                 => this.StatsAsync(ctx, member as DiscordUser);
 
             [Command("stats"), Priority(0)]
             public async Task StatsAsync(CommandContext ctx,
-                                        [Description("desc-user")] DiscordUser? user = null)
+                                        [Description(TranslationKey.desc_user)] DiscordUser? user = null)
             {
                 user ??= ctx.User;
                 GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
 
                 GameStats? stats = await gss.GetAsync(user.Id);
                 await ctx.RespondWithLocalizedEmbedAsync(emb => {
-                    emb.WithLocalizedTitle("fmt-game-stats", user.ToDiscriminatorString());
+                    emb.WithLocalizedTitle(TranslationKey.fmt_game_stats(user.ToDiscriminatorString()));
                     emb.WithColor(this.ModuleColor);
                     emb.WithThumbnail(user.AvatarUrl);
                     if (stats is null)
-                        emb.WithLocalizedDescription("str-game-stats-none");
+                        emb.WithLocalizedDescription(TranslationKey.str_game_stats_none);
                     else
                         emb.WithDescription(stats.BuildDuelStatsString());
                 });
@@ -102,7 +102,7 @@ namespace TheGodfather.Modules.Games
                 GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
                 IReadOnlyList<GameStats> topStats = await gss.GetTopDuelStatsAsync();
                 string top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildDuelStatsString());
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "fmt-game-duel-top", top);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, TranslationKey.fmt_game_duel_top(top));
             }
             #endregion
         }

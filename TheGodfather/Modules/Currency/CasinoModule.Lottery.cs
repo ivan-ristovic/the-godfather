@@ -24,13 +24,13 @@ namespace TheGodfather.Modules.Currency
             #region casino lottery
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [RemainingText, Description("desc-gamble-numbers-3")] params int[] numbers)
+                                               [RemainingText, Description(TranslationKey.desc_gamble_numbers_3)] params int[] numbers)
             {
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id)) {
                     if (this.Service.GetEventInChannel(ctx.Channel.Id) is LotteryGame)
                         await this.JoinAsync(ctx);
                     else
-                        throw new CommandFailedException(ctx, "cmd-err-evt-dup");
+                        throw new CommandFailedException(ctx, TranslationKey.cmd_err_evt_dup);
                     return;
                 }
 
@@ -38,8 +38,10 @@ namespace TheGodfather.Modules.Currency
                 var game = new LotteryGame(ctx.Client.GetInteractivity(), ctx.Channel);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
                 try {
-                    await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "str-casino-lottery-start",
-                        LotteryGame.MaxParticipants, LotteryGame.TicketPrice, currency
+                    await ctx.ImpInfoAsync(
+                        this.ModuleColor, 
+                        Emojis.Clock1, 
+                        TranslationKey.str_casino_lottery_start(LotteryGame.MaxParticipants, LotteryGame.TicketPrice, currency)
                     );
                     await this.JoinAsync(ctx, numbers);
                     await Task.Delay(TimeSpan.FromSeconds(30));
@@ -49,18 +51,20 @@ namespace TheGodfather.Modules.Currency
                         await game.RunAsync(this.Localization);
 
                         if (game.Winners.Any()) {
-                            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], "fmt-winnings",
-                                game.Winners.Select(w => $"{w.User.Mention}: {w.WinAmount:n0} {currency}").JoinWith()
+                            await ctx.ImpInfoAsync(
+                                this.ModuleColor, 
+                                Emojis.Cards.Suits[0], 
+                                TranslationKey.fmt_winnings(game.Winners.Select(w => $"{w.User.Mention}: {w.WinAmount:n0} {currency}").JoinWith())
                             );
                             foreach (LotteryGame.Participant winner in game.Winners)
                                 await bas.IncreaseBankAccountAsync(ctx.Guild.Id, winner.Id, winner.WinAmount);
                         } else {
-                            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], "str-casino-lottery-lose");
+                            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], TranslationKey.str_casino_lottery_lose);
                         }
                     } else {
                         if (game.IsParticipating(ctx.User))
                             await bas.IncreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, LotteryGame.TicketPrice);
-                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, "str-casino-lottery-none");
+                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, TranslationKey.str_casino_lottery_none);
                     }
                 } finally {
                     this.Service.UnregisterEventInChannel(ctx.Channel.Id);
@@ -72,29 +76,29 @@ namespace TheGodfather.Modules.Currency
             [Command("join")]
             [Aliases("+", "compete", "enter", "j", "<<", "<")]
             public async Task JoinAsync(CommandContext ctx,
-                                       [RemainingText, Description("desc-gamble-numbers-3")] params int[] numbers)
+                                       [RemainingText, Description(TranslationKey.desc_gamble_numbers_3)] params int[] numbers)
             {
                 if (numbers is null || numbers.Length != 3 || numbers.Any(n => n is < 1 or > LotteryGame.MaxNumber))
-                    throw new CommandFailedException(ctx, "cmd-err-casino-lottery-num", LotteryGame.MaxNumber);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_casino_lottery_num(LotteryGame.MaxNumber));
 
                 if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out LotteryGame? game) || game is null)
-                    throw new CommandFailedException(ctx, "cmd-err-casino-lottery-none");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_casino_lottery_none);
 
                 if (game.Started)
-                    throw new CommandFailedException(ctx, "cmd-err-casino-lottery-started");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_casino_lottery_started);
 
                 if (game.ParticipantCount >= LotteryGame.MaxParticipants)
-                    throw new CommandFailedException(ctx, "cmd-err-casino-lottery-full", LotteryGame.MaxParticipants);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_casino_lottery_full(LotteryGame.MaxParticipants));
 
                 if (game.IsParticipating(ctx.User))
-                    throw new CommandFailedException(ctx, "cmd-err-casino-lottery-dup");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_casino_lottery_dup);
 
                 if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, LotteryGame.TicketPrice))
-                    throw new CommandFailedException(ctx, "cmd-err-funds-insuf");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_funds_insuf);
 
                 game.AddParticipant(ctx.User, numbers);
 
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.EightBall, "fmt-casino-lottery-join", ctx.User.Mention);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.EightBall, TranslationKey.fmt_casino_lottery_join(ctx.User.Mention));
             }
             #endregion
 
@@ -103,8 +107,10 @@ namespace TheGodfather.Modules.Currency
             [Aliases("help", "h", "ruling", "rule")]
             public Task RulesAsync(CommandContext ctx)
             {
-                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "str-casino-lottery", 
-                    LotteryGame.MaxNumber, LotteryGame.TicketPrice, LotteryGame.Prizes.JoinWith(", ")
+                return ctx.ImpInfoAsync(
+                    this.ModuleColor, 
+                    Emojis.Information, 
+                    TranslationKey.str_casino_lottery(LotteryGame.MaxNumber, LotteryGame.TicketPrice, LotteryGame.Prizes.JoinWith(", "))
                 );
             }
             #endregion

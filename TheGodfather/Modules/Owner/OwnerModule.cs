@@ -44,13 +44,13 @@ namespace TheGodfather.Modules.Owner
         [Aliases("ann")]
         [RequireOwner]
         public async Task AnnounceAsync(CommandContext ctx,
-                                       [RemainingText, Description("desc-announcement")] string message)
+                                       [RemainingText, Description(TranslationKey.desc_announcement)] string message)
         {
-            if (!await ctx.WaitForBoolReplyAsync("q-announcement", args: Formatter.Strip(message)))
+            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_announcement(Formatter.Strip(message))))
                 return;
 
             var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild?.Id);
-            emb.WithLocalizedTitle("str-announcement");
+            emb.WithLocalizedTitle(TranslationKey.str_announcement);
             emb.WithDescription(message);
             emb.WithColor(DiscordColor.Red);
 
@@ -62,13 +62,13 @@ namespace TheGodfather.Modules.Owner
                     try {
                         await guild.GetDefaultChannel().SendMessageAsync(embed: emb.Build());
                     } catch {
-                        eb.AppendLine(this.Localization.GetString(ctx.Guild?.Id, "cmd-err-announce", shardId, guild.Name, guild.Id));
+                        eb.AppendLine(this.Localization.GetString(ctx.Guild?.Id, TranslationKey.cmd_err_announce(shardId, guild.Name, guild.Id)));
                     }
                 }
             }
 
             if (eb.Length > 0)
-                await ctx.ImpInfoAsync(this.ModuleColor, "fmt-err", eb.ToString());
+                await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_err(eb.ToString()));
             else
                 await ctx.InfoAsync(this.ModuleColor);
         }
@@ -79,16 +79,16 @@ namespace TheGodfather.Modules.Owner
         [Aliases("setavatar", "setbotavatar", "profilepic", "a")]
         [RequireOwner]
         public async Task SetBotAvatarAsync(CommandContext ctx,
-                                           [Description("desc-image-url")] Uri url)
+                                           [Description(TranslationKey.desc_image_url)] Uri url)
         {
             if (!await url.ContentTypeHeaderIsImageAsync(DiscordLimits.AvatarSizeLimit))
-                throw new CommandFailedException(ctx, "cmd-err-image-url-fail", DiscordLimits.AvatarSizeLimit);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_image_url_fail(DiscordLimits.AvatarSizeLimit));
 
             try {
                 using MemoryStream ms = await HttpService.GetMemoryStreamAsync(url);
                 await ctx.Client.UpdateCurrentUserAsync(avatar: ms);
             } catch (WebException e) {
-                throw new CommandFailedException(ctx, e, "err-url-image-fail");
+                throw new CommandFailedException(ctx, e, TranslationKey.err_url_image_fail);
             }
 
             await ctx.InfoAsync(this.ModuleColor);
@@ -100,13 +100,13 @@ namespace TheGodfather.Modules.Owner
         [Aliases("botname", "setbotname", "setname")]
         [RequireOwner]
         public async Task SetBotNameAsync(CommandContext ctx,
-                                         [RemainingText, Description("desc-name")] string name)
+                                         [RemainingText, Description(TranslationKey.desc_name_new)] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-missing-name");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_missing_name);
 
             if (name.Length > DiscordLimits.NameLimit)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-name", DiscordLimits.NameLimit);
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_name(DiscordLimits.NameLimit));
 
             await ctx.Client.UpdateCurrentUserAsync(username: name);
             await ctx.InfoAsync(this.ModuleColor);
@@ -120,17 +120,17 @@ namespace TheGodfather.Modules.Owner
         public async Task DatabaseQuery(CommandContext ctx)
         {
             if (!ctx.Message.Attachments.Any())
-                throw new CommandFailedException(ctx, "cmd-err-dbq-sql-att");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_dbq_sql_att);
 
             DiscordAttachment? attachment = ctx.Message.Attachments.FirstOrDefault(att => att.FileName.EndsWith(".sql"));
             if (attachment is null)
-                throw new CommandFailedException(ctx, "cmd-err-dbq-sql-att-none");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_dbq_sql_att_none);
 
             string query;
             try {
                 query = await HttpService.GetStringAsync(attachment.Url).ConfigureAwait(false);
             } catch (Exception e) {
-                throw new CommandFailedException(ctx, e, "err-attachment");
+                throw new CommandFailedException(ctx, e, TranslationKey.err_attachment);
             }
 
             await this.DatabaseQuery(ctx, query);
@@ -138,10 +138,10 @@ namespace TheGodfather.Modules.Owner
 
         [Command("dbquery"), Priority(0)]
         public async Task DatabaseQuery(CommandContext ctx,
-                                       [RemainingText, Description("desc-sql")] string query)
+                                       [RemainingText, Description(TranslationKey.desc_sql)] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-dbq-sql-none");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_dbq_sql_none);
 
             var res = new List<IReadOnlyDictionary<string, string>>();
             using (TheGodfatherDbContext db = ctx.Services.GetRequiredService<DbContextBuilder>().CreateContext())
@@ -158,7 +158,7 @@ namespace TheGodfather.Modules.Owner
             }
 
             if (!res.Any() || !res.First().Any()) {
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "str-dbq-none");
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, TranslationKey.str_dbq_none);
                 return;
             }
 
@@ -170,7 +170,7 @@ namespace TheGodfather.Modules.Owner
                 .Length;
 
             await ctx.PaginateAsync(
-                "str-dbq-res",
+                TranslationKey.str_dbq_res,
                 res.Take(25),
                 row => {
                     var sb = new StringBuilder();
@@ -189,38 +189,36 @@ namespace TheGodfather.Modules.Owner
         [Aliases("evaluate", "compile", "run", "e", "c", "r", "exec")]
         [RequireOwner]
         public async Task EvaluateAsync(CommandContext ctx,
-                                       [RemainingText, Description("desc-code")] string code)
+                                       [RemainingText, Description(TranslationKey.desc_code)] string code)
         {
             if (string.IsNullOrWhiteSpace(code))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-cmd-add-cb");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_cmd_add_cb);
 
             DiscordMessage msg = await ctx.RespondWithLocalizedEmbedAsync(emb => {
-                emb.WithLocalizedTitle("str-eval");
+                emb.WithLocalizedTitle(TranslationKey.str_eval);
                 emb.WithColor(this.ModuleColor);
             });
 
             Script<object>? snippet = CSharpCompilationService.Compile(code, out ImmutableArray<Diagnostic> diag, out Stopwatch compileTime);
             if (snippet is null) {
                 await msg.DeleteAsync();
-                throw new InvalidCommandUsageException(ctx, "cmd-err-cmd-add-cb");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_cmd_add_cb);
             }
 
             var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild?.Id);
 
             if (diag.Any(d => d.Severity == DiagnosticSeverity.Error)) {
-                emb.WithLocalizedTitle("str-eval-fail-compile");
-                emb.WithLocalizedDescription("fmt-eval-fail-compile", compileTime.ElapsedMilliseconds, diag.Length);
+                emb.WithLocalizedTitle(TranslationKey.str_eval_fail_compile);
+                emb.WithLocalizedDescription(TranslationKey.fmt_eval_fail_compile(compileTime.ElapsedMilliseconds, diag.Length));
                 emb.WithColor(DiscordColor.Red);
 
                 foreach (Diagnostic d in diag.Take(3)) {
                     FileLinePositionSpan ls = d.Location.GetLineSpan();
-                    emb.AddLocalizedField("fmt-eval-err", Formatter.BlockCode(d.GetMessage()),
-                        titleArgs: new object[] { ls.StartLinePosition.Line, ls.StartLinePosition.Character }
-                    );
+                    emb.AddLocalizedField(TranslationKey.fmt_eval_err(ls.StartLinePosition.Line, ls.StartLinePosition.Character), Formatter.BlockCode(d.GetMessage()));
                 }
 
                 if (diag.Length > 3)
-                    emb.AddLocalizedField("str-eval-omit", "fmt-eval-omit", contentArgs: new object[] { diag.Length - 3 });
+                    emb.AddLocalizedField(TranslationKey.str_eval_omit, TranslationKey.fmt_eval_omit(diag.Length - 3));
 
                 await UpdateOrRespondAsync();
                 return;
@@ -237,20 +235,20 @@ namespace TheGodfather.Modules.Owner
             runTime.Stop();
 
             if (exc is { } || res is null) {
-                emb.WithLocalizedTitle("str-eval-fail-run");
-                emb.WithLocalizedDescription("fmt-eval-fail-run", runTime.ElapsedMilliseconds, exc?.GetType(), exc?.Message);
+                emb.WithLocalizedTitle(TranslationKey.str_eval_fail_run);
+                emb.WithLocalizedDescription(TranslationKey.fmt_eval_fail_run(runTime.ElapsedMilliseconds, exc?.GetType(), exc?.Message));
                 emb.WithColor(DiscordColor.Red);
             } else {
-                emb.WithLocalizedTitle("str-eval-succ");
+                emb.WithLocalizedTitle(TranslationKey.str_eval_succ);
                 emb.WithColor(this.ModuleColor);
                 if (res.ReturnValue is { }) {
-                    emb.AddLocalizedField("str-result", res.ReturnValue, false);
-                    emb.AddLocalizedField("str-result-type", res.ReturnValue.GetType(), true);
+                    emb.AddLocalizedField(TranslationKey.str_result, res.ReturnValue, false);
+                    emb.AddLocalizedField(TranslationKey.str_result_type, res.ReturnValue.GetType(), true);
                 } else {
-                    emb.AddLocalizedField("str-result", "str-eval-value-none", inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_result, TranslationKey.str_eval_value_none, inline: true);
                 }
-                emb.AddLocalizedField("str-eval-time-compile", compileTime.ElapsedMilliseconds, true);
-                emb.AddLocalizedField("str-eval-time-run", runTime.ElapsedMilliseconds, true);
+                emb.AddLocalizedField(TranslationKey.str_eval_time_compile, compileTime.ElapsedMilliseconds, true);
+                emb.AddLocalizedField(TranslationKey.str_eval_time_run, runTime.ElapsedMilliseconds, true);
             }
 
             await UpdateOrRespondAsync();
@@ -266,7 +264,7 @@ namespace TheGodfather.Modules.Owner
         [Aliases("gendocs", "generatecommandslist", "docs", "cmdlist", "gencmdlist", "gencmds", "gencmdslist")]
         [RequireOwner]
         public async Task GenerateCommandListAsync(CommandContext ctx,
-                                                  [RemainingText, Description("desc-folder")] string? path = null)
+                                                  [RemainingText, Description(TranslationKey.desc_folder)] string? path = null)
         {
             if (string.IsNullOrWhiteSpace(path))
                 path = "Documentation";
@@ -280,7 +278,7 @@ namespace TheGodfather.Modules.Owner
                 parts = Directory.CreateDirectory(Path.Combine(current.FullName, "Parts"));
             } catch (IOException e) {
                 LogExt.Error(ctx, e, "Failed to delete/create documentation directory");
-                throw new CommandFailedException(ctx, "cmd-err-doc-clean");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_doc_clean);
             }
 
             CommandService cs = ctx.Services.GetRequiredService<CommandService>();
@@ -297,7 +295,7 @@ namespace TheGodfather.Modules.Owner
 
             foreach ((ModuleAttribute mattr, List<Command> cmdlist) in modules) {
                 sb.Append("# Module: ").Append(mattr.Module.ToString()).AppendLine();
-                sb.AppendLine(Formatter.Italic(this.Localization.GetString(null, $"{mattr.Module.ToLocalizedDescriptionKey()}-raw")));
+                sb.AppendLine(Formatter.Italic(this.Localization.GetStringUnsafe(null, $"{mattr.Module.ToLocalizedDescriptionKey()}-raw")));
                 sb.AppendLine().AppendLine();
 
                 foreach (Command cmd in cmdlist) {
@@ -382,7 +380,7 @@ namespace TheGodfather.Modules.Owner
                                 if (string.IsNullOrWhiteSpace(arg.Description))
                                     sb.Append("No description provided.");
                                 else
-                                    sb.Append(this.Localization.GetString(null, arg.Description));
+                                    sb.Append(this.Localization.GetStringUnsafe(null, arg.Description));
                                 sb.Append('*');
 
                                 if (arg.IsOptional) {
@@ -415,7 +413,7 @@ namespace TheGodfather.Modules.Owner
                     File.WriteAllText(filename, sb.ToString());
                 } catch (IOException e) {
                     LogExt.Error(ctx, e, "Failed to delete/create documentation file {Filename}", filename);
-                    throw new CommandFailedException(ctx, "cmd-err-doc-save", filename);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_doc_save(filename));
                 }
 
                 sb.Clear();
@@ -432,7 +430,7 @@ namespace TheGodfather.Modules.Owner
                 File.WriteAllText(mainDocFilename, sb.ToString());
             } catch (IOException e) {
                 LogExt.Error(ctx, e, "Failed to delete/create documentation file {Filename}", mainDocFilename);
-                throw new CommandFailedException(ctx, "cmd-err-doc-save", mainDocFilename);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_doc_save(mainDocFilename));
             }
 
             await ctx.InfoAsync(this.ModuleColor);
@@ -444,15 +442,15 @@ namespace TheGodfather.Modules.Owner
         [Aliases("leave", "gtfo")]
         [RequireOwner]
         public Task LeaveGuildsAsync(CommandContext ctx,
-                                    [Description("desc-guilds")] params DiscordGuild[] guilds)
+                                    [Description(TranslationKey.desc_guilds)] params DiscordGuild[] guilds)
             => this.LeaveGuildsAsync(ctx, guilds.Select(g => g.Id).ToArray());
 
         [Command("leaveguilds"), Priority(0)]
         public async Task LeaveGuildsAsync(CommandContext ctx,
-                                          [Description("desc-guilds")] params ulong[] gids)
+                                          [Description(TranslationKey.desc_guilds)] params ulong[] gids)
         {
             if (gids is null || !gids.Any())
-                throw new InvalidCommandUsageException(ctx, "cmd-err-ids-none");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_ids_none);
 
             var eb = new StringBuilder();
             foreach (ulong gid in gids) {
@@ -460,15 +458,15 @@ namespace TheGodfather.Modules.Owner
                     if (ctx.Client.Guilds.TryGetValue(gid, out DiscordGuild? guild))
                         await guild.LeaveAsync();
                     else
-                        eb.AppendLine(this.Localization.GetString(ctx.Guild?.Id, "cmd-err-guild-leave", gid));
+                        eb.AppendLine(this.Localization.GetString(ctx.Guild?.Id, TranslationKey.cmd_err_guild_leave(gid)));
                 } catch {
-                    eb.AppendLine(this.Localization.GetString(ctx.Guild?.Id, "cmd-err-guild-leave-fail", gid));
+                    eb.AppendLine(this.Localization.GetString(ctx.Guild?.Id, TranslationKey.cmd_err_guild_leave_fail(gid)));
                 }
             }
 
             if (ctx.Guild is { } && !gids.Contains(ctx.Guild.Id)) {
                 if (eb.Length > 0)
-                    await ctx.FailAsync("fmt-err", eb);
+                    await ctx.FailAsync(TranslationKey.fmt_err(eb));
                 else
                     await ctx.InfoAsync(this.ModuleColor);
             } else {
@@ -482,18 +480,18 @@ namespace TheGodfather.Modules.Owner
         [Aliases("getlog", "remark", "rem")]
         [RequireOwner]
         public async Task LogAsync(CommandContext ctx,
-                                  [Description("desc-log-bp")] bool bypassConfig = false)
+                                  [Description(TranslationKey.desc_log_bp)] bool bypassConfig = false)
         {
             BotConfig cfg = ctx.Services.GetRequiredService<BotConfigService>().CurrentConfiguration;
 
             if (!bypassConfig && !cfg.LogToFile)
-                throw new CommandFailedException(ctx, "cmd-err-log-off");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_log_off);
 
             var fi = new FileInfo(cfg.LogPath);
             if (fi.Exists) {
                 fi = new FileInfo(cfg.LogPath);
                 if (fi.Length > DiscordLimits.AttachmentLimit)
-                    throw new CommandFailedException(ctx, "cmd-err-log-size", fi.Name, fi.Length.Megabytes().Humanize());
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_log_size(fi.Name, fi.Length.Megabytes().Humanize()));
             } else {
                 DirectoryInfo? di = fi.Directory;
                 if (di?.Exists ?? false) {
@@ -503,10 +501,10 @@ namespace TheGodfather.Modules.Owner
                         .ToDictionary(tup => tup.i, tup => tup.fi)
                         ;
                     if (!fis.Any())
-                        throw new CommandFailedException(ctx, "cmd-err-log-404", cfg.LogPath);
+                        throw new CommandFailedException(ctx, TranslationKey.cmd_err_log_404(cfg.LogPath));
 
                     await ctx.PaginateAsync(
-                        "q-log-select",
+                        TranslationKey.q_log_select,
                         fis,
                         kvp => Formatter.InlineCode($"{kvp.Key:D3}: {kvp.Value.Name}"),
                         this.ModuleColor
@@ -517,9 +515,9 @@ namespace TheGodfather.Modules.Owner
                         return;
 
                     if (!fis.TryGetValue(index.Value, out fi))
-                        throw new CommandFailedException(ctx, "cmd-err-log-404", cfg.LogPath);
+                        throw new CommandFailedException(ctx, TranslationKey.cmd_err_log_404(cfg.LogPath));
                 } else {
-                    throw new CommandFailedException(ctx, "cmd-err-log-404", cfg.LogPath);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_log_404(cfg.LogPath));
                 }
             }
 
@@ -529,8 +527,8 @@ namespace TheGodfather.Modules.Owner
 
         [Command("log"), Priority(0)]
         public Task LogAsync(CommandContext ctx,
-                            [Description("desc-log-lvl")] LogEventLevel level,
-                            [RemainingText, Description("desc-log-msg")] string text)
+                            [Description(TranslationKey.desc_log_lvl)] LogEventLevel level,
+                            [RemainingText, Description(TranslationKey.desc_log_msg)] string text)
         {
             Log.Write(level, "{LogRemark}", text);
             return ctx.InfoAsync(this.ModuleColor);
@@ -542,17 +540,17 @@ namespace TheGodfather.Modules.Owner
         [Aliases("send", "sendmsg", "s")]
         [RequirePrivilegedUser]
         public async Task SendAsync(CommandContext ctx,
-                                   [Description("desc-send")] string desc,
-                                   [Description("desc-id")] ulong xid,
-                                   [RemainingText, Description("desc-send-msg")] string message)
+                                   [Description(TranslationKey.desc_send)] string desc,
+                                   [Description(TranslationKey.desc_id)] ulong xid,
+                                   [RemainingText, Description(TranslationKey.desc_send_msg)] string message)
         {
             if (string.IsNullOrWhiteSpace(message))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-text-none");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_text_none);
 
             if (string.Equals(desc, "u", StringComparison.InvariantCultureIgnoreCase)) {
                 DiscordDmChannel? dm = await ctx.Client.CreateDmChannelAsync(xid);
                 if (dm is null)
-                    throw new CommandFailedException(ctx, "cmd-err-dm-create");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_dm_create);
                 await dm.SendMessageAsync(message);
             } else if (string.Equals(desc, "c", StringComparison.InvariantCultureIgnoreCase)) {
                 DiscordChannel channel = await ctx.Client.GetChannelAsync(xid);
@@ -570,13 +568,13 @@ namespace TheGodfather.Modules.Owner
         [Aliases("disable", "poweroff", "exit", "quit")]
         [RequirePrivilegedUser]
         public Task ExitAsync(CommandContext _,
-                             [Description("desc-exit-time")] TimeSpan timespan,
-                             [Description("desc-exit-code")] int exitCode = 0)
+                             [Description(TranslationKey.desc_exit_time)] TimeSpan timespan,
+                             [Description(TranslationKey.desc_exit_code)] int exitCode = 0)
             => TheGodfather.Stop(exitCode, timespan);
 
         [Command("shutdown"), Priority(0)]
         public Task ExitAsync(CommandContext _,
-                             [Description("desc-exit-code")] int exitCode = 0)
+                             [Description(TranslationKey.desc_exit_code)] int exitCode = 0)
             => TheGodfather.Stop(exitCode);
         #endregion
 
@@ -585,20 +583,20 @@ namespace TheGodfather.Modules.Owner
         [Aliases("execas", "as")]
         [RequireGuild, RequirePrivilegedUser]
         public async Task SudoAsync(CommandContext ctx,
-                                   [Description("desc-member")] DiscordMember member,
-                                   [RemainingText, Description("desc-cmd-full")] string command)
+                                   [Description(TranslationKey.desc_member)] DiscordMember member,
+                                   [RemainingText, Description(TranslationKey.desc_cmd_full)] string command)
         {
             if (string.IsNullOrWhiteSpace(command))
                 throw new InvalidCommandUsageException(ctx);
 
             Command? cmd = ctx.CommandsNext.FindCommand(command, out string args);
             if (cmd is null)
-                throw new CommandFailedException(ctx, "cmd-404", command);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_404(command));
             if (cmd.ExecutionChecks.Any(c => c is RequireOwnerAttribute or RequirePrivilegedUserAttribute))
-                throw new CommandFailedException(ctx, "cmd-err-sudo");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_sudo);
             CommandContext fctx = ctx.CommandsNext.CreateFakeContext(member, ctx.Channel, command, ctx.Prefix, cmd, args);
             if ((await cmd.RunChecksAsync(fctx, false)).Any())
-                throw new CommandFailedException(ctx, "cmd-err-sudo-chk");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_sudo_chk);
 
             await ctx.CommandsNext.ExecuteCommandAsync(fctx);
         }
@@ -612,7 +610,7 @@ namespace TheGodfather.Modules.Owner
         {
             BotActivityService bas = ctx.Services.GetRequiredService<BotActivityService>();
             bool ignoreEnabled = bas.ToggleListeningStatus();
-            return ctx.InfoAsync(this.ModuleColor, ignoreEnabled ? "str-off" : "str-on");
+            return ctx.InfoAsync(this.ModuleColor, ignoreEnabled ? TranslationKey.str_off : TranslationKey.str_on);
         }
         #endregion
 
@@ -641,11 +639,11 @@ namespace TheGodfather.Modules.Owner
             TimeSpan socketUptime = bas.UptimeInformation.SocketUptime;
 
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
-                emb.WithLocalizedTitle("str-uptime-info");
+                emb.WithLocalizedTitle(TranslationKey.str_uptime_info);
                 emb.WithDescription($"{TheGodfather.ApplicationName} {TheGodfather.ApplicationVersion}");
-                emb.AddLocalizedField("str-shard", $"{ctx.Client.ShardId}/{ctx.Client.ShardCount - 1}", inline: true);
-                emb.AddLocalizedField("str-uptime-bot", processUptime.ToString(@"dd\.hh\:mm\:ss"), inline: true);
-                emb.AddLocalizedField("str-uptime-socket", socketUptime.ToString(@"dd\.hh\:mm\:ss"), inline: true);
+                emb.AddLocalizedField(TranslationKey.str_shard, $"{ctx.Client.ShardId}/{ctx.Client.ShardCount - 1}", inline: true);
+                emb.AddLocalizedField(TranslationKey.str_uptime_bot, processUptime.ToString(@"dd\.hh\:mm\:ss"), inline: true);
+                emb.AddLocalizedField(TranslationKey.str_uptime_socket, socketUptime.ToString(@"dd\.hh\:mm\:ss"), inline: true);
                 emb.WithColor(this.ModuleColor);
             });
         }

@@ -75,9 +75,12 @@ namespace TheGodfather.Extensions
             => InternalInformAsync(ctx, emoji, key, true, color);
 
         public static Task FailAsync(this CommandContext ctx, TranslationKey key)
+            => ctx.FailAsync(Emojis.X, key);
+
+        public static Task FailAsync(this CommandContext ctx, DiscordEmoji emoji, TranslationKey key)
         {
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
-                Description = $"{Emojis.X} {ctx.Services.GetRequiredService<LocalizationService>().GetString(ctx.Guild?.Id ?? 0, key)}",
+                Description = $"{emoji} {ctx.Services.GetRequiredService<LocalizationService>().GetString(ctx.Guild?.Id ?? 0, key)}",
                 Color = DiscordColor.IndianRed
             });
         }

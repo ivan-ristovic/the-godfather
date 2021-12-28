@@ -25,7 +25,7 @@ namespace TheGodfather.Modules.Owner
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-users")] params DiscordUser[] users)
+                                     [Description(TranslationKey.desc_users)] params DiscordUser[] users)
             => this.AddAsync(ctx, users);
         #endregion
 
@@ -33,10 +33,10 @@ namespace TheGodfather.Modules.Owner
         [Command("add")]
         [Aliases("register", "reg", "new", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("desc-users")] params DiscordUser[] users)
+                                  [Description(TranslationKey.desc_users)] params DiscordUser[] users)
         {
             if (users is null || !users.Any())
-                throw new InvalidCommandUsageException(ctx, "cmd-err-missing-users");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_missing_users);
 
             await this.Service.AddAsync(users.Select(u => new PrivilegedUser { UserId = u.Id }));
             await ctx.InfoAsync(this.ModuleColor);
@@ -47,10 +47,10 @@ namespace TheGodfather.Modules.Owner
         [Command("delete")]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("desc-users")] params DiscordUser[] users)
+                                     [Description(TranslationKey.desc_users)] params DiscordUser[] users)
         {
             if (users is null || !users.Any())
-                throw new InvalidCommandUsageException(ctx, "cmd-err-missing-users");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_missing_users);
 
             await this.Service.RemoveAsync(users.Select(u => new PrivilegedUser { UserId = u.Id }));
             await ctx.InfoAsync(this.ModuleColor);
@@ -77,10 +77,10 @@ namespace TheGodfather.Modules.Owner
             }
 
             if (!valid.Any())
-                throw new CommandFailedException(ctx, "cmd-err-choice-none");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_choice_none);
 
             await ctx.PaginateAsync(
-                "str-priv",
+                TranslationKey.str_priv,
                 valid,
                 user => user.ToString(),
                 this.ModuleColor,

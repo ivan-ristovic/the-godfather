@@ -6,7 +6,9 @@
   },
   "music forward": {
     "usage": [
-      [ "arg-timespan" ]
+      [
+        "arg-timespan"
+      ]
     ]
   },
   "music info": {
@@ -21,13 +23,19 @@
   },
   "music play": {
     "usage": [
-      [ "arg-yt-song" ],
-      [ "arg-query" ]
+      [
+        "arg-yt-song"
+      ],
+      [
+        "arg-query"
+      ]
     ]
   },
   "music playfile": {
     "usage": [
-      [ "arg-file-mp3" ]
+      [
+        "arg-file-mp3"
+      ]
     ]
   },
   "music queue": {
@@ -37,12 +45,16 @@
   },
   "music remove": {
     "usage": [
-      [ "arg-five" ]
+      [
+        "arg-five"
+      ]
     ]
   },
   "music repeat": {
     "usage": [
-      [ "arg-repeat-mode" ]
+      [
+        "arg-repeat-mode"
+      ]
     ]
   },
   "music reshuffle": {
@@ -62,12 +74,16 @@
   },
   "music rewind": {
     "usage": [
-      [ "arg-timespan" ]
+      [
+        "arg-timespan"
+      ]
     ]
   },
   "music seek": {
     "usage": [
-      [ "arg-timespan-full" ]
+      [
+        "arg-timespan-full"
+      ]
     ]
   },
   "music shuffle": {
@@ -87,12 +103,16 @@
   },
   "music volume": {
     "usage": [
-      [ "arg-fifty" ]
+      [
+        "arg-fifty"
+      ]
     ]
   },
   "voice connect": {
     "usage": [
-      [ "arg-chn-voice" ]
+      [
+        "arg-chn-voice"
+      ]
     ]
   },
   "voice disconnect": {

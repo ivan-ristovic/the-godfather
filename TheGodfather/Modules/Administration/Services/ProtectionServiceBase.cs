@@ -11,6 +11,7 @@ using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Modules.Administration.Services
 {
@@ -87,10 +88,10 @@ namespace TheGodfather.Modules.Administration.Services
             } catch (Exception e) {
                 Log.Error(e, "Failed to punish ({PunishmentType}) {Member} in {Guild}", type, member, guild);
                 if (this.ls.IsLogEnabledFor(guild.Id, out LocalizedEmbedBuilder emb)) {
-                    emb.WithLocalizedTitle("err-punish-failed");
+                    emb.WithLocalizedTitle(TranslationKey.err_punish_failed);
                     emb.WithColor(DiscordColor.Red);
-                    emb.AddLocalizedField("str-user", member);
-                    emb.AddLocalizedField("str-rsn", reason ?? this.reason);
+                    emb.AddLocalizedField(TranslationKey.str_user, member);
+                    emb.AddLocalizedField(TranslationKey.str_rsn, reason ?? this.reason);
                     await this.ls.LogAsync(guild, emb.Build());
                 }
             }

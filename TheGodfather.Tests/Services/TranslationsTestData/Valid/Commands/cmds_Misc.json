@@ -2,19 +2,26 @@
   "cmd1": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "cmd1 subcommand": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "cmd2": {
     "usage": [
       [],
-      [ "arg-mem", "arg-rsn" ]
+      [
+        "arg-mem",
+        "arg-rsn"
+      ]
     ]
   }
 }

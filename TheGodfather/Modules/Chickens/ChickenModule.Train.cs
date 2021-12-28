@@ -41,9 +41,11 @@ namespace TheGodfather.Modules.Chickens
                 chicken.Stats.BareVitality--;
 
                 await this.Service.UpdateAsync(chicken);
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Chicken, 
-                    success ? "fmt-chicken-train-succ" : "fmt-chicken-train-fail", ctx.User.Mention, "STR", chicken.Stats.TotalStrength
-                );
+
+                TranslationKey msg = success
+                    ? TranslationKey.fmt_chicken_train_succ(ctx.User.Mention, "STR", chicken.Stats.TotalStrength)
+                    : TranslationKey.fmt_chicken_train_fail(ctx.User.Mention, "STR", chicken.Stats.TotalStrength);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Chicken, msg);
             }
             #endregion
 
@@ -60,9 +62,11 @@ namespace TheGodfather.Modules.Chickens
                 chicken.Stats.BareVitality--;
 
                 await this.Service.UpdateAsync(chicken);
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Chicken,
-                    success ? "fmt-chicken-train-succ" : "fmt-chicken-train-fail", ctx.User.Mention, "VIT", chicken.Stats.TotalMaxVitality
-                );
+
+                TranslationKey msg = success
+                    ? TranslationKey.fmt_chicken_train_succ(ctx.User.Mention, "VIT", chicken.Stats.TotalMaxVitality)
+                    : TranslationKey.fmt_chicken_train_fail(ctx.User.Mention, "VIT", chicken.Stats.TotalMaxVitality);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Chicken, msg);
             }
             #endregion
 
@@ -71,15 +75,15 @@ namespace TheGodfather.Modules.Chickens
             private async Task<Chicken?> PreTrainCheckAsync(CommandContext ctx, string stat)
             {
                 if (ctx.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
-                    throw new CommandFailedException(ctx, "cmd-err-chicken-war");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_chicken_war);
 
                 Chicken? chicken = await this.Service.GetCompleteAsync(ctx.Guild.Id, ctx.User.Id);
                 if (chicken is null)
-                    throw new CommandFailedException(ctx, "cmd-err-chicken-none");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_chicken_none);
                 chicken.Owner = ctx.User;
 
                 if (chicken.Stats.TotalVitality < Chicken.MinVitalityToFight)
-                    throw new CommandFailedException(ctx, "cmd-err-chicken-weak", ctx.User.Mention);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_chicken_weak(ctx.User.Mention));
 
                 CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
                 long price = stat switch {
@@ -88,11 +92,11 @@ namespace TheGodfather.Modules.Chickens
                     _ => throw new CommandFailedException(ctx),
                 };
 
-                if (!await ctx.WaitForBoolReplyAsync("q-chicken-train", args: new object[] { ctx.User.Mention, stat, price, gcfg.Currency }))
+                if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_chicken_train(ctx.User.Mention, stat, price, gcfg.Currency)))
                     return null;
 
                 if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, price))
-                    throw new CommandFailedException(ctx, "cmd-err-funds", gcfg.Currency, price);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_funds(gcfg.Currency, price));
 
                 return chicken;
             }

@@ -1,9 +1,17 @@
 {
   "poll": {
     "usage": [
-      [ "arg-poll-q" ],
-      [ "arg-timespan", "arg-poll-q" ],
-      [ "arg-poll-q", "arg-timespan" ]
+      [
+        "arg-poll-q"
+      ],
+      [
+        "arg-timespan",
+        "arg-poll-q"
+      ],
+      [
+        "arg-poll-q",
+        "arg-timespan"
+      ]
     ]
   },
   "poll stop": {
@@ -13,9 +21,17 @@
   },
   "reactionspoll": {
     "usage": [
-      [ "arg-poll-q" ],
-      [ "arg-timespan", "arg-poll-q" ],
-      [ "arg-poll-q", "arg-timespan" ]
+      [
+        "arg-poll-q"
+      ],
+      [
+        "arg-timespan",
+        "arg-poll-q"
+      ],
+      [
+        "arg-poll-q",
+        "arg-timespan"
+      ]
     ]
   },
   "reactionspoll stop": {
@@ -25,7 +41,9 @@
   },
   "vote": {
     "usage": [
-      [ "arg-five" ]
+      [
+        "arg-five"
+      ]
     ]
   },
   "vote cancel": {

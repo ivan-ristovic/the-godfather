@@ -22,18 +22,18 @@ namespace TheGodfather.Modules.Administration
             #region message delete
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("desc-msg-del-amount")] int amount = 1,
-                                               [RemainingText, Description("desc-rsn")] string? reason = null)
+                                               [Description(TranslationKey.desc_msg_del_amount)] int amount = 1,
+                                               [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             {
                 if (amount is < 1 or > 10000)
-                    throw new CommandFailedException(ctx, "cmd-err-msg-del-range", 1, 10000);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_msg_del_range(1, 10000));
 
-                if (amount > 10 && !await ctx.WaitForBoolReplyAsync("q-msg-del", args: amount))
+                if (amount > 10 && !await ctx.WaitForBoolReplyAsync(TranslationKey.q_msg_del(amount)))
                     return;
 
                 IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesAsync(amount);
                 if (!msgs.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-msg-del-none");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_msg_del_none);
 
                 await ctx.Channel.DeleteMessagesAsync(msgs, ctx.BuildInvocationDetailsString(reason));
             }
@@ -43,12 +43,12 @@ namespace TheGodfather.Modules.Administration
             [Command("after")]
             [Aliases("aft", "af")]
             public async Task DeleteMessagesAfterAsync(CommandContext ctx,
-                                                      [Description("desc-msg")] DiscordMessage message,
-                                                      [Description("desc-msg-del-amount")] int amount = 1,
-                                                      [RemainingText, Description("desc-rsn")] string? reason = null)
+                                                      [Description(TranslationKey.desc_msg)] DiscordMessage message,
+                                                      [Description(TranslationKey.desc_msg_del_amount)] int amount = 1,
+                                                      [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             {
                 if (amount is < 1 or > 10000)
-                    throw new CommandFailedException(ctx, "cmd-err-msg-del-range", 1, 10000);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_msg_del_range(1, 10000));
 
                 IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesAfterAsync(message.Id, amount);
                 await ctx.Channel.DeleteMessagesAsync(msgs, ctx.BuildInvocationDetailsString(reason));
@@ -59,12 +59,12 @@ namespace TheGodfather.Modules.Administration
             [Command("before")]
             [Aliases("bef", "bf")]
             public async Task DeleteMessagesBeforeAsync(CommandContext ctx,
-                                                       [Description("desc-msg")] DiscordMessage message,
-                                                       [Description("desc-msg-del-amount")] int amount = 1,
-                                                       [RemainingText, Description("desc-rsn")] string? reason = null)
+                                                       [Description(TranslationKey.desc_msg)] DiscordMessage message,
+                                                       [Description(TranslationKey.desc_msg_del_amount)] int amount = 1,
+                                                       [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             {
                 if (amount is < 1 or > 10000)
-                    throw new CommandFailedException(ctx, "cmd-err-msg-del-range", 1, 10000);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_msg_del_range(1, 10000));
 
                 IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesBeforeAsync(message.Id, amount);
                 await ctx.Channel.DeleteMessagesAsync(msgs, ctx.BuildInvocationDetailsString(reason));
@@ -75,12 +75,12 @@ namespace TheGodfather.Modules.Administration
             [Command("from"), Priority(1)]
             [Aliases("f", "frm")]
             public async Task DeleteMessagesFromUserAsync(CommandContext ctx,
-                                                         [Description("desc-member")] DiscordMember member,
-                                                         [Description("desc-msg-del-amount")] int amount = 1,
-                                                         [RemainingText, Description("desc-rsn")] string? reason = null)
+                                                         [Description(TranslationKey.desc_member)] DiscordMember member,
+                                                         [Description(TranslationKey.desc_msg_del_amount)] int amount = 1,
+                                                         [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             {
                 if (amount is < 1 or > 10000)
-                    throw new CommandFailedException(ctx, "cmd-err-msg-del-range", 1, 10000);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_msg_del_range(1, 10000));
 
                 IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesAsync(amount);
                 await ctx.Channel.DeleteMessagesAsync(msgs.Where(m => m.Author == member), ctx.BuildInvocationDetailsString(reason));
@@ -88,9 +88,9 @@ namespace TheGodfather.Modules.Administration
 
             [Command("from"), Priority(0)]
             public Task DeleteMessagesFromUserAsync(CommandContext ctx,
-                                                   [Description("desc-msg-del-amount")] int amount,
-                                                   [Description("desc-member")] DiscordMember member,
-                                                   [RemainingText, Description("desc-rsn")] string? reason = null)
+                                                   [Description(TranslationKey.desc_msg_del_amount)] int amount,
+                                                   [Description(TranslationKey.desc_member)] DiscordMember member,
+                                                   [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
                 => this.DeleteMessagesFromUserAsync(ctx, member, amount, reason);
             #endregion
 
@@ -98,12 +98,12 @@ namespace TheGodfather.Modules.Administration
             [Command("reactions")]
             [Aliases("react", "re")]
             public async Task DeleteReactionsAsync(CommandContext ctx,
-                                                  [Description("desc-msg")] DiscordMessage? message = null,
-                                                  [RemainingText, Description("desc-rsn")] string? reason = null)
+                                                  [Description(TranslationKey.desc_msg)] DiscordMessage? message = null,
+                                                  [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             {
                 message ??= await ctx.Channel.GetLastMessageAsync();
                 if (message is null)
-                    throw new CommandFailedException(ctx, "cmd-err-msg-404");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_msg_404);
 
                 await message.DeleteAllReactionsAsync(ctx.BuildInvocationDetailsString(reason));
                 await ctx.InfoAsync(this.ModuleColor);
@@ -114,15 +114,15 @@ namespace TheGodfather.Modules.Administration
             [Command("regex"), Priority(1)]
             [Aliases("r", "rgx", "regexp", "reg")]
             public async Task DeleteMessagesFromRegexAsync(CommandContext ctx,
-                                                          [Description("desc-regex")] string pattern,
-                                                          [Description("desc-msg-del-amount")] int amount = 5,
-                                                          [RemainingText, Description("desc-rsn")] string? reason = null)
+                                                          [Description(TranslationKey.desc_regex)] string pattern,
+                                                          [Description(TranslationKey.desc_msg_del_amount)] int amount = 5,
+                                                          [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             {
                 if (amount is < 1 or > 100)
-                    throw new CommandFailedException(ctx, "cmd-err-msg-del-range", 1, 100);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_msg_del_range(1, 100));
 
                 if (!pattern.TryParseRegex(out Regex? regex) || regex is null)
-                    throw new CommandFailedException(ctx, "cmd-err-regex");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_regex);
 
                 if (ctx.Channel.LastMessageId is null)
                     return;
@@ -134,9 +134,9 @@ namespace TheGodfather.Modules.Administration
 
             [Command("regex"), Priority(0)]
             public Task DeleteMessagesFromRegexAsync(CommandContext ctx,
-                                                    [Description("desc-msg-del-amount")] int amount,
-                                                    [Description("desc-regex")] string pattern,
-                                                    [RemainingText, Description("desc-rsn")] string? reason = null)
+                                                    [Description(TranslationKey.desc_msg_del_amount)] int amount,
+                                                    [Description(TranslationKey.desc_regex)] string pattern,
+                                                    [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
                 => this.DeleteMessagesFromRegexAsync(ctx, pattern, amount, reason);
             #endregion
         }

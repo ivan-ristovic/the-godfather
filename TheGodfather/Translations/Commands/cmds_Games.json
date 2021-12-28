@@ -6,7 +6,9 @@
   },
   "deck draw": {
     "usage": [
-      [ "arg-five" ]
+      [
+        "arg-five"
+      ]
     ]
   },
   "deck reset": {
@@ -32,7 +34,9 @@
   "game animalrace stats": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "game animalrace top": {
@@ -43,7 +47,9 @@
   "game caro": {
     "usage": [
       [],
-      [ "arg-timespan" ]
+      [
+        "arg-timespan"
+      ]
     ]
   },
   "game caro rules": {
@@ -54,7 +60,11 @@
   "game minesweeper": {
     "usage": [
       [],
-      [ "arg-twenty", "arg-twenty", "arg-fifty" ]
+      [
+        "arg-twenty",
+        "arg-twenty",
+        "arg-fifty"
+      ]
     ]
   },
   "game minesweeper rules": {
@@ -65,7 +75,9 @@
   "game caro stats": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "game caro top": {
@@ -76,7 +88,9 @@
   "game connect4": {
     "usage": [
       [],
-      [ "arg-timespan" ]
+      [
+        "arg-timespan"
+      ]
     ]
   },
   "game connect4 rules": {
@@ -87,7 +101,9 @@
   "game connect4 stats": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "game connect4 top": {
@@ -98,7 +114,9 @@
   "game duel": {
     "usage": [
       [],
-      [ "arg-mem" ]
+      [
+        "arg-mem"
+      ]
     ]
   },
   "game duel rules": {
@@ -109,7 +127,9 @@
   "game duel stats": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "game duel top": {
@@ -130,7 +150,9 @@
   "game hangman stats": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "game hangman top": {
@@ -161,7 +183,9 @@
   "game numberrace stats": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "game numberrace top": {
@@ -172,7 +196,9 @@
   "game othello": {
     "usage": [
       [],
-      [ "arg-timespan" ]
+      [
+        "arg-timespan"
+      ]
     ]
   },
   "game othello rules": {
@@ -183,7 +209,9 @@
   "game othello stats": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "game othello top": {
@@ -194,26 +222,37 @@
   "game quiz": {
     "usage": [
       [],
-      [ "arg-ten" ],
-      [ "arg-ten", "arg-ten" ]
+      [
+        "arg-ten"
+      ],
+      [
+        "arg-ten",
+        "arg-ten"
+      ]
     ]
   },
   "game quiz capitals": {
     "usage": [
       [],
-      [ "arg-ten" ]
+      [
+        "arg-ten"
+      ]
     ]
   },
   "game quiz countries": {
     "usage": [
       [],
-      [ "arg-ten" ]
+      [
+        "arg-ten"
+      ]
     ]
   },
   "game quiz stats": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "game quiz top": {
@@ -249,7 +288,9 @@
   "game russianroulette stats": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "game russianroulette top": {
@@ -260,13 +301,17 @@
   "game stats": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "game tictactoe": {
     "usage": [
       [],
-      [ "arg-timespan" ]
+      [
+        "arg-timespan"
+      ]
     ]
   },
   "game tictactoe rules": {
@@ -277,7 +322,9 @@
   "game tictactoe stats": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "game tictactoe top": {
@@ -298,7 +345,9 @@
   "game typingrace stats": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "game typingrace top": {

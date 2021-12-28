@@ -27,18 +27,18 @@ namespace TheGodfather.Modules.Games
         [Command("draw")]
         [Aliases("take")]
         public Task DrawAsync(CommandContext ctx,
-                             [Description("desc-draw-amount")] int amount = 1)
+                             [Description(TranslationKey.desc_draw_amount)] int amount = 1)
         {
             Deck deck = CardDecksService.GetDeckForChannel(ctx.Channel.Id);
 
             if (amount is < 1 or > 10)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-deck-amount", 1, 10);
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_deck_amount(1, 10));
 
             IReadOnlyList<Card> drawn = deck.DrawCards(amount);
             if (!drawn.Any())
-                throw new CommandFailedException(ctx, "cmd-err-deck-empty");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_deck_empty);
 
-            return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Dice, "fmt-deck-draw", drawn.JoinWith(" "));
+            return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Dice, TranslationKey.fmt_deck_draw(ctx.User.Mention, drawn.JoinWith(" ")));
         }
         #endregion
 

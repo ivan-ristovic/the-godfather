@@ -24,7 +24,7 @@ namespace TheGodfather.Modules.Music
         [Command("play"), Priority(1)]
         [Aliases("p", "+", "+=", "add", "a")]
         public async Task PlayAsync(CommandContext ctx,
-                                   [Description("desc-audio-url")] Uri uri)
+                                   [Description(TranslationKey.desc_audio_url)] Uri uri)
         {
             LavalinkLoadResult tlr = await this.Service.GetTracksAsync(uri);
             await this.InternalPlayAsync(ctx, tlr);
@@ -32,10 +32,10 @@ namespace TheGodfather.Modules.Music
 
         [Command("play"), Priority(0)]
         public async Task PlayAsync(CommandContext ctx,
-                                   [RemainingText, Description("desc-audio-query")] string query)
+                                   [RemainingText, Description(TranslationKey.desc_audio_query)] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-query");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_query);
 
             YtService yt = ctx.Services.GetRequiredService<YtService>();
             if (yt.IsDisabled)
@@ -43,14 +43,14 @@ namespace TheGodfather.Modules.Music
 
             IReadOnlyList<SearchResult>? res = await yt.SearchAsync(query, 1);
             if (res is null)
-                throw new CommandFailedException(ctx, "cmd-err-yt");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_yt);
 
             if (!res.Any())
-                throw new CommandFailedException(ctx, "cmd-err-res-none");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_res_none);
 
             string? url = yt.GetUrlForResourceId(res[0].Id);
             if (url is null)
-                throw new CommandFailedException(ctx, "cmd-err-yt");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_yt);
 
             await this.PlayAsync(ctx, new Uri(url));
         }
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Music
         [Command("playfile"), RequireOwner]
         [Aliases("pf", "+f", "+=f", "addf", "af")]
         public async Task PlayFileAsync(CommandContext ctx,
-                                       [RemainingText, Description("desc-audio-url")] string path)
+                                       [RemainingText, Description(TranslationKey.desc_audio_url)] string path)
         {
             var fi = new FileInfo(path);
             LavalinkLoadResult tlr = await this.Service.GetTracksAsync(fi);
@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Music
         {
             IEnumerable<LavalinkTrack> tracks = tlr.Tracks;
             if (tlr.LoadResultType == LavalinkLoadResultType.LoadFailed || !tracks.Any() || this.Player is null)
-                throw new CommandFailedException(ctx, "cmd-err-music-none");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_music_none);
 
             if (this.Player.IsShuffled)
                 tracks = this.Service.Shuffle(tracks);
@@ -85,13 +85,13 @@ namespace TheGodfather.Modules.Music
 
             DiscordChannel? chn = ctx.Member.VoiceState?.Channel ?? ctx.Guild.CurrentMember.VoiceState?.Channel;
             if (chn is null)
-                throw new CommandFailedException(ctx, "cmd-err-music-vc");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_music_vc);
 
             await this.Player.CreatePlayerAsync(chn);
             await this.Player.PlayAsync();
 
             if (trackCount > 1) {
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-add-many", trackCount);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.fmt_music_add_many(trackCount));
             } else {
                 LavalinkTrack track = tracks.First();
                 await ctx.RespondWithLocalizedEmbedAsync(emb => {
@@ -104,10 +104,10 @@ namespace TheGodfather.Modules.Music
                         emb.WithUrl(track.Uri);
                     }
                     emb.WithColor(this.ModuleColor);
-                    emb.WithLocalizedTitle("fmt-music-add", Emojis.Headphones);
+                    emb.WithLocalizedTitle(TranslationKey.fmt_music_add(Emojis.Headphones));
                     emb.WithDescription(Formatter.Bold(Formatter.Sanitize(title)));
-                    emb.AddLocalizedField("str-author", author, inline: true);
-                    emb.AddLocalizedField("str-duration", track.Length.ToDurationString(), inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_author, author, inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_duration, track.Length.ToDurationString(), inline: true);
                 });
             }
         }

@@ -8,7 +8,7 @@ namespace TheGodfather.Modules.Misc.Extensions
 {
     public static class RandomServiceExtensions
     {
-        public static bool EightBall(this RandomService service, DiscordChannel channel, string question, out string answer)
+        public static bool EightBall(this RandomService service, DiscordChannel channel, string question, out TranslationKey answer)
         {
             bool localized = true;
 
@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Misc.Extensions
                     ? channel.Users.Where(m => IsOnline(m))
                     : channel.Users.Where(m => !IsOnline(m))
                 );
-                answer = member.Mention;
+                answer = TranslationKey.wrap_1(member.Mention);
                 localized = false;
             } else if (question.StartsWith("how much", StringComparison.InvariantCultureIgnoreCase) ||
                 question.StartsWith("how many", StringComparison.InvariantCultureIgnoreCase)) {

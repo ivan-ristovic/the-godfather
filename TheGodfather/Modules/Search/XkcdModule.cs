@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Search
         #region xkcd
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-id")] int id)
+                                     [Description(TranslationKey.desc_id)] int id)
             => this.ByIdAsync(ctx, id);
 
         [GroupCommand, Priority(0)]
@@ -28,14 +28,14 @@ namespace TheGodfather.Modules.Search
         #region xkcd id
         [Command("id")]
         public async Task ByIdAsync(CommandContext ctx,
-                                   [Description("desc-id")] int? id = null)
+                                   [Description(TranslationKey.desc_id)] int? id = null)
         {
             if (id < 0 || id > XkcdService.TotalComics)
-                throw new CommandFailedException(ctx, "cmd-err-xkcd");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_xkcd_404);
 
             XkcdComic? comic = await XkcdService.GetComicAsync(id);
             if (comic is null)
-                throw new CommandFailedException(ctx, "cmd-err-xkcd");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_xkcd_fatal);
 
             await this.PrintComicAsync(ctx, comic);
         }
@@ -55,7 +55,7 @@ namespace TheGodfather.Modules.Search
         {
             XkcdComic? comic = await XkcdService.GetRandomComicAsync();
             if (comic is null)
-                throw new CommandFailedException(ctx, "cmd-err-xkcd");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_xkcd_fatal);
 
             await this.PrintComicAsync(ctx, comic);
         }
@@ -72,7 +72,7 @@ namespace TheGodfather.Modules.Search
                 if (url is { })
                     emb.WithUrl(url);
                 emb.WithColor(this.ModuleColor);
-                emb.WithLocalizedFooter("fmt-xkcd", null, $"{comic.Month}/{comic.Year}");
+                emb.WithLocalizedFooter(TranslationKey.fmt_xkcd(comic.Month, comic.Year), null);
             });
         }
         #endregion

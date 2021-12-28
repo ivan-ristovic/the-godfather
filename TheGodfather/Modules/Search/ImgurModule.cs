@@ -21,13 +21,11 @@ namespace TheGodfather.Modules.Search
         #region imgur
         [GroupCommand, Priority(1)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("desc-res-num")] int amount,
-                                           [RemainingText, Description("desc-sub")] string sub)
+                                           [Description(TranslationKey.desc_res_num)] int amount,
+                                           [RemainingText, Description(TranslationKey.desc_sub)] string sub)
         {
-            if (string.IsNullOrWhiteSpace(sub)) {
-                await ctx.FailAsync("cmd-err-sub");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(sub))
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_sub_none);
 
             IEnumerable<IGalleryItem>? res = await this.Service.GetItemsFromSubAsync(
                 sub,
@@ -41,8 +39,8 @@ namespace TheGodfather.Modules.Search
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-sub")] string sub,
-                                     [Description("desc-res-num")] int n = 1)
+                                     [Description(TranslationKey.desc_sub)] string sub,
+                                     [Description(TranslationKey.desc_res_num)] int n = 1)
             => this.ExecuteGroupAsync(ctx, n, sub);
         #endregion
 
@@ -50,13 +48,11 @@ namespace TheGodfather.Modules.Search
         [Command("latest"), Priority(1)]
         [Aliases("l", "new", "newest")]
         public async Task LatestAsync(CommandContext ctx,
-                                     [Description("desc-res-num")] int amount,
-                                     [RemainingText, Description("desc-sub")] string sub)
+                                     [Description(TranslationKey.desc_res_num)] int amount,
+                                     [RemainingText, Description(TranslationKey.desc_sub)] string sub)
         {
-            if (string.IsNullOrWhiteSpace(sub)) {
-                await ctx.FailAsync("cmd-err-sub");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(sub)) 
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_sub_none);
 
             IEnumerable<IGalleryItem>? res = await this.Service.GetItemsFromSubAsync(sub, amount, SubredditGallerySortOrder.Time, TimeWindow.Day);
             await this.PrintImagesAsync(ctx, res);
@@ -64,8 +60,8 @@ namespace TheGodfather.Modules.Search
 
         [Command("latest"), Priority(0)]
         public Task LatestAsync(CommandContext ctx,
-                               [Description("desc-sub")] string sub,
-                               [Description("desc-res-num")] int n)
+                               [Description(TranslationKey.desc_sub)] string sub,
+                               [Description(TranslationKey.desc_res_num)] int n)
             => this.LatestAsync(ctx, n, sub);
         #endregion
 
@@ -73,14 +69,12 @@ namespace TheGodfather.Modules.Search
         [Command("top"), Priority(3)]
         [Aliases("t")]
         public async Task TopAsync(CommandContext ctx,
-                                  [Description("desc-timewindow")] TimeWindow timespan,
-                                  [Description("desc-res-num")] int amount,
-                                  [RemainingText, Description("desc-sub")] string sub)
+                                  [Description(TranslationKey.desc_timewindow)] TimeWindow timespan,
+                                  [Description(TranslationKey.desc_res_num)] int amount,
+                                  [RemainingText, Description(TranslationKey.desc_sub)] string sub)
         {
-            if (string.IsNullOrWhiteSpace(sub)) {
-                await ctx.FailAsync("cmd-err-sub");
-                return;
-            }
+            if (string.IsNullOrWhiteSpace(sub)) 
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_sub_none);
 
             IEnumerable<IGalleryItem>? res = await this.Service.GetItemsFromSubAsync(sub, amount, SubredditGallerySortOrder.Time, timespan);
             await this.PrintImagesAsync(ctx, res);
@@ -88,22 +82,22 @@ namespace TheGodfather.Modules.Search
 
         [Command("top"), Priority(2)]
         public Task TopAsync(CommandContext ctx,
-                            [Description("desc-timewindow")] TimeWindow timespan,
-                            [Description("desc-sub")] string sub,
-                            [Description("desc-res-num")] int amount = 1)
+                            [Description(TranslationKey.desc_timewindow)] TimeWindow timespan,
+                            [Description(TranslationKey.desc_sub)] string sub,
+                            [Description(TranslationKey.desc_res_num)] int amount = 1)
             => this.TopAsync(ctx, timespan, amount, sub);
 
         [Command("top"), Priority(1)]
         public Task TopAsync(CommandContext ctx,
-                            [Description("desc-res-num")] int amount,
-                            [Description("desc-timewindow")] TimeWindow timespan,
-                            [RemainingText, Description("desc-sub")] string sub)
+                            [Description(TranslationKey.desc_res_num)] int amount,
+                            [Description(TranslationKey.desc_timewindow)] TimeWindow timespan,
+                            [RemainingText, Description(TranslationKey.desc_sub)] string sub)
             => this.TopAsync(ctx, timespan, amount, sub);
 
         [Command("top"), Priority(0)]
         public Task TopAsync(CommandContext ctx,
-                            [Description("desc-res-num")] int amount,
-                            [RemainingText, Description("desc-sub")] string sub)
+                            [Description(TranslationKey.desc_res_num)] int amount,
+                            [RemainingText, Description(TranslationKey.desc_sub)] string sub)
             => this.TopAsync(ctx, TimeWindow.Day, amount, sub);
 
         #endregion
@@ -113,34 +107,34 @@ namespace TheGodfather.Modules.Search
         private Task PrintImagesAsync(CommandContext ctx, IEnumerable<IGalleryItem>? res)
         {
             if (res is null || !res.Any()) 
-                return ctx.FailAsync("cmd-err-res-none");
+                return ctx.FailAsync(TranslationKey.cmd_err_res_none);
 
             return ctx.PaginateAsync(res.Take(20), (emb, r) => {
                 emb.WithColor(this.ModuleColor);
                 if (r is GalleryImage img) {
                     if ((img.Nsfw ?? false) && !ctx.Channel.IsNsfwOrNsfwName())
-                        throw new CommandFailedException(ctx, "cmd-err-nsfw");
+                        throw new CommandFailedException(ctx, TranslationKey.cmd_err_nsfw);
                     emb.WithTitle(img.Title);
                     emb.WithDescription(img.Description, unknown: false);
                     emb.WithImageUrl(img.Link);
                     emb.WithLocalizedTimestamp(img.DateTime);
-                    emb.AddLocalizedField("str-views", img.Views, inline: true);
-                    emb.AddLocalizedField("str-score", img.Score, inline: true, unknown: false);
-                    emb.AddLocalizedField("str-votes", $"{img.Points ?? 0} pts | {img.Ups ?? 0} ⬆️ {img.Downs ?? 0} ⬇️", inline: true);
-                    emb.AddLocalizedField("str-comments", img.CommentCount, inline: true, unknown: false);
+                    emb.AddLocalizedField(TranslationKey.str_views, img.Views, inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_score, img.Score, inline: true, unknown: false);
+                    emb.AddLocalizedField(TranslationKey.str_votes, $"{img.Points ?? 0} pts | {img.Ups ?? 0} ⬆️ {img.Downs ?? 0} ⬇️", inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_comments, img.CommentCount, inline: true, unknown: false);
                 } else if (r is GalleryAlbum album) {
                     if ((album.Nsfw ?? false) & !ctx.Channel.IsNsfwOrNsfwName())
-                        throw new CommandFailedException(ctx, "cmd-err-nsfw");
+                        throw new CommandFailedException(ctx, TranslationKey.cmd_err_nsfw);
                     emb.WithTitle(album.Title);
                     emb.WithDescription(album.Description, unknown: false);
                     emb.WithImageUrl(album.Link);
                     emb.WithLocalizedTimestamp(album.DateTime);
-                    emb.AddLocalizedField("str-views", album.Views, inline: true);
-                    emb.AddLocalizedField("str-score", album.Score, inline: true, unknown: false);
-                    emb.AddLocalizedField("str-votes", $"{album.Points ?? 0} pts | {album.Ups ?? 0} ⬆️ {album.Downs ?? 0} ⬇️", inline: true);
-                    emb.AddLocalizedField("str-comments", album.CommentCount, inline: true, unknown: false);
+                    emb.AddLocalizedField(TranslationKey.str_views, album.Views, inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_score, album.Score, inline: true, unknown: false);
+                    emb.AddLocalizedField(TranslationKey.str_votes, $"{album.Points ?? 0} pts | {album.Ups ?? 0} ⬆️ {album.Downs ?? 0} ⬇️", inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_comments, album.CommentCount, inline: true, unknown: false);
                 } else {
-                    throw new CommandFailedException(ctx, "cmd-err-imgur");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_imgur);
                 }
                 return emb;
             });

@@ -46,7 +46,7 @@ namespace TheGodfather.Modules.Currency.Common
         {
             this.Started = true;
 
-            DiscordMessage msg = await this.Channel.EmbedAsync(lcs.GetString(this.Channel.GuildId, "str-casino-lottery-starting"));
+            DiscordMessage msg = await this.Channel.EmbedAsync(lcs.GetString(this.Channel.GuildId, TranslationKey.str_casino_lottery_starting));
 
             IEnumerable<int> drawn = Enumerable.Range(1, MaxNumber + 1).Shuffle().Take(3);
 
@@ -75,7 +75,7 @@ namespace TheGodfather.Modules.Currency.Common
         {
             var sb = new StringBuilder();
 
-            sb.Append(Formatter.Bold(lcs.GetString(this.Channel.GuildId, "str-casino-lottery-drawn"))).Append(' ');
+            sb.Append(Formatter.Bold(lcs.GetString(this.Channel.GuildId, TranslationKey.str_casino_lottery_drawn))).Append(' ');
             sb.AppendLine(Formatter.Bold(numbers.Take(step).JoinWith(" "))).AppendLine();
 
             foreach (Participant participant in this.participants) {
@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Currency.Common
             }
 
             var emb = new LocalizedEmbedBuilder(lcs, this.Channel.GuildId);
-            emb.WithLocalizedTitle("fmt-casino-lottery", Emojis.MoneyBag, Emojis.MoneyBag);
+            emb.WithLocalizedTitle(TranslationKey.fmt_casino_lottery(Emojis.MoneyBag, Emojis.MoneyBag));
             emb.WithColor(DiscordColor.DarkGreen);
             emb.WithDescription(sb);
 

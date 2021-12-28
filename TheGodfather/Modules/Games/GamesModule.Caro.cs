@@ -27,17 +27,17 @@ namespace TheGodfather.Modules.Games
             #region game caro
             [GroupCommand]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("desc-game-movetime")] TimeSpan? moveTime = null)
+                                               [Description(TranslationKey.desc_game_movetime)] TimeSpan? moveTime = null)
             {
                 if (moveTime?.TotalSeconds is < 2 or > 120)
-                    throw new InvalidCommandUsageException(ctx, "cmd-err-game-movetime", 2, 120);
+                    throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_game_movetime(2, 120));
 
                 if (this.Service.IsEventRunningInChannel(ctx.Channel.Id))
-                    throw new CommandFailedException(ctx, "cmd-err-evt-dup");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_evt_dup);
 
                 DiscordUser? opponent = await ctx.WaitForGameOpponentAsync();
                 if (opponent is null)
-                    throw new CommandFailedException(ctx, "cmd-err-game-op-none", ctx.User.Mention);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_game_op_none(ctx.User.Mention));
 
                 var game = new CaroGame(ctx.Client.GetInteractivity(), ctx.Channel, ctx.User, opponent, moveTime);
                 this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
@@ -46,15 +46,15 @@ namespace TheGodfather.Modules.Games
 
                     if (game.Winner is { }) {
                         if (game.IsTimeoutReached)
-                            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "str-game-timeout", game.Winner.Mention);
+                            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, TranslationKey.str_game_timeout(game.Winner.Mention));
                         else
-                            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "fmt-winners", game.Winner.Mention);
+                            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, TranslationKey.fmt_winners(game.Winner.Mention));
 
                         GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
                         await gss.UpdateStatsAsync(game.Winner.Id, s => s.CaroWon++);
                         await gss.UpdateStatsAsync(game.Winner == ctx.User ? opponent.Id : ctx.User.Id, s => s.CaroLost++);
                     } else {
-                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Joystick, "str-game-draw");
+                        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Joystick, TranslationKey.str_game_draw);
                     }
 
                 } finally {
@@ -67,30 +67,30 @@ namespace TheGodfather.Modules.Games
             [Command("rules")]
             [Aliases("help", "h", "ruling", "rule")]
             public Task RulesAsync(CommandContext ctx)
-                => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "str-game-caro");
+                => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, TranslationKey.str_game_caro);
             #endregion
 
             #region game caro stats
             [Command("stats"), Priority(1)]
             [Aliases("s")]
             public Task StatsAsync(CommandContext ctx,
-                                  [Description("desc-member")] DiscordMember? member = null)
+                                  [Description(TranslationKey.desc_member)] DiscordMember? member = null)
                 => this.StatsAsync(ctx, member as DiscordUser);
 
             [Command("stats"), Priority(0)]
             public async Task StatsAsync(CommandContext ctx,
-                                        [Description("desc-user")] DiscordUser? user = null)
+                                        [Description(TranslationKey.desc_user)] DiscordUser? user = null)
             {
                 user ??= ctx.User;
                 GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
 
                 GameStats? stats = await gss.GetAsync(user.Id);
                 await ctx.RespondWithLocalizedEmbedAsync(emb => {
-                    emb.WithLocalizedTitle("fmt-game-stats", user.ToDiscriminatorString());
+                    emb.WithLocalizedTitle(TranslationKey.fmt_game_stats(user.ToDiscriminatorString()));
                     emb.WithColor(this.ModuleColor);
                     emb.WithThumbnail(user.AvatarUrl);
                     if (stats is null)
-                        emb.WithLocalizedDescription("str-game-stats-none");
+                        emb.WithLocalizedDescription(TranslationKey.str_game_stats_none);
                     else
                         emb.WithDescription(stats.BuildCaroStatsString());
                 });
@@ -105,7 +105,7 @@ namespace TheGodfather.Modules.Games
                 GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
                 IReadOnlyList<GameStats> topStats = await gss.GetTopCaroStatsAsync();
                 string top = await GameStatsExtensions.BuildStatsStringAsync(ctx.Client, topStats, s => s.BuildCaroStatsString());
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, "fmt-game-caro-top", top);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, TranslationKey.fmt_game_caro_top(top));
             }
             #endregion
         }

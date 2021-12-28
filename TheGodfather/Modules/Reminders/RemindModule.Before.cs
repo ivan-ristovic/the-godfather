@@ -21,14 +21,14 @@ namespace TheGodfather.Modules.Reminders
             #region remind before
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("desc-remind-dt")] DateTimeOffset when,
-                                         [Description("desc-chn-list")] DiscordChannel? channel = null)
+                                         [Description(TranslationKey.desc_remind_dt)] DateTimeOffset when,
+                                         [Description(TranslationKey.desc_chn_list)] DiscordChannel? channel = null)
                 => this.InternalListAsync(ctx, when - DateTimeOffset.UtcNow, channel);
 
             [GroupCommand, Priority(0)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("desc-remind-dts")] TimeSpan relativeWhen,
-                                         [Description("desc-chn-list")] DiscordChannel? channel = null)
+                                         [Description(TranslationKey.desc_remind_dts)] TimeSpan relativeWhen,
+                                         [Description(TranslationKey.desc_chn_list)] DiscordChannel? channel = null)
                 => this.InternalListAsync(ctx, relativeWhen, channel);
             #endregion
 
@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Reminders
             [Command("tomorrow")]
             [Aliases("tmrw", "t", "tomo")]
             public Task TomorrowAsync(CommandContext ctx,
-                                     [Description("desc-chn-list")] DiscordChannel? channel = null)
+                                     [Description(TranslationKey.desc_chn_list)] DiscordChannel? channel = null)
                 => this.InternalListAsync(ctx, TimeSpan.FromDays(1), channel);
             #endregion
 
@@ -48,8 +48,8 @@ namespace TheGodfather.Modules.Reminders
                 #region remind before next
                 [GroupCommand]
                 public Task ExecuteGroupAsync(CommandContext ctx,
-                                             [Description("desc-weekday")] DayOfWeek dayOfWeek,
-                                             [Description("desc-chn-list")] DiscordChannel? channel = null)
+                                             [Description(TranslationKey.desc_weekday)] DayOfWeek dayOfWeek,
+                                             [Description(TranslationKey.desc_chn_list)] DiscordChannel? channel = null)
                 {
                     DayOfWeek currentDayOfWeek = this.Localization.GetLocalizedTime(ctx?.Guild.Id).DayOfWeek;
                     return this.InternalListAsync(ctx!, currentDayOfWeek.Until(dayOfWeek), channel);
@@ -60,7 +60,7 @@ namespace TheGodfather.Modules.Reminders
                 [Command("day")]
                 [Aliases("d")]
                 public Task DayAsync(CommandContext ctx,
-                                    [Description("desc-chn-list")] DiscordChannel? channel = null)
+                                    [Description(TranslationKey.desc_chn_list)] DiscordChannel? channel = null)
                     => this.InternalListAsync(ctx, TimeSpan.FromDays(1), channel);
                 #endregion
 
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Reminders
                 [Command("week")]
                 [Aliases("w")]
                 public Task WeekAsync(CommandContext ctx,
-                                     [Description("desc-chn-list")] DiscordChannel? channel = null)
+                                     [Description(TranslationKey.desc_chn_list)] DiscordChannel? channel = null)
                 {
                     DayOfWeek currentDayOfWeek = this.Localization.GetLocalizedTime(ctx?.Guild.Id).DayOfWeek;
                     DayOfWeek firstDayOfWeek = this.Localization.GetGuildCulture(ctx?.Guild.Id).DateTimeFormat.FirstDayOfWeek;
@@ -85,7 +85,7 @@ namespace TheGodfather.Modules.Reminders
                 this.ThrowIfDM(ctx, channel);
 
                 if (channel is { } && channel.Type != ChannelType.Text)
-                    throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-text");
+                    throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
 
                 IReadOnlyList<Reminder> reminders = await this.Service.GetRemindTasksForUserAsync(ctx.User.Id);
 

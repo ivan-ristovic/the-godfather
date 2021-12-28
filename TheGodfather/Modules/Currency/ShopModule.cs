@@ -32,23 +32,22 @@ namespace TheGodfather.Modules.Currency
         [Command("purchases")]
         [Aliases("myitems", "purchased", "bought")]
         public async Task GetPurchasedItemsAsync(CommandContext ctx,
-                                                [Description("desc-member")] DiscordMember? member = null)
+                                                [Description(TranslationKey.desc_member)] DiscordMember? member = null)
         {
             member ??= ctx.Member;
 
             IReadOnlyList<PurchasedItem> purchased = await this.Service.Purchases.GetAllCompleteAsync(member.Id);
             if (!purchased.Any()) {
-                await ctx.FailAsync("cmd-err-shop-purchased-none", member.Mention);
+                await ctx.FailAsync(TranslationKey.cmd_err_shop_purchased_none(member.Mention));
                 return;
             }
 
             await ctx.PaginateAsync(
-                "fmt-shop-purchased",
+                TranslationKey.fmt_shop_purchased(member.ToDiscriminatorString()),
                 purchased.OrderBy(i => i.Item.Price),
                 i => $"{Formatter.Bold(i.Item.Name)} | {i.Item.Price}",
                 this.ModuleColor,
-                5,
-                member.ToDiscriminatorString()
+                5
             );
         }
         #endregion
@@ -58,17 +57,17 @@ namespace TheGodfather.Modules.Currency
         [Aliases("register", "reg", "additem", "a", "+", "+=", "<<", "<", "<-", "<=")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("desc-shop-price")] long price,
-                                  [RemainingText, Description("desc-shop-name")] string name)
+                                  [Description(TranslationKey.desc_shop_price)] long price,
+                                  [RemainingText, Description(TranslationKey.desc_shop_name)] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-name-404");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_name_404);
 
             if (name.Length >= PurchasableItem.NameLimit)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-name", PurchasableItem.NameLimit);
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_name(PurchasableItem.NameLimit));
 
             if (price is < 1 or > PurchasableItem.PriceLimit)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-shop-price", PurchasableItem.PriceLimit);
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_shop_price(PurchasableItem.PriceLimit));
 
             await this.Service.AddAsync(new PurchasableItem {
                 GuildId = ctx.Guild.Id,
@@ -81,8 +80,8 @@ namespace TheGodfather.Modules.Currency
 
         [Command("add"), Priority(0)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-shop-name")] string name,
-                            [Description("desc-shop-price")] long price)
+                            [Description(TranslationKey.desc_shop_name)] string name,
+                            [Description(TranslationKey.desc_shop_price)] long price)
             => this.AddAsync(ctx, price, name);
         #endregion
 
@@ -90,23 +89,23 @@ namespace TheGodfather.Modules.Currency
         [Command("buy"), UsesInteractivity, Priority(1)]
         [Aliases("purchase", "shutupandtakemymoney", "b", "p")]
         public async Task BuyAsync(CommandContext ctx,
-                                  [Description("desc-shop-ids")] params int[] ids)
+                                  [Description(TranslationKey.desc_shop_ids)] params int[] ids)
         {
             await foreach (PurchasableItem? item in this.FetchItemsAsync(ctx, ids)) {
                 if (item is null)
-                    throw new CommandFailedException(ctx, "cmd-err-shop-404");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_shop_404);
                 await this.InternalPurchaseAsync(ctx, item);
             }
         }
 
         [Command("buy"), UsesInteractivity, Priority(1)]
         public async Task BuyAsync(CommandContext ctx,
-                                  [Description("desc-shop-name")] string name)
+                                  [Description(TranslationKey.desc_shop_name)] string name)
         {
             IReadOnlyList<PurchasableItem> items = await this.Service.GetAllAsync(ctx.Guild.Id);
             PurchasableItem? item = items.FirstOrDefault(i => i.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
             if (item is null)
-                throw new CommandFailedException(ctx, "cmd-err-shop-404");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_shop_404);
 
             await this.InternalPurchaseAsync(ctx, item);
         }
@@ -118,18 +117,18 @@ namespace TheGodfather.Modules.Currency
         [Command("sell"), UsesInteractivity]
         [Aliases("return")]
         public async Task SellAsync(CommandContext ctx,
-                                   [Description("desc-shop-ids")] params int[] ids)
+                                   [Description(TranslationKey.desc_shop_ids)] params int[] ids)
         {
             await foreach (PurchasableItem? item in this.FetchItemsAsync(ctx, ids)) {
                 if (item is null)
-                    throw new CommandFailedException(ctx, "cmd-err-shop-404");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_shop_404);
 
                 if (!await this.Service.Purchases.ContainsAsync(ctx.Guild.Id, item.Id))
-                    throw new CommandFailedException(ctx, "cmd-err-shop-sell", item.Name);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_shop_sell(item.Name));
 
                 string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
                 long sellPrice = item.Price / 2;
-                if (!await ctx.WaitForBoolReplyAsync("q-shop-sell", args: new object[] { item.Name, item.Price, currency }))
+                if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_shop_sell(item.Name, item.Price, currency)))
                     return;
 
                 await this.Service.Purchases.RemoveAsync(new PurchasedItem {
@@ -138,7 +137,7 @@ namespace TheGodfather.Modules.Currency
                 });
                 await ctx.Services.GetRequiredService<BankAccountService>().IncreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, sellPrice);
 
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, "fmt-shop-sell", ctx.User.Mention, item.Name, item.Price, currency);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, TranslationKey.fmt_shop_sell(ctx.User.Mention, item.Name, item.Price, currency));
             }
 
         }
@@ -149,21 +148,22 @@ namespace TheGodfather.Modules.Currency
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("desc-shop-del-ids")] params int[] ids)
+                                     [Description(TranslationKey.desc_shop_del_ids)] params int[] ids)
         {
             if (ids is null || !ids.Any())
-                throw new InvalidCommandUsageException(ctx, "cmd-err-ids-none");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_ids_none);
 
             int removed = await this.Service.RemoveAsync(ctx.Guild.Id, ids);
-            await ctx.ImpInfoAsync(this.ModuleColor, "fmt-shop-delete", removed);
+            await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_shop_delete(removed));
         }
 
+        [Command("delete"), Priority(0)]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [RemainingText, Description("desc-shop-item-ids")] string name)
+                                     [RemainingText, Description(TranslationKey.desc_shop_ids)] string name)
         {
             IReadOnlyList<PurchasableItem> items = await this.Service.GetAllAsync(ctx.Guild.Id);
             int removed = await this.Service.RemoveAsync(items.Where(i => i.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase)));
-            await ctx.ImpInfoAsync(this.ModuleColor, "fmt-shop-delete", removed);
+            await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_shop_delete(removed));
         }
 
         #endregion
@@ -174,7 +174,7 @@ namespace TheGodfather.Modules.Currency
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task RemoveAllAsync(CommandContext ctx)
         {
-            if (!await ctx.WaitForBoolReplyAsync("q-shop-clear"))
+            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_shop_clear))
                 return;
 
             IReadOnlyList<PurchasableItem> items = await this.Service.GetAllAsync(ctx.Guild.Id);
@@ -190,16 +190,15 @@ namespace TheGodfather.Modules.Currency
         {
             IReadOnlyList<PurchasableItem> items = await this.Service.GetAllAsync(ctx.Guild.Id);
             if (!items.Any())
-                throw new CommandFailedException(ctx, "cmd-err-shop-none");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_shop_none);
 
             string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
             await ctx.PaginateAsync(
-                "fmt-shop",
+                TranslationKey.fmt_shop(ctx.Guild.Name),
                 items,
                 item => $"{Formatter.InlineCode($"{item.Id:D4}")} | {Formatter.Bold(item.Name)} : {Formatter.Bold(item.Price.ToString())} {currency}",
                 this.ModuleColor,
-                5,
-                ctx.Guild.Name
+                5
             );
         }
         #endregion
@@ -209,21 +208,21 @@ namespace TheGodfather.Modules.Currency
         private async Task InternalPurchaseAsync(CommandContext ctx, PurchasableItem item)
         {
             if (await this.Service.Purchases.ContainsAsync(ctx.User.Id, item.Id))
-                throw new CommandFailedException(ctx, "cmd-err-shop-purchased", item.Name);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_shop_purchased(item.Name));
 
             string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
-            if (!await ctx.WaitForBoolReplyAsync("q-shop-buy", args: new object[] { item.Name, item.Price, currency }))
+            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_shop_buy(item.Name, item.Price, currency)))
                 return;
 
             if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, item.Price))
-                throw new CommandFailedException(ctx, "cmd-err-funds-insuf");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_funds_insuf);
 
             await this.Service.Purchases.AddAsync(new PurchasedItem {
                 ItemId = item.Id,
                 UserId = ctx.User.Id,
             });
 
-            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, "fmt-shop-buy", ctx.User.Mention, item.Name, item.Price, currency);
+            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, TranslationKey.fmt_shop_buy(ctx.User.Mention, item.Name, item.Price, currency));
         }
 
         private async IAsyncEnumerable<PurchasableItem?> FetchItemsAsync(CommandContext ctx, params int[] ids)

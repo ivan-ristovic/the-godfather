@@ -56,7 +56,7 @@ namespace TheGodfather.Modules.Currency.Common
         {
             this.Started = true;
 
-            DiscordMessage msg = await this.Channel.EmbedAsync(lcs.GetString(this.Channel.GuildId, "str-casino-blackjack-starting"));
+            DiscordMessage msg = await this.Channel.EmbedAsync(lcs.GetString(this.Channel.GuildId, TranslationKey.str_casino_blackjack_starting));
 
             foreach (Participant participant in this.participants) {
                 participant.Hand.Add(this.deck.GetNextCard());
@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Currency.Common
         {
             var sb = new StringBuilder();
 
-            sb.AppendLine(Formatter.Bold($"{lcs.GetString(this.Channel.GuildId, "str-house")}: {this.HandValue(this.hand)}"));
+            sb.AppendLine(Formatter.Bold($"{lcs.GetString(this.Channel.GuildId, TranslationKey.str_house)}: {this.HandValue(this.hand)}"));
             if (this.hand.Any())
                 sb.AppendJoin(" | ", this.hand).AppendLine();
             else
@@ -151,12 +151,12 @@ namespace TheGodfather.Modules.Currency.Common
             }
 
             var emb = new LocalizedEmbedBuilder(lcs, this.Channel.GuildId);
-            emb.WithLocalizedTitle("fmt-casino-blackjack", Emojis.Cards.Suits[0], Emojis.Cards.Suits[0]);
+            emb.WithLocalizedTitle(TranslationKey.fmt_casino_blackjack(Emojis.Cards.Suits[0], Emojis.Cards.Suits[0]));
             emb.WithColor(DiscordColor.DarkGreen);
             emb.WithDescription(sb);
 
             if (!this.gameOver)
-                emb.AddLocalizedField("str-casino-blackjack-hit", toMove?.User.Mention ?? lcs.GetString(this.Channel.GuildId, "str-house"));
+                emb.AddLocalizedField(TranslationKey.str_casino_blackjack_hit, toMove?.User.Mention ?? lcs.GetString(this.Channel.GuildId, TranslationKey.str_house));
 
             return msg.ModifyAsync(embed: emb.Build());
         }

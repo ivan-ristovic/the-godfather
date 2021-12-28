@@ -18,11 +18,11 @@ namespace TheGodfather.Modules.Misc.Extensions
             emb.WithUrl(msg.JumpLink);
             emb.WithAuthor(msg.Author.ToDiscriminatorString(), iconUrl: msg.Author.AvatarUrl);
             emb.WithDescription(msg.Content?.Truncate(DiscordLimits.EmbedDescriptionLimit - 5, " ..."), unknown: false);
-            emb.AddLocalizedField("str-votes", $"{Formatter.Bold(count.ToString())} {star}", inline: true);
-            emb.AddLocalizedField("str-chn", msg.Channel.Mention, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_votes, $"{Formatter.Bold(count.ToString())} {star}", inline: true);
+            emb.AddLocalizedField(TranslationKey.str_chn, msg.Channel.Mention, inline: true);
 
-            string jumplink = Formatter.MaskedUrl(lcs.GetString(msg.Channel.Guild.Id, "str-jumplink"), msg.JumpLink);
-            emb.AddLocalizedField("str-link", jumplink, inline: true);
+            string jumplink = Formatter.MaskedUrl(lcs.GetString(msg.Channel.Guild.Id, TranslationKey.str_jumplink), msg.JumpLink);
+            emb.AddLocalizedField(TranslationKey.str_link, jumplink, inline: true);
 
             string? url = msg.Attachments
                 .Select(a => a.Url)

@@ -30,7 +30,7 @@ namespace TheGodfather.Modules.Currency
         #region bank
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-member")] DiscordMember? member = null)
+                                     [Description(TranslationKey.desc_member)] DiscordMember? member = null)
             => this.GetBalanceAsync(ctx, member);
         #endregion
 
@@ -38,24 +38,24 @@ namespace TheGodfather.Modules.Currency
         [Command("balance")]
         [Aliases("s", "status", "bal", "money")]
         public async Task GetBalanceAsync(CommandContext ctx,
-                                         [Description("desc-member")] DiscordMember? member = null)
+                                         [Description(TranslationKey.desc_member)] DiscordMember? member = null)
         {
             member ??= ctx.Member;
 
             BankAccount? balance = await this.Service.GetAsync(ctx.Guild.Id, member.Id);
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(this.ModuleColor);
-                emb.WithLocalizedTitle("fmt-bank-acc", Emojis.MoneyBag, member.ToDiscriminatorString());
+                emb.WithLocalizedTitle(TranslationKey.fmt_bank_acc(Emojis.MoneyBag, member.ToDiscriminatorString()));
                 emb.WithThumbnail(member.AvatarUrl);
                 if (balance is { }) {
                     string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
                     CultureInfo culture = this.Localization.GetGuildCulture(ctx.Guild.Id);
-                    emb.WithLocalizedDescription("fmt-bank-acc-value", balance.Balance.ToWords(culture), currency);
-                    emb.AddLocalizedField("str-bank-acc-value-num", $"{balance.Balance:n0} {currency}");
+                    emb.WithLocalizedDescription(TranslationKey.fmt_bank_acc_value(balance.Balance.ToWords(culture), currency));
+                    emb.AddLocalizedField(TranslationKey.str_bank_acc_value_num, $"{balance.Balance:n0} {currency}");
                 } else {
-                    emb.WithLocalizedDescription("fmt-bank-acc-none");
+                    emb.WithLocalizedDescription(TranslationKey.fmt_bank_acc_none);
                 }
-                emb.WithLocalizedFooter("fmt-bank-footer", ctx.Client.CurrentUser.AvatarUrl);
+                emb.WithLocalizedFooter(TranslationKey.fmt_bank_footer, ctx.Client.CurrentUser.AvatarUrl);
             });
         }
         #endregion
@@ -64,19 +64,19 @@ namespace TheGodfather.Modules.Currency
         [Command("currency"), Priority(1)]
         [Aliases("setcurrency", "curr")]
         public async Task CurrencyAsync(CommandContext ctx,
-                                       [Description("desc-currency")] string currency)
+                                       [Description(TranslationKey.desc_currency)] string currency)
         {
             if (string.IsNullOrWhiteSpace(currency) || currency.Length > GuildConfig.CurrencyLimit)
-                throw new CommandFailedException(ctx, "cmd-err-currency");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_currency(GuildConfig.CurrencyLimit));
 
             await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.Currency = currency);
 
             await this.CurrencyAsync(ctx);
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle("evt-cfg-upd");
+                emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedField("str-currency", currency, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_currency, currency, inline: true);
             });
         }
 
@@ -84,7 +84,7 @@ namespace TheGodfather.Modules.Currency
         public Task CurrencyAsync(CommandContext ctx)
         {
             CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-            return ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, "str-currency-get", gcfg.Currency);
+            return ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, TranslationKey.str_currency_get(gcfg.Currency));
         }
         #endregion
 
@@ -93,22 +93,22 @@ namespace TheGodfather.Modules.Currency
         [Aliases("give")]
         [RequirePrivilegedUser]
         public async Task GrantAsync(CommandContext ctx,
-                                    [Description("desc-member")] DiscordMember member,
-                                    [Description("desc-amount")] long amount)
+                                    [Description(TranslationKey.desc_member)] DiscordMember member,
+                                    [Description(TranslationKey.desc_amount)] long amount)
         {
             if (amount is < 1 or > 1_000_000_000_000)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-bank-grant", 1_000_000_000_000);
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_bank_grant($"{1_000_000_000_000:n0}"));
 
             await this.Service.IncreaseBankAccountAsync(ctx.Guild.Id, member.Id, amount);
 
             string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
-            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, "fmt-bank-grant", member.Mention, amount, currency);
+            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, TranslationKey.fmt_bank_grant(member.Mention, amount, currency));
         }
 
         [Command("grant"), Priority(0)]
         public Task GrantAsync(CommandContext ctx,
-                              [Description("desc-amount")] long amount,
-                              [Description("desc-member")] DiscordMember member)
+                              [Description(TranslationKey.desc_amount)] long amount,
+                              [Description(TranslationKey.desc_member)] DiscordMember member)
             => this.GrantAsync(ctx, member, amount);
         #endregion
 
@@ -118,7 +118,7 @@ namespace TheGodfather.Modules.Currency
         public async Task RegisterAsync(CommandContext ctx)
         {
             if (await this.Service.ContainsAsync(ctx.Guild.Id, ctx.User.Id))
-                throw new CommandFailedException(ctx, "cmd-err-bank-register");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_bank_register);
 
             await this.Service.AddAsync(new BankAccount {
                 GuildId = ctx.Guild.Id,
@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Currency
             });
 
             string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
-            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, "fmt-bank-register", ctx.User.Mention, BankAccount.StartingBalance, currency);
+            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, TranslationKey.fmt_bank_register(ctx.User.Mention, BankAccount.StartingBalance, currency));
         }
         #endregion
 
@@ -151,7 +151,7 @@ namespace TheGodfather.Modules.Currency
             }
 
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
-                emb.WithLocalizedTitle("str-bank-top");
+                emb.WithLocalizedTitle(TranslationKey.str_bank_top);
                 emb.WithColor(this.ModuleColor);
                 emb.WithDescription(sb);
             });
@@ -182,7 +182,7 @@ namespace TheGodfather.Modules.Currency
             }
 
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
-                emb.WithLocalizedTitle("str-bank-topg");
+                emb.WithLocalizedTitle(TranslationKey.str_bank_topg);
                 emb.WithColor(this.ModuleColor);
                 emb.WithDescription(sb);
             });
@@ -196,25 +196,25 @@ namespace TheGodfather.Modules.Currency
         [Command("transfer"), Priority(1)]
         [Aliases("lend", "tr")]
         public async Task TransferAsync(CommandContext ctx,
-                                       [Description("desc-member")] DiscordMember member,
-                                       [Description("desc-amount")] long amount)
+                                       [Description(TranslationKey.desc_member)] DiscordMember member,
+                                       [Description(TranslationKey.desc_amount)] long amount)
         {
             if (amount is < 1 or > 1_000_000_000_000)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-bank-grant", $"{1_000_000_000_000:n0}");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_bank_grant($"{1_000_000_000_000:n0}"));
 
             if (member == ctx.User)
-                throw new CommandFailedException(ctx, "cmd-err-self-action");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_self_action);
 
             if (!await this.Service.TransferAsync(ctx.Guild.Id, ctx.User.Id, member.Id, amount))
-                throw new CommandFailedException(ctx, "cmd-err-funds-insuf");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_funds_insuf);
 
             await ctx.InfoAsync(this.ModuleColor);
         }
 
         [Command("transfer"), Priority(0)]
         public Task TransferAsync(CommandContext ctx,
-                                 [Description("desc-amount")] long amount,
-                                 [Description("desc-member")] DiscordMember member)
+                                 [Description(TranslationKey.desc_amount)] long amount,
+                                 [Description(TranslationKey.desc_member)] DiscordMember member)
             => this.TransferAsync(ctx, member, amount);
         #endregion
 
@@ -223,8 +223,8 @@ namespace TheGodfather.Modules.Currency
         [Aliases("ur", "signout", "deleteaccount", "delacc", "disable", "deactivate")]
         [RequirePrivilegedUser]
         public async Task UnregisterAsync(CommandContext ctx,
-                                         [Description("desc-member")] DiscordMember member,
-                                         [Description("desc-bank-del-g")] bool global = false)
+                                         [Description(TranslationKey.desc_member)] DiscordMember member,
+                                         [Description(TranslationKey.desc_bank_del_g)] bool global = false)
         {
             if (global)
                 await this.Service.RemoveAsync(ctx.Guild.Id, member.Id);

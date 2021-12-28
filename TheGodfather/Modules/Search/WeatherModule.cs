@@ -21,22 +21,22 @@ namespace TheGodfather.Modules.Search
         #region weather
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [RemainingText, Description("desc-query")] string query)
+                                           [RemainingText, Description(TranslationKey.desc_query)] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-query");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_query);
 
             CompleteWeatherData? data = await this.Service.GetCurrentDataAsync(query);
             if (data is null) {
-                await ctx.FailAsync("cmd-err-weather");
+                await ctx.FailAsync(TranslationKey.cmd_err_weather);
                 return;
             }
 
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(this.ModuleColor);
                 string locationStr = $"[{data.Name + ", " + data.Sys.Country}]({WeatherService.GetCityUrl(data.Id)})";
-                emb.AddLocalizedField("str-w-location", locationStr, inline: true, titleArgs: Emojis.Globe);
-                emb.AddLocalizedField("str-w-coordinates", $"{data.Coord.Lat}, {data.Coord.Lon}", inline: true, titleArgs: Emojis.Ruler);
+                emb.AddLocalizedField(TranslationKey.str_w_location(Emojis.Globe), locationStr, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_w_coordinates(Emojis.Ruler), $"{data.Coord.Lat}, {data.Coord.Lon}", inline: true);
                 this.AddDataToEmbed(emb, data);
             });
         }
@@ -46,27 +46,27 @@ namespace TheGodfather.Modules.Search
         [Command("forecast"), Priority(1)]
         [Aliases("f")]
         public async Task ForecastAsync(CommandContext ctx,
-                                       [Description("desc-amount-days")] int amount,
-                                       [RemainingText, Description("desc-query")] string query)
+                                       [Description(TranslationKey.desc_amount_days)] int amount,
+                                       [RemainingText, Description(TranslationKey.desc_query)] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-query");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_query);
 
             if (amount is < 1 or > 31)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-weather", 1, 31);
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_weather_f(1, 31));
 
             Forecast? data = await this.Service.GetForecastAsync(query);
             if (data is null || !data.WeatherDataList.Any()) {
-                await ctx.FailAsync("cmd-err-weather");
+                await ctx.FailAsync(TranslationKey.cmd_err_weather);
                 return;
             }
 
             await ctx.PaginateAsync(data.WeatherDataList.Select((d, i) => (d, i)).Take(amount), (emb, r) => {
                 DateTime date = DateTime.Now.AddDays(r.i + 1);
-                emb.WithLocalizedTitle("fmt-weather-f", date.DayOfWeek, date.Date.ToShortDateString());
+                emb.WithLocalizedTitle(TranslationKey.fmt_weather_f(date.DayOfWeek, date.Date.ToShortDateString()));
                 string locationStr = $"[{data.City.Name + ", " + data.City.Country}]({WeatherService.GetCityUrl(data.City)})";
-                emb.AddLocalizedField("str-w-location", locationStr, inline: true, titleArgs: Emojis.Globe);
-                emb.AddLocalizedField("str-w-coordinates", $"{data.City.Coord.Lat}, {data.City.Coord.Lon}", inline: true, titleArgs: Emojis.Ruler);
+                emb.AddLocalizedField(TranslationKey.str_w_location(Emojis.Globe), locationStr, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_w_coordinates(Emojis.Ruler), $"{data.City.Coord.Lat}, {data.City.Coord.Lon}", inline: true);
                 this.AddDataToEmbed(emb, r.d);
                 return emb;
             }, this.ModuleColor);
@@ -74,7 +74,7 @@ namespace TheGodfather.Modules.Search
 
         [Command("forecast"), Priority(0)]
         public Task ForecastAsync(CommandContext ctx,
-                                 [RemainingText, Description("desc-query")] string query)
+                                 [RemainingText, Description(TranslationKey.desc_query)] string query)
             => this.ForecastAsync(ctx, 7, query);
         #endregion
 
@@ -83,13 +83,13 @@ namespace TheGodfather.Modules.Search
         private LocalizedEmbedBuilder AddDataToEmbed(LocalizedEmbedBuilder emb, PartialWeatherData data)
         {
             emb.WithColor(this.ModuleColor);
-            emb.AddLocalizedField("str-w-condition", data.Weather.Select(w => w.Main).JoinWith(", "), inline: true, titleArgs: Emojis.Cloud);
-            emb.AddLocalizedField("str-w-humidity", $"{data.Main.Humidity}%", inline: true, titleArgs: Emojis.Drops);
-            emb.AddLocalizedField("str-w-temp", $"{data.Main.Temp:F1}°C", inline: true, titleArgs: Emojis.Thermometer);
-            emb.AddLocalizedField("str-w-temp-minmax", $"{data.Main.TempMin:F1}°C / {data.Main.TempMax:F1}°C", inline: true, titleArgs: Emojis.Thermometer);
-            emb.AddLocalizedField("str-w-wind", $"{data.Wind.Speed} m/s", inline: true, titleArgs: Emojis.Wind);
+            emb.AddLocalizedField(TranslationKey.str_w_condition(Emojis.Cloud), data.Weather.Select(w => w.Main).JoinWith(", "), inline: true);
+            emb.AddLocalizedField(TranslationKey.str_w_humidity(Emojis.Drops), $"{data.Main.Humidity}%", inline: true);
+            emb.AddLocalizedField(TranslationKey.str_w_temp(Emojis.Thermometer), $"{data.Main.Temp:F1}°C", inline: true);
+            emb.AddLocalizedField(TranslationKey.str_w_temp_minmax(Emojis.Thermometer), $"{data.Main.TempMin:F1}°C / {data.Main.TempMax:F1}°C", inline: true);
+            emb.AddLocalizedField(TranslationKey.str_w_wind(Emojis.Wind), $"{data.Wind.Speed} m/s", inline: true);
             emb.WithThumbnail(WeatherService.GetWeatherIconUrl(data.Weather[0]));
-            emb.WithLocalizedFooter("fmt-powered-by", null, "openweathermap.org");
+            emb.WithLocalizedFooter(TranslationKey.fmt_powered_by("openweathermap.org"), null);
             return emb;
         }
         #endregion

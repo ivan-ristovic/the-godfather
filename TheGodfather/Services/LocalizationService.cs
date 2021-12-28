@@ -90,14 +90,17 @@ namespace TheGodfather.Services
         }
 
         public string GetString(ulong? gid, TranslationKey key)
+            => this.GetStringUnsafe(gid, key.Key, key.Params);
+
+        public string GetStringUnsafe(ulong? gid, string key, params object?[] args) 
         {
             this.AssertIsDataLoaded();
 
             string locale = this.GetGuildLocale(gid);
             if (this.strings!.TryGetValue(locale, out ImmutableDictionary<string, string>? localeStrings)) {
-                if (!localeStrings.TryGetValue(key.Key, out string? response)) {
+                if (!localeStrings.TryGetValue(key, out string? response)) {
                     Log.Error("Failed to find string for {Key} in locale {Locale}", key, locale);
-                    throw new LocalizationException($"I do not have a translation ready for:{Formatter.InlineCode(key.Key)} Please report this.");
+                    throw new LocalizationException($"I do not have a translation ready for:{Formatter.InlineCode(key)} Please report this.");
                 }
 
                 string unknownKey = TranslationKey.NotFound.Key;
@@ -105,14 +108,14 @@ namespace TheGodfather.Services
                     Log.Error("Failed to find string for {Key} in locale {Locale}", unknownKey, locale);
                     throw new LocalizationException($"I do not have a translation ready for:{Formatter.InlineCode(unknownKey)} Please report this.");
                 }
-                IEnumerable<object> margs = key.Params.Any() ? key.Params.Select(a => a ?? str404) : Enumerable.Empty<object>();
+                IEnumerable<object> margs = args.Any() ? args.Select(a => a ?? str404) : Enumerable.Empty<object>();
                 return string.Format(response, margs.ToArray()).Trim();
             }
 
             Log.Error("Guild {GuildId} has unknown locale {Locale}", gid, locale);
             throw new LocalizationException($"Locale not found for guild {gid}");
         }
-
+        
         public string GetCommandDescription(ulong? gid, string command)
         {
             this.AssertIsDataLoaded();

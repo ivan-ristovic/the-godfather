@@ -32,12 +32,12 @@ namespace TheGodfather.Modules.Misc
         [Command("8ball")]
         [Aliases("8b")]
         public Task EightBallAsync(CommandContext ctx,
-                                  [RemainingText, Description("desc-8b-question")] string question)
+                                  [RemainingText, Description(TranslationKey.desc_8b_question)] string question)
         {
             if (string.IsNullOrWhiteSpace(question))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-8b");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_8b);
 
-            return this.Service.EightBall(ctx.Channel, question, out string answer)
+            return this.Service.EightBall(ctx.Channel, question, out TranslationKey answer)
                 ? ctx.ImpInfoAsync(this.ModuleColor, Emojis.EightBall, answer)
                 : ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                     Description = $"{Emojis.EightBall} {answer}",
@@ -50,23 +50,28 @@ namespace TheGodfather.Modules.Misc
         [Command("coinflip")]
         [Aliases("coin", "flip")]
         public Task CoinflipAsync(CommandContext ctx,
-                                 [Description("desc-coinflip-ratio")] int ratio = 1)
-            => ctx.ImpInfoAsync(this.ModuleColor, Emojis.NewMoon, this.Service.Coinflip(ratio) ? "fmt-coin-heads" : "fmt-coin-tails", ctx.User.Mention);
+                                 [Description(TranslationKey.desc_coinflip_ratio)] int ratio = 1)
+        {
+            TranslationKey result = this.Service.Coinflip(ratio) 
+                ? TranslationKey.fmt_coin_heads(ctx.User.Mention) 
+                : TranslationKey.fmt_coin_tails(ctx.User.Mention);
+            return ctx.ImpInfoAsync(this.ModuleColor, Emojis.NewMoon, result);
+        }
         #endregion
 
         #region dice
         [Command("dice")]
         [Aliases("die", "roll")]
         public Task DiceAsync(CommandContext ctx,
-                             [Description("desc-dice-sides")] int sides = 6)
-            => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Dice, "fmt-dice", ctx.User.Mention, this.Service.Dice(sides));
+                             [Description(TranslationKey.desc_dice_sides)] int sides = 6)
+            => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Dice, TranslationKey.fmt_dice(ctx.User.Mention, this.Service.Dice(sides)));
         #endregion
 
         #region invite
         [Command("invite")]
         [Aliases("getinvite", "inv")]
         public async Task GetInstantInviteAsync(CommandContext ctx,
-                                               [Description("desc-invite-expire")] TimeSpan? expiryTime = null)
+                                               [Description(TranslationKey.desc_invite_expire)] TimeSpan? expiryTime = null)
         {
             DiscordInvite? invite = null;
             if (expiryTime is null) {
@@ -97,7 +102,7 @@ namespace TheGodfather.Modules.Misc
         [RequireOwnerOrPermissions(Permissions.Administrator)]
         public async Task LeaveAsync(CommandContext ctx)
         {
-            if (await ctx.WaitForBoolReplyAsync("q-leave"))
+            if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_leave))
                 await ctx.Guild.LeaveAsync();
         }
         #endregion
@@ -106,10 +111,10 @@ namespace TheGodfather.Modules.Misc
         [Command("leet")]
         [Aliases("l33t", "1337")]
         public Task L33tAsync(CommandContext ctx,
-                             [RemainingText, Description("desc-say")] string text)
+                             [RemainingText, Description(TranslationKey.desc_say)] string text)
         {
             if (string.IsNullOrWhiteSpace(text))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-leet-none");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_leet_none);
 
             string leet = this.Service.ToLeet(text);
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
@@ -123,8 +128,8 @@ namespace TheGodfather.Modules.Misc
         [Command("linux")]
         [Aliases("interject", "interjection")]
         public Task LinuxAsync(CommandContext ctx,
-                              [Description("desc-replacement")] string? str1 = null,
-                              [Description("desc-replacement")] string? str2 = null)
+                              [Description(TranslationKey.desc_replacement)] string? str1 = null,
+                              [Description(TranslationKey.desc_replacement)] string? str2 = null)
         {
             if (string.IsNullOrWhiteSpace(str1))
                 str1 = "GNU";
@@ -157,12 +162,12 @@ namespace TheGodfather.Modules.Misc
         [Command("penis"), Priority(1)]
         [Aliases("size", "length", "manhood", "dick", "dicksize")]
         public Task PenisAsync(CommandContext ctx,
-                              [Description("desc-members")] params DiscordMember[] members)
+                              [Description(TranslationKey.desc_members)] params DiscordMember[] members)
             => this.InternalPenisAsync(ctx, members);
 
         [Command("penis"), Priority(0)]
         public Task PenisAsync(CommandContext ctx,
-                              [Description("desc-users")] params DiscordUser[] users)
+                              [Description(TranslationKey.desc_users)] params DiscordUser[] users)
             => this.InternalPenisAsync(ctx, users);
         #endregion
 
@@ -171,16 +176,16 @@ namespace TheGodfather.Modules.Misc
         [Aliases("sizebros", "lengthbros", "manhoodbros", "dickbros", "cockbros")]
         [RequireGuild]
         public Task PenisBrosAsync(CommandContext ctx,
-                                  [Description("desc-member")] DiscordMember member)
+                                  [Description(TranslationKey.desc_member)] DiscordMember member)
             => this.PenisBrosAsync(ctx, member as DiscordUser);
 
         [Command("penisbros"), Priority(0)]
         public Task PenisBrosAsync(CommandContext ctx,
-                                  [Description("desc-user")] DiscordUser? user = null)
+                                  [Description(TranslationKey.desc_user)] DiscordUser? user = null)
         {
             user ??= ctx.User;
             if (user.IsCurrent)
-                return ctx.InfoAsync(this.ModuleColor, Emojis.Ruler, "cmd-err-size-bot");
+                return ctx.InfoAsync(this.ModuleColor, Emojis.Ruler, TranslationKey.cmd_err_size_bot);
 
             int size = this.Service.Size(user.Id).Length;
             IEnumerable<DiscordMember> cockbros = ctx.Guild.Members
@@ -189,15 +194,15 @@ namespace TheGodfather.Modules.Misc
                 ;
 
             return cockbros.Any()
-                ? ctx.PaginateAsync("fmt-penisbros", cockbros, m => m.Mention, this.ModuleColor, args: user.ToDiscriminatorString())
-                : ctx.FailAsync("cmd-err-penisbros-none", user.Mention);
+                ? ctx.PaginateAsync(TranslationKey.fmt_penisbros(user.Mention), cockbros, m => m.Mention, this.ModuleColor)
+                : ctx.FailAsync(TranslationKey.cmd_err_penisbros_none(user.Mention));
         }
         #endregion
 
         #region ping
         [Command("ping")]
         public Task PingAsync(CommandContext ctx)
-            => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Heartbeat, "fmt-ping", ctx.Client.Ping);
+            => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Heartbeat, TranslationKey.fmt_ping(ctx.Client.Ping));
         #endregion
 
         #region prefix
@@ -205,17 +210,17 @@ namespace TheGodfather.Modules.Misc
         [Aliases("setprefix", "pref", "setpref")]
         [RequireGuild, RequireOwnerOrPermissions(Permissions.Administrator)]
         public async Task GetOrSetPrefixAsync(CommandContext ctx,
-                                             [Description("desc-prefix")] string? prefix = null)
+                                             [Description(TranslationKey.desc_prefix)] string? prefix = null)
         {
             GuildConfigService gcs = ctx.Services.GetRequiredService<GuildConfigService>();
             if (string.IsNullOrWhiteSpace(prefix)) {
                 string p = gcs.GetGuildPrefix(ctx.Guild.Id);
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "fmt-prefix", p);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, TranslationKey.fmt_prefix(p));
                 return;
             }
 
             if (prefix.Length > GuildConfig.PrefixLimit)
-                throw new CommandFailedException(ctx, "cmd-err-prefix", GuildConfig.PrefixLimit);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_prefix(GuildConfig.PrefixLimit));
 
             await gcs.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.Prefix = prefix);
             await ctx.InfoAsync(this.ModuleColor);
@@ -227,12 +232,12 @@ namespace TheGodfather.Modules.Misc
         [Aliases("score", "graph", "rating")]
         [RequireBotPermissions(Permissions.AttachFiles)]
         public Task RateAsync(CommandContext ctx,
-                             [Description("desc-members")] params DiscordMember[] members)
+                             [Description(TranslationKey.desc_members)] params DiscordMember[] members)
             => this.InternalRateAsync(ctx, members);
 
         [Command("rate"), Priority(0)]
         public Task RateAsync(CommandContext ctx,
-                             [Description("desc-users")] params DiscordUser[] users)
+                             [Description(TranslationKey.desc_users)] params DiscordUser[] users)
             => this.InternalRateAsync(ctx, users);
         #endregion
 
@@ -241,14 +246,14 @@ namespace TheGodfather.Modules.Misc
         [Aliases("restinpeace", "grave")]
         [RequireBotPermissions(Permissions.AttachFiles)]
         public Task RateAsync(CommandContext ctx,
-                             [Description("desc-member")] DiscordMember member,
-                             [RemainingText, Description("desc-rip")] string? desc = "RIP")
+                             [Description(TranslationKey.desc_member)] DiscordMember member,
+                             [RemainingText, Description(TranslationKey.desc_rip)] string? desc = "RIP")
             => this.InternalRipAsync(ctx, member, desc);
 
         [Command("rip"), Priority(0)]
         public Task RateAsync(CommandContext ctx,
-                             [Description("desc-user")] DiscordUser user,
-                             [RemainingText, Description("desc-rip")] string? desc = "RIP")
+                             [Description(TranslationKey.desc_user)] DiscordUser user,
+                             [RemainingText, Description(TranslationKey.desc_rip)] string? desc = "RIP")
             => this.InternalRipAsync(ctx, user, desc);
         #endregion
 
@@ -256,16 +261,16 @@ namespace TheGodfather.Modules.Misc
         [Command("report"), UsesInteractivity]
         [Cooldown(1, 3600, CooldownBucketType.User)]
         public async Task SendErrorReportAsync(CommandContext ctx,
-                                              [RemainingText, Description("desc-issue")] string issue)
+                                              [RemainingText, Description(TranslationKey.desc_issue)] string issue)
         {
             if (string.IsNullOrWhiteSpace(issue))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-issue-none");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_issue_none);
 
             DiscordDmChannel? dm = await ctx.Client.CreateOwnerDmChannel();
             if (dm is null)
-                throw new CommandFailedException(ctx, "cmd-err-issue-fail");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_issue_fail);
 
-            if (await ctx.WaitForBoolReplyAsync("q-issue")) {
+            if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_issue)) {
                 Log.Warning($"Report from {ctx.User.Username} ({ctx.User.Id}): {issue}");
                 var emb = new DiscordEmbedBuilder {
                     Title = "Issue reported",
@@ -276,7 +281,7 @@ namespace TheGodfather.Modules.Misc
                     emb.AddField("Guild", $"{ctx.Guild} owned by {ctx.Guild.Owner}");
 
                 await dm.SendMessageAsync("A new issue has been reported!", embed: emb.Build());
-                await ctx.InfoAsync(this.ModuleColor, "str-reported");
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_reported);
             }
         }
         #endregion
@@ -285,13 +290,13 @@ namespace TheGodfather.Modules.Misc
         [Command("say")]
         [Aliases("repeat", "echo")]
         public Task SayAsync(CommandContext ctx,
-                            [RemainingText, Description("desc-say")] string text)
+                            [RemainingText, Description(TranslationKey.desc_say)] string text)
         {
             if (string.IsNullOrWhiteSpace(text))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-text-none");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_text_none);
 
             return ctx.Services.GetRequiredService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text, out _)
-                ? throw new CommandFailedException(ctx, "cmd-err-say")
+                ? throw new CommandFailedException(ctx, TranslationKey.cmd_err_say)
                 : ctx.RespondWithLocalizedEmbedAsync(emb => {
                     emb.WithColor(this.ModuleColor);
                     emb.WithDescription($"{Emojis.Loudspeaker} {Formatter.Strip(text)}");
@@ -304,7 +309,7 @@ namespace TheGodfather.Modules.Misc
         [Aliases("sim")]
         [RequireGuild, Cooldown(1, 5, CooldownBucketType.Guild)]
         public async Task SimulateAsync(CommandContext ctx,
-                                       [Description("desc-member")] DiscordMember? member = null)
+                                       [Description(TranslationKey.desc_member)] DiscordMember? member = null)
         {
             member ??= ctx.Member;
             if (member == ctx.Guild.CurrentMember)
@@ -313,7 +318,7 @@ namespace TheGodfather.Modules.Misc
             string prefix = ctx.Services.GetRequiredService<GuildConfigService>().GetGuildPrefix(ctx.Guild.Id);
             string? simulatedMessage = await SimulationService.SimulateAsync(ctx.Channel, member, prefix);
             if (simulatedMessage is null)
-                throw new CommandFailedException(ctx, "cmd-err-sim");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_sim);
             await ctx.Channel.EmbedAsync(simulatedMessage, Emojis.Loudspeaker, this.ModuleColor);
         }
         #endregion
@@ -322,14 +327,14 @@ namespace TheGodfather.Modules.Misc
         [Command("tts")]
         [RequirePermissions(Permissions.SendTtsMessages)]
         public Task TtsAsync(CommandContext ctx,
-                            [RemainingText, Description("desc-say")] string text)
+                            [RemainingText, Description(TranslationKey.desc_say)] string text)
         {
 
             if (string.IsNullOrWhiteSpace(text))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-text-none");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_text_none);
 
             return ctx.Services.GetRequiredService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text, out _)
-                ? throw new CommandFailedException(ctx, "cmd-err-say")
+                ? throw new CommandFailedException(ctx, TranslationKey.cmd_err_say)
                 : ctx.RespondAsync(new DiscordMessageBuilder().WithContent(Formatter.BlockCode(Formatter.Strip(text))).HasTTS(true));
         }
         #endregion
@@ -338,20 +343,20 @@ namespace TheGodfather.Modules.Misc
         [Command("time")]
         [Aliases("t")]
         public Task TimeAsync(CommandContext ctx,
-                             [RemainingText, Description("desc-tz")] string? timezone = null)
+                             [RemainingText, Description(TranslationKey.desc_tz)] string? timezone = null)
         {
             if (string.IsNullOrWhiteSpace(timezone)) {
                 string time = this.Localization.GetLocalizedTimeString(ctx.Guild?.Id, DateTimeOffset.Now);
                 string tz = this.Localization.GetGuildTimeZone(ctx.Guild?.Id).DisplayName;
-                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "fmt-time", tz, time);
+                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, TranslationKey.fmt_time(tz, time));
             }
 
             if (!TZConvert.TryGetTimeZoneInfo(timezone, out TimeZoneInfo info))
-                throw new CommandFailedException(ctx, "cmd-err-tz");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_tz);
 
             CultureInfo culture = this.Localization.GetGuildCulture(ctx.Guild.Id);
             string timeStr = TimeZoneInfo.ConvertTime(DateTimeOffset.Now, info).ToString("G", culture);
-            return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, "fmt-time", info.DisplayName, timeStr);
+            return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, TranslationKey.fmt_time(info.DisplayName, timeStr));
         }
         #endregion
 
@@ -359,10 +364,10 @@ namespace TheGodfather.Modules.Misc
         [Command("unleet")]
         [Aliases("unl33t")]
         public Task Unl33tAsync(CommandContext ctx,
-                               [RemainingText, Description("desc-say")] string leet)
+                               [RemainingText, Description(TranslationKey.desc_say)] string leet)
         {
             if (string.IsNullOrWhiteSpace(leet))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-leet-none");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_leet_none);
 
             string text = this.Service.FromLeet(leet);
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
@@ -380,18 +385,18 @@ namespace TheGodfather.Modules.Misc
             if (!users.Any())
                 users = new[] { ctx.User };
             if (users.Count >= 10)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-size");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_size);
 
             var sb = new StringBuilder();
             foreach (DiscordUser user in users) {
                 if (user.IsCurrent)
-                    return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Ruler, "cmd-err-size-bot");
+                    return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Ruler, TranslationKey.cmd_err_size_bot);
                 sb.Append(Formatter.Bold(this.Service.Size(user.Id))).Append(' ').AppendLine(user.Mention);
             }
 
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(this.ModuleColor);
-                emb.WithLocalizedDescription("fmt-size", Emojis.Ruler, sb.ToString());
+                emb.WithLocalizedDescription(TranslationKey.fmt_size(Emojis.Ruler, sb.ToString()));
             });
         }
 
@@ -401,10 +406,10 @@ namespace TheGodfather.Modules.Misc
             if (!users.Any())
                 users = new[] { ctx.User };
             if (users.Count > 8)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-rate");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_rate);
 
             if (users.Any(u => u.IsCurrent)) {
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Ruler, "cmd-err-size-bot");
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Ruler, TranslationKey.cmd_err_size_bot);
                 return;
             }
 
@@ -412,7 +417,7 @@ namespace TheGodfather.Modules.Misc
             await ctx.RespondAsync(new DiscordMessageBuilder()
                 .WithFile("Rating.jpg", ms)
                 .WithEmbed(new DiscordEmbedBuilder {
-                    Description = this.Localization.GetString(ctx.Guild?.Id, "fmt-rating", Emojis.Ruler, users.Select(u => u.Mention).JoinWith(", ")),
+                    Description = this.Localization.GetString(ctx.Guild?.Id, TranslationKey.fmt_rating(Emojis.Ruler, users.Select(u => u.Mention).JoinWith(", "))),
                     Color = this.ModuleColor,
                 })
             );
@@ -421,7 +426,7 @@ namespace TheGodfather.Modules.Misc
         private async Task InternalRipAsync(CommandContext ctx, DiscordUser user, string? desc)
         {
             if (user.IsCurrent) {
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Ruler, "cmd-err-size-bot");
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Ruler, TranslationKey.cmd_err_size_bot);
                 return;
             }
 

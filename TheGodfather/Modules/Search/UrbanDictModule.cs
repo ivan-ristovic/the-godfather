@@ -19,30 +19,29 @@ namespace TheGodfather.Modules.Search
         #region urbandict
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [RemainingText, Description("desc-query")] string query)
+                                           [RemainingText, Description(TranslationKey.desc_query)] string query)
         {
             UrbanDictData? data = await UrbanDictService.GetDefinitionForTermAsync(query);
             if (data is null) {
-                await ctx.FailAsync("cmd-err-res-none");
+                await ctx.FailAsync(TranslationKey.cmd_err_res_none);
                 return;
             }
 
             await ctx.PaginateAsync(
-                "fmt-ud",
+                TranslationKey.fmt_ud(query),
                 data.List,
                 res => {
-                    var sb = new StringBuilder(this.Localization.GetString(ctx.Guild?.Id, "str-def-by"));
+                    var sb = new StringBuilder(this.Localization.GetString(ctx.Guild?.Id, TranslationKey.str_def_by));
                     sb.Append(Formatter.Bold(res.Author)).AppendLine().AppendLine();
                     sb.Append(Formatter.Bold(res.Word)).Append(" :");
                     sb.AppendLine(Formatter.BlockCode(res.Definition.Trim().Truncate(1000)));
                     if (!string.IsNullOrWhiteSpace(res.Example))
-                        sb.Append(this.Localization.GetString(ctx.Guild?.Id, "str-examples")).AppendLine(Formatter.BlockCode(res.Example.Trim().Truncate(250)));
+                        sb.Append(this.Localization.GetString(ctx.Guild?.Id, TranslationKey.str_examples)).AppendLine(Formatter.BlockCode(res.Example.Trim().Truncate(250)));
                     sb.Append(res.Permalink);
                     return sb.ToString();
                 },
                 this.ModuleColor,
-                1,
-                query
+                1
             );
         }
         #endregion

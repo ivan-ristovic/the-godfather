@@ -41,13 +41,13 @@ namespace TheGodfather.Modules.Owner
         public async Task BaseAddAsync(CommandContext ctx, string? reason, params T[] entities)
         {
             if (reason?.Length >= 60)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-rsn", BlockedEntity.ReasonLimit);
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_rsn(BlockedEntity.ReasonLimit));
 
             if (entities is null || !entities.Any())
-                throw new InvalidCommandUsageException(ctx, "cmd-err-block-none");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_block_none);
 
             int blocked = await this.BlockAsync(entities.Select(c => c.Id), reason);
-            await ctx.InfoAsync(this.ModuleColor, "fmt-block-add", blocked);
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_block_add(blocked));
 
             if (typeof(T) == typeof(DiscordGuild)) {
                 foreach (T entity in entities) {
@@ -70,10 +70,10 @@ namespace TheGodfather.Modules.Owner
         public async Task BaseDeleteAsync(CommandContext ctx, params T[] entities)
         {
             if (entities is null || !entities.Any())
-                throw new InvalidCommandUsageException(ctx, "cmd-err-block-none");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_block_none);
 
             int unblocked = await this.UnblockAsync(entities.Select(c => c.Id));
-            await ctx.InfoAsync(this.ModuleColor, "fmt-block-del", unblocked);
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_block_del(unblocked));
         }
         #endregion
 
@@ -82,10 +82,10 @@ namespace TheGodfather.Modules.Owner
         {
             IReadOnlyList<(T Entity, string? Reason)> blocked = await this.ListBlockedAsync(ctx);
             if (!blocked.Any())
-                throw new CommandFailedException(ctx, "cmd-err-block-list-none");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_block_list_none);
 
             await ctx.PaginateAsync(
-                "str-block-list",
+                TranslationKey.str_block_list,
                 blocked,
 #pragma warning disable CS8603 // Possible null reference return.
                     tup => tup.Reason is { } ? $"{tup.Entity} ({tup.Reason})" : tup.Entity.ToString(),
@@ -110,19 +110,19 @@ namespace TheGodfather.Modules.Owner
 
         [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-block-add")] params DiscordUser[] entities)
+                                     [Description(TranslationKey.desc_block_add)] params DiscordUser[] entities)
             => this.BaseAddAsync(ctx, null, entities);
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-rsn")] string? reason,
-                                     [Description("desc-block-add")] params DiscordUser[] entities)
+                                     [Description(TranslationKey.desc_rsn)] string? reason,
+                                     [Description(TranslationKey.desc_block_add)] params DiscordUser[] entities)
             => this.BaseAddAsync(ctx, reason, entities);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-block-add")] DiscordUser entity,
-                                     [RemainingText, Description("desc-rsn")] string reason)
+                                     [Description(TranslationKey.desc_block_add)] DiscordUser entity,
+                                     [RemainingText, Description(TranslationKey.desc_rsn)] string reason)
             => this.BaseAddAsync(ctx, reason, entity);
         #endregion
 
@@ -130,19 +130,19 @@ namespace TheGodfather.Modules.Owner
         [Command("add"), Priority(2)]
         [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-block-add")] params DiscordUser[] entities)
+                            [Description(TranslationKey.desc_block_add)] params DiscordUser[] entities)
             => this.BaseAddAsync(ctx, null, entities);
 
         [Command("add"), Priority(1)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-rsn")] string? reason,
-                            [Description("desc-block-add")] params DiscordUser[] entities)
+                            [Description(TranslationKey.desc_rsn)] string? reason,
+                            [Description(TranslationKey.desc_block_add)] params DiscordUser[] entities)
             => this.BaseAddAsync(ctx, reason, entities);
 
         [Command("add"), Priority(0)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-block-add")] DiscordUser entity,
-                            [RemainingText, Description("desc-rsn")] string reason)
+                            [Description(TranslationKey.desc_block_add)] DiscordUser entity,
+                            [RemainingText, Description(TranslationKey.desc_rsn)] string reason)
             => this.BaseAddAsync(ctx, reason, entity);
         #endregion
 
@@ -150,7 +150,7 @@ namespace TheGodfather.Modules.Owner
         [Command("delete")]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public Task DeleteAsync(CommandContext ctx,
-                               [Description("desc-block-del")] params DiscordUser[] entities)
+                               [Description(TranslationKey.desc_block_del)] params DiscordUser[] entities)
             => this.BaseDeleteAsync(ctx, entities);
         #endregion
 
@@ -205,19 +205,19 @@ namespace TheGodfather.Modules.Owner
 
         [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-block-add")] params DiscordChannel[] entities)
+                                     [Description(TranslationKey.desc_block_add)] params DiscordChannel[] entities)
             => this.BaseAddAsync(ctx, null, entities);
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-rsn")] string? reason,
-                                     [Description("desc-block-add")] params DiscordChannel[] entities)
+                                     [Description(TranslationKey.desc_rsn)] string? reason,
+                                     [Description(TranslationKey.desc_block_add)] params DiscordChannel[] entities)
             => this.BaseAddAsync(ctx, reason, entities);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-block-add")] DiscordChannel entity,
-                                     [RemainingText, Description("desc-rsn")] string reason)
+                                     [Description(TranslationKey.desc_block_add)] DiscordChannel entity,
+                                     [RemainingText, Description(TranslationKey.desc_rsn)] string reason)
             => this.BaseAddAsync(ctx, reason, entity);
         #endregion
 
@@ -225,19 +225,19 @@ namespace TheGodfather.Modules.Owner
         [Command("add"), Priority(2)]
         [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-block-add")] params DiscordChannel[] entities)
+                            [Description(TranslationKey.desc_block_add)] params DiscordChannel[] entities)
             => this.BaseAddAsync(ctx, null, entities);
 
         [Command("add"), Priority(1)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-rsn")] string? reason,
-                            [Description("desc-block-add")] params DiscordChannel[] entities)
+                            [Description(TranslationKey.desc_rsn)] string? reason,
+                            [Description(TranslationKey.desc_block_add)] params DiscordChannel[] entities)
             => this.BaseAddAsync(ctx, reason, entities);
 
         [Command("add"), Priority(0)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-block-add")] DiscordChannel entity,
-                            [RemainingText, Description("desc-rsn")] string reason)
+                            [Description(TranslationKey.desc_block_add)] DiscordChannel entity,
+                            [RemainingText, Description(TranslationKey.desc_rsn)] string reason)
             => this.BaseAddAsync(ctx, reason, entity);
         #endregion
 
@@ -245,7 +245,7 @@ namespace TheGodfather.Modules.Owner
         [Command("delete")]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public Task DeleteAsync(CommandContext ctx,
-                               [Description("desc-block-del")] params DiscordChannel[] entities)
+                               [Description(TranslationKey.desc_block_del)] params DiscordChannel[] entities)
             => this.BaseDeleteAsync(ctx, entities);
         #endregion
 
@@ -299,19 +299,19 @@ namespace TheGodfather.Modules.Owner
 
         [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-block-add")] params DiscordGuild[] entities)
+                                     [Description(TranslationKey.desc_block_add)] params DiscordGuild[] entities)
             => this.BaseAddAsync(ctx, null, entities);
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-rsn")] string? reason,
-                                     [Description("desc-block-add")] params DiscordGuild[] entities)
+                                     [Description(TranslationKey.desc_rsn)] string? reason,
+                                     [Description(TranslationKey.desc_block_add)] params DiscordGuild[] entities)
             => this.BaseAddAsync(ctx, reason, entities);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-block-add")] DiscordGuild entity,
-                                     [RemainingText, Description("desc-rsn")] string reason)
+                                     [Description(TranslationKey.desc_block_add)] DiscordGuild entity,
+                                     [RemainingText, Description(TranslationKey.desc_rsn)] string reason)
             => this.BaseAddAsync(ctx, reason, entity);
         #endregion
 
@@ -319,19 +319,19 @@ namespace TheGodfather.Modules.Owner
         [Command("add"), Priority(2)]
         [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-block-add")] params DiscordGuild[] entities)
+                            [Description(TranslationKey.desc_block_add)] params DiscordGuild[] entities)
             => this.BaseAddAsync(ctx, null, entities);
 
         [Command("add"), Priority(1)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-rsn")] string? reason,
-                            [Description("desc-block-add")] params DiscordGuild[] entities)
+                            [Description(TranslationKey.desc_rsn)] string? reason,
+                            [Description(TranslationKey.desc_block_add)] params DiscordGuild[] entities)
             => this.BaseAddAsync(ctx, reason, entities);
 
         [Command("add"), Priority(0)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-block-add")] DiscordGuild entity,
-                            [RemainingText, Description("desc-rsn")] string reason)
+                            [Description(TranslationKey.desc_block_add)] DiscordGuild entity,
+                            [RemainingText, Description(TranslationKey.desc_rsn)] string reason)
             => this.BaseAddAsync(ctx, reason, entity);
         #endregion
 
@@ -339,7 +339,7 @@ namespace TheGodfather.Modules.Owner
         [Command("delete")]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public Task DeleteAsync(CommandContext ctx,
-                               [Description("desc-block-del")] params DiscordGuild[] entities)
+                               [Description(TranslationKey.desc_block_del)] params DiscordGuild[] entities)
             => this.BaseDeleteAsync(ctx, entities);
         #endregion
 

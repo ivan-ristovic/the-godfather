@@ -39,11 +39,11 @@ namespace TheGodfather.Modules.Music
                 DiscordVoiceState? memberVoiceState = ctx.Member.VoiceState;
                 DiscordChannel? chn = memberVoiceState?.Channel;
                 if (chn is null)
-                    throw new CommandFailedException(ctx, "cmd-err-music-vc");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_music_vc);
 
                 DiscordChannel? botVoiceState = ctx.Guild.CurrentMember?.VoiceState?.Channel;
                 if (botVoiceState is { } && chn != botVoiceState)
-                    throw new CommandFailedException(ctx, "cmd-err-music-vc-same");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_music_vc_same);
 
                 if (!chn.PermissionsFor(ctx.Guild.CurrentMember).HasPermission(Permissions.AccessChannels))
                     throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.Speak) });
@@ -63,15 +63,15 @@ namespace TheGodfather.Modules.Music
         {
             Song song = this.Player.NowPlaying;
             if (string.IsNullOrWhiteSpace(this.Player.NowPlaying.Track?.TrackString))
-                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-none");
+                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.str_music_none);
 
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
-                emb.WithLocalizedTitle("str-music-queue");
+                emb.WithLocalizedTitle(TranslationKey.str_music_queue);
                 emb.WithColor(this.ModuleColor);
                 emb.WithDescription(Formatter.Bold(Formatter.Sanitize(song.Track.Title)));
-                emb.AddLocalizedField("str-author", song.Track.Author, inline: true);
-                emb.AddLocalizedField("str-duration", song.Track.Length.ToDurationString(), inline: true);
-                emb.AddLocalizedField("str-requested-by", song.RequestedBy?.Mention, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_author, song.Track.Author, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_duration, song.Track.Length.ToDurationString(), inline: true);
+                emb.AddLocalizedField(TranslationKey.str_requested_by, song.RequestedBy?.Mention, inline: true);
             });
         }
         #endregion
@@ -80,7 +80,7 @@ namespace TheGodfather.Modules.Music
         [Command("forward")]
         [Aliases("fw", "f", ">", ">>")]
         public async Task ForwardAsync(CommandContext ctx,
-                                      [RemainingText, Description("desc-music-fw")] TimeSpan offset)
+                                      [RemainingText, Description(TranslationKey.desc_music_fw)] TimeSpan offset)
         {
             await this.Player.SeekAsync(offset, true);
             await ctx.InfoAsync(this.ModuleColor);
@@ -93,13 +93,13 @@ namespace TheGodfather.Modules.Music
         public Task PlayerInfoAsync(CommandContext ctx)
         {
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
-                emb.WithLocalizedTitle("str-music-player");
+                emb.WithLocalizedTitle(TranslationKey.str_music_player);
                 emb.WithColor(this.ModuleColor);
                 var totalQueueTime = TimeSpan.FromSeconds(this.Player.Queue.Sum(s => s.Track.Length.TotalSeconds));
-                emb.AddLocalizedField("str-music-shuffled", this.Player.IsShuffled, inline: true);
-                emb.AddLocalizedField("str-music-mode", this.Player.RepeatMode, inline: true);
-                emb.AddLocalizedField("str-music-vol", $"{this.Player.Volume}%", inline: true);
-                emb.AddLocalizedField("str-music-queue-len", $"{this.Player.Queue.Count} ({totalQueueTime.ToDurationString()})", inline: true);
+                emb.AddLocalizedField(TranslationKey.str_music_shuffled, this.Player.IsShuffled, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_music_mode, this.Player.RepeatMode, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_music_vol, $"{this.Player.Volume}%", inline: true);
+                emb.AddLocalizedField(TranslationKey.str_music_queue_len, $"{this.Player.Queue.Count} ({totalQueueTime.ToDurationString()})", inline: true);
             });
         }
         #endregion
@@ -115,7 +115,7 @@ namespace TheGodfather.Modules.Music
             }
 
             await this.Player.PauseAsync();
-            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-pause");
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.str_music_pause);
         }
         #endregion
 
@@ -123,10 +123,10 @@ namespace TheGodfather.Modules.Music
         [Command("repeat")]
         [Aliases("loop", "l", "rep", "lp")]
         public Task RepeatAsync(CommandContext ctx,
-                               [Description("desc-music-mode")] RepeatMode mode = RepeatMode.Single)
+                               [Description(TranslationKey.desc_music_mode)] RepeatMode mode = RepeatMode.Single)
         {
             this.Player.SetRepeatMode(mode);
-            return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-mode", mode);
+            return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.fmt_music_mode(mode));
         }
         #endregion
 
@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Music
         {
             Song song = this.Player.NowPlaying;
             await this.Player.RestartAsync();
-            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-replay", Formatter.Sanitize(song.Track.Title), Formatter.Sanitize(song.Track.Author));
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.fmt_music_replay(Formatter.Sanitize(song.Track.Title), Formatter.Sanitize(song.Track.Author)));
         }
         #endregion
 
@@ -147,7 +147,7 @@ namespace TheGodfather.Modules.Music
         public async Task ResumeAsync(CommandContext ctx)
         {
             await this.Player.ResumeAsync();
-            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-resume");
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.str_music_resume);
         }
         #endregion
 
@@ -156,7 +156,7 @@ namespace TheGodfather.Modules.Music
         public Task ReshuffleAsync(CommandContext ctx)
         {
             this.Player.Reshuffle();
-            return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-reshuffle");
+            return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.str_music_reshuffle);
         }
         #endregion
 
@@ -164,7 +164,7 @@ namespace TheGodfather.Modules.Music
         [Command("rewind")]
         [Aliases("bw", "rw", "<", "<<")]
         public async Task RewindAsync(CommandContext ctx,
-                                     [RemainingText, Description("desc-music-bw")] TimeSpan offset)
+                                     [RemainingText, Description(TranslationKey.desc_music_bw)] TimeSpan offset)
         {
             await this.Player.SeekAsync(-offset, true);
             await ctx.InfoAsync(this.ModuleColor);
@@ -175,7 +175,7 @@ namespace TheGodfather.Modules.Music
         [Command("seek")]
         [Aliases("s")]
         public async Task SeekAsync(CommandContext ctx,
-                                   [RemainingText, Description("desc-music-seek")] TimeSpan position)
+                                   [RemainingText, Description(TranslationKey.desc_music_seek)] TimeSpan position)
         {
             await this.Player.SeekAsync(position, false);
             await ctx.InfoAsync(this.ModuleColor);
@@ -189,10 +189,10 @@ namespace TheGodfather.Modules.Music
         {
             if (this.Player.IsShuffled) {
                 this.Player.StopShuffle();
-                return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-unshuffle");
+                return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.str_music_unshuffle);
             } else {
                 this.Player.Shuffle();
-                return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-shuffle");
+                return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.str_music_shuffle);
             }
         }
         #endregion
@@ -204,7 +204,7 @@ namespace TheGodfather.Modules.Music
         {
             Song song = this.Player.NowPlaying;
             await this.Player.StopAsync();
-            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-skip", Formatter.Sanitize(song.Track.Title), Formatter.Sanitize(song.Track.Author));
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.fmt_music_skip(Formatter.Sanitize(song.Track.Title), Formatter.Sanitize(song.Track.Author)));
         }
         #endregion
 
@@ -215,7 +215,7 @@ namespace TheGodfather.Modules.Music
             int removed = this.Player.EmptyQueue();
             await this.Player.StopAsync();
             await this.Player.DestroyPlayerAsync();
-            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-del-many", removed);
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.fmt_music_del_many(removed));
         }
         #endregion
 
@@ -223,13 +223,13 @@ namespace TheGodfather.Modules.Music
         [Command("volume")]
         [Aliases("vol", "v")]
         public async Task VolumeAsync(CommandContext ctx,
-                                     [Description("desc-music-vol")] int volume = 100)
+                                     [Description(TranslationKey.desc_music_vol)] int volume = 100)
         {
             if (volume < GuildMusicPlayer.MinVolume || volume > GuildMusicPlayer.MaxVolume)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-music-vol", GuildMusicPlayer.MinVolume, GuildMusicPlayer.MaxVolume);
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_music_vol(GuildMusicPlayer.MinVolume, GuildMusicPlayer.MaxVolume));
 
             await this.Player.SetVolumeAsync(volume);
-            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-vol", volume);
+            await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.fmt_music_vol(volume));
         }
         #endregion
     }

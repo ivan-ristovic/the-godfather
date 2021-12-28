@@ -39,15 +39,15 @@ namespace TheGodfather.Modules.Games.Common
 
             foreach ((QuizQuestion question, int i) in this.questions.Select((q, i) => (q, i))) {
                 var emb = new LocalizedEmbedBuilder(lcs, this.Channel.GuildId);
-                emb.WithLocalizedTitle("fmt-game-quiz-q", i + 1);
+                emb.WithLocalizedTitle(TranslationKey.fmt_game_quiz_q(i + 1));
                 emb.WithDescription(Formatter.Bold(question.Content));
                 emb.WithColor(DiscordColor.Teal);
-                emb.AddLocalizedField("str-category", question.Category, inline: false);
+                emb.AddLocalizedField(TranslationKey.str_category, question.Category, inline: false);
 
                 var answers = new List<string>(question.IncorrectAnswers) { question.CorrectAnswer }.Shuffle().ToList();
 
                 foreach ((string answer, int index) in answers.Select((a, i) => (a, i)))
-                    emb.AddLocalizedField("fmt-game-quiz-a", answer, inline: true, titleArgs: index + 1);
+                    emb.AddLocalizedField(TranslationKey.fmt_game_quiz_a(index + 1), answer, inline: true);
 
                 var options = Emojis.Numbers.All.Skip(1).Take(4).ToList();
                 DiscordMessage msg = await this.Channel.SendMessageAsync(embed: emb.Build());
@@ -82,9 +82,9 @@ namespace TheGodfather.Modules.Games.Common
                     } else {
                         timeouts = 0;
                     }
-                    await this.Channel.LocalizedEmbedAsync(lcs, Emojis.AlarmClock, DiscordColor.Teal, "fmt-game-quiz-timeout", question.CorrectAnswer);
+                    await this.Channel.LocalizedEmbedAsync(lcs, Emojis.AlarmClock, DiscordColor.Teal, TranslationKey.fmt_game_quiz_timeout(question.CorrectAnswer));
                 } else {
-                    await this.Channel.LocalizedEmbedAsync(lcs, Emojis.CheckMarkSuccess, DiscordColor.Teal, "fmt-game-quiz-correct", res.Result.User.Mention);
+                    await this.Channel.LocalizedEmbedAsync(lcs, Emojis.CheckMarkSuccess, DiscordColor.Teal, TranslationKey.fmt_game_quiz_correct(res.Result.User.Mention));
                     this.results.AddOrUpdate(res.Result.User, u => 1, (u, v) => v + 1);
                 }
 

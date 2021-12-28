@@ -20,14 +20,14 @@ namespace TheGodfather.Modules.Music
         [Command("connect")]
         [Aliases("c", "con", "conn")]
         public Task ConnectAsync(CommandContext ctx,
-                                [RemainingText, Description("desc-chn-voice")] DiscordChannel? channel = null)
+                                [RemainingText, Description(TranslationKey.desc_chn_voice)] DiscordChannel? channel = null)
         {
             channel ??= ctx.Member.VoiceState?.Channel;
             if (channel is null)
-                throw new CommandFailedException(ctx, "cmd-err-music-vc");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_music_vc);
 
             if (channel.Type != ChannelType.Voice)
-                throw new CommandFailedException(ctx, "cmd-err-chn-type-voice");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_chn_type_voice);
 
             if (!channel.PermissionsFor(ctx.Guild.CurrentMember).HasPermission(Permissions.AccessChannels))
                 throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.AccessChannels) });

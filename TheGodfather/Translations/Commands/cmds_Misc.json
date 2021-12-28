@@ -1,27 +1,50 @@
 {
   "8ball": {
     "usage": [
-      [ "arg-string" ]
+      [
+        "arg-string"
+      ]
     ]
   },
   "birthday": {
     "usage": [
-      [ "arg-usr" ],
-      [ "arg-chn-text" ],
-      [ "arg-usr", "arg-chn-text", "arg-date" ]
+      [
+        "arg-usr"
+      ],
+      [
+        "arg-chn-text"
+      ],
+      [
+        "arg-usr",
+        "arg-chn-text",
+        "arg-date"
+      ]
     ]
   },
   "birthday add": {
     "usage": [
-      [ "arg-usr" ],
-      [ "arg-usr", "arg-chn-text" ],
-      [ "arg-usr", "arg-chn-text", "arg-date" ]
+      [
+        "arg-usr"
+      ],
+      [
+        "arg-usr",
+        "arg-chn-text"
+      ],
+      [
+        "arg-usr",
+        "arg-chn-text",
+        "arg-date"
+      ]
     ]
   },
   "birthday delete": {
     "usage": [
-      [ "arg-usr" ],
-      [ "arg-chn-text" ]
+      [
+        "arg-usr"
+      ],
+      [
+        "arg-chn-text"
+      ]
     ]
   },
   "birthday deleteall": {
@@ -31,8 +54,12 @@
   },
   "birthday list": {
     "usage": [
-      [ "arg-usr" ],
-      [ "arg-chn-text" ]
+      [
+        "arg-usr"
+      ],
+      [
+        "arg-chn-text"
+      ]
     ]
   },
   "birthday listall": {
@@ -42,8 +69,12 @@
   },
   "birthday remove": {
     "usage": [
-      [ "arg-usr" ],
-      [ "arg-chn-text" ]
+      [
+        "arg-usr"
+      ],
+      [
+        "arg-chn-text"
+      ]
     ]
   },
   "birthday removeall": {
@@ -54,48 +85,70 @@
   "coinflip": {
     "usage": [
       [],
-      [ "arg-five" ]
+      [
+        "arg-five"
+      ]
     ]
   },
   "dice": {
     "usage": [
       [],
-      [ "arg-five" ]
+      [
+        "arg-five"
+      ]
     ]
   },
   "grant": {
     "usage": [
-      [ "arg-role" ],
-      [ "arg-name" ]
+      [
+        "arg-role"
+      ],
+      [
+        "arg-name"
+      ]
     ]
   },
   "grant nickname": {
     "usage": [
-      [ "arg-name" ]
+      [
+        "arg-name"
+      ]
     ]
   },
   "grant role": {
     "usage": [
-      [ "arg-role" ]
+      [
+        "arg-role"
+      ]
     ]
   },
   "help": {
     "usage": [
       [],
-      [ "arg-module" ],
-      [ "arg-cmd" ]
+      [
+        "arg-module"
+      ],
+      [
+        "arg-cmd"
+      ]
     ]
   },
   "insult": {
     "usage": [
-      [ "arg-usr" ],
-      [ "arg-string" ]
+      [
+        "arg-usr"
+      ],
+      [
+        "arg-string"
+      ]
     ]
   },
   "invite": {
     "usage": [
       [],
-      [ "arg-timespan-day" ]
+      [
+        "arg-timespan-day"
+      ]
     ]
   },
   "leave": {
@@ -105,35 +158,53 @@
   },
   "leet": {
     "usage": [
-      [ "arg-string" ]
+      [
+        "arg-string"
+      ]
     ]
   },
   "linux": {
     "usage": [
       [],
-      [ "arg-gnu", "arg-windows" ]
+      [
+        "arg-gnu",
+        "arg-windows"
+      ]
     ]
   },
   "meme": {
     "usage": [
       [],
-      [ "arg-string" ]
+      [
+        "arg-string"
+      ]
     ]
   },
   "meme add": {
     "usage": [
-      [ "arg-string" ],
-      [ "arg-string", "arg-url-image" ]
+      [
+        "arg-string"
+      ],
+      [
+        "arg-string",
+        "arg-url-image"
+      ]
     ]
   },
   "meme create": {
     "usage": [
-      [ "arg-meme-template", "arg-string", "arg-string" ]
+      [
+        "arg-meme-template",
+        "arg-string",
+        "arg-string"
+      ]
     ]
   },
   "meme delete": {
     "usage": [
-      [ "arg-string" ]
+      [
+        "arg-string"
+      ]
     ]
   },
   "meme deleteall": {
@@ -149,20 +220,30 @@
   "meme templates": {
     "usage": [
       [],
-      [ "arg-meme-template" ]
+      [
+        "arg-meme-template"
+      ]
     ]
   },
   "penis": {
     "usage": [
       [],
-      [ "arg-usr" ],
-      [ "arg-usr", "arg-usr", "arg-usr" ]
+      [
+        "arg-usr"
+      ],
+      [
+        "arg-usr",
+        "arg-usr",
+        "arg-usr"
+      ]
     ]
   },
   "penisbros": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "ping": {
@@ -173,34 +254,47 @@
   "prefix": {
     "usage": [
       [],
-      [ "arg-prefix" ]
+      [
+        "arg-prefix"
+      ]
     ]
   },
   "random choice": {
     "usage": [
-      [ "arg-opts" ]
+      [
+        "arg-opts"
+      ]
     ]
   },
   "random raffle": {
     "usage": [
       [],
-      [ "arg-role" ]
+      [
+        "arg-role"
+      ]
     ]
   },
   "rank": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "rank add": {
     "usage": [
-      [ "arg-five", "arg-name" ]
+      [
+        "arg-five",
+        "arg-name"
+      ]
     ]
   },
   "rank delete": {
     "usage": [
-      [ "arg-five" ]
+      [
+        "arg-five"
+      ]
     ]
   },
   "rank list": {
@@ -210,7 +304,9 @@
   },
   "rank remove": {
     "usage": [
-      [ "arg-five" ]
+      [
+        "arg-five"
+      ]
     ]
   },
   "rank top": {
@@ -226,47 +322,77 @@
   "rate": {
     "usage": [
       [],
-      [ "arg-usr" ],
-      [ "arg-usr", "arg-usr", "arg-usr" ]
+      [
+        "arg-usr"
+      ],
+      [
+        "arg-usr",
+        "arg-usr",
+        "arg-usr"
+      ]
     ]
   },
   "rip": {
     "usage": [
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "report": {
     "usage": [
-      [ "arg-report" ]
+      [
+        "arg-report"
+      ]
     ]
   },
   "revoke": {
     "usage": [
-      [ "arg-role" ]
+      [
+        "arg-role"
+      ]
     ]
   },
   "revoke role": {
     "usage": [
-      [ "arg-role" ]
+      [
+        "arg-role"
+      ]
     ]
   },
   "say": {
     "usage": [
-      [ "arg-string" ]
+      [
+        "arg-string"
+      ]
     ]
   },
   "simulate": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "starboard": {
     "usage": [
       [],
-      [ "arg-bool", "arg-chn-text" ],
-      [ "arg-bool", "arg-chn-text", "arg-emoji" ],
-      [ "arg-bool", "arg-chn-text", "arg-emoji", "arg-five" ]
+      [
+        "arg-bool",
+        "arg-chn-text"
+      ],
+      [
+        "arg-bool",
+        "arg-chn-text",
+        "arg-emoji"
+      ],
+      [
+        "arg-bool",
+        "arg-chn-text",
+        "arg-emoji",
+        "arg-five"
+      ]
     ]
   },
   "starboard channel": {
@@ -277,29 +403,39 @@
   "starboard emoji": {
     "usage": [
       [],
-      [ "arg-emoji" ]
+      [
+        "arg-emoji"
+      ]
     ]
   },
   "starboard sensitivity": {
     "usage": [
       [],
-      [ "arg-five" ]
+      [
+        "arg-five"
+      ]
     ]
   },
   "time": {
     "usage": [
       [],
-      [ "arg-tz" ]
+      [
+        "arg-tz"
+      ]
     ]
   },
   "tts": {
     "usage": [
-      [ "arg-string" ]
+      [
+        "arg-string"
+      ]
     ]
   },
   "unleet": {
     "usage": [
-      [ "arg-string" ]
+      [
+        "arg-string"
+      ]
     ]
   }
 }

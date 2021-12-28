@@ -26,12 +26,12 @@ namespace TheGodfather.Modules.Administration
         #region user
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-member")] DiscordMember? member = null)
+                                     [Description(TranslationKey.desc_member)] DiscordMember? member = null)
             => this.InfoAsync(ctx, member);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-user")] DiscordUser? user = null)
+                                     [Description(TranslationKey.desc_user)] DiscordUser? user = null)
             => this.InfoAsync(ctx, user);
         #endregion
 
@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Administration
         [Command("avatar")]
         [Aliases("a", "pic", "profilepic")]
         public Task GetAvatarAsync(CommandContext ctx,
-                                  [Description("desc-user")] DiscordUser user)
+                                  [Description(TranslationKey.desc_user)] DiscordUser user)
         {
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
                 Title = user.ToDiscriminatorString(),
@@ -54,35 +54,35 @@ namespace TheGodfather.Modules.Administration
         [Aliases("b")]
         [RequireGuild, RequirePermissions(Permissions.BanMembers)]
         public async Task BanAsync(CommandContext ctx,
-                                  [Description("desc-user")] DiscordUser user,
-                                  [Description("desc-ban-msg-days-del")] int days,
-                                  [RemainingText, Description("desc-rsn")] string? reason = null)
+                                  [Description(TranslationKey.desc_user)] DiscordUser user,
+                                  [Description(TranslationKey.desc_ban_msg_days_del)] int days,
+                                  [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             if (user == ctx.User)
-                throw new CommandFailedException(ctx, "cmd-err-self-action");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_self_action);
 
             string name = user.ToString();
             await ctx.Guild.BanMemberAsync(user.Id, delete_message_days: days, reason: ctx.BuildInvocationDetailsString(reason));
-            await ctx.ImpInfoAsync(this.ModuleColor, "fmt-ban", ctx.User.Mention, name, days);
+            await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_ban(ctx.User.Mention, name, days));
         }
 
         [Command("ban"), Priority(2)]
         public Task BanAsync(CommandContext ctx,
-                            [Description("desc-member")] DiscordMember member,
-                            [Description("desc-ban-msg-days-del")] int days,
-                            [RemainingText, Description("desc-rsn")] string? reason = null)
+                            [Description(TranslationKey.desc_member)] DiscordMember member,
+                            [Description(TranslationKey.desc_ban_msg_days_del)] int days,
+                            [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             => this.BanAsync(ctx, member as DiscordUser, days, reason);
 
         [Command("ban"), Priority(1)]
         public Task BanAsync(CommandContext ctx,
-                            [Description("desc-member")] DiscordMember member,
-                            [RemainingText, Description("desc-rsn")] string? reason = null)
+                            [Description(TranslationKey.desc_member)] DiscordMember member,
+                            [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             => this.BanAsync(ctx, member, 0, reason);
 
         [Command("ban"), Priority(0)]
         public Task BanAsync(CommandContext ctx,
-                            [Description("desc-member")] DiscordUser user,
-                            [RemainingText, Description("desc-rsn")] string? reason = null)
+                            [Description(TranslationKey.desc_member)] DiscordUser user,
+                            [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             => this.BanAsync(ctx, user, 0, reason);
         #endregion
 
@@ -91,8 +91,8 @@ namespace TheGodfather.Modules.Administration
         [Aliases("deaf", "d", "df")]
         [RequireGuild, RequirePermissions(Permissions.DeafenMembers)]
         public async Task DeafenAsync(CommandContext ctx,
-                                     [Description("desc-member")] DiscordMember member,
-                                     [RemainingText, Description("desc-rsn")] string? reason = null)
+                                     [Description(TranslationKey.desc_member)] DiscordMember member,
+                                     [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             await member.SetDeafAsync(true, reason: ctx.BuildInvocationDetailsString(reason));
             await ctx.InfoAsync(this.ModuleColor);
@@ -104,14 +104,14 @@ namespace TheGodfather.Modules.Administration
         [Aliases("+role", "+r", "<r", "<<r", "ar", "addr", "+roles", "addroles", "giverole", "giveroles", "addrole", "grantroles", "gr")]
         [RequireGuild, RequirePermissions(Permissions.ManageRoles)]
         public async Task GrantRolesAsync(CommandContext ctx,
-                                         [Description("desc-member")] DiscordMember member,
-                                         [Description("desc-roles-add")] params DiscordRole[] roles)
+                                         [Description(TranslationKey.desc_member)] DiscordMember member,
+                                         [Description(TranslationKey.desc_roles_add)] params DiscordRole[] roles)
         {
             if (roles is null || !roles.Any())
-                throw new InvalidCommandUsageException(ctx, "cmd-err-missing-roles");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_missing_roles);
 
             if (member.Hierarchy >= ctx.Member.Hierarchy)
-                throw new CommandFailedException(ctx, "cmd-err-role-manage-403");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_role_manage_403);
 
             await Task.WhenAll(roles.Distinct().Select(r => member.GrantRoleAsync(r, ctx.BuildInvocationDetailsString())));
             await ctx.InfoAsync(this.ModuleColor);
@@ -119,8 +119,8 @@ namespace TheGodfather.Modules.Administration
 
         [Command("grantrole"), Priority(0)]
         public Task GrantRolesAsync(CommandContext ctx,
-                                   [Description("desc-role")] DiscordRole role,
-                                   [Description("desc-member")] DiscordMember member)
+                                   [Description(TranslationKey.desc_role)] DiscordRole role,
+                                   [Description(TranslationKey.desc_member)] DiscordMember member)
             => this.GrantRolesAsync(ctx, member, role);
         #endregion
 
@@ -128,30 +128,30 @@ namespace TheGodfather.Modules.Administration
         [Command("info"), Priority(1)]
         [Aliases("i", "information")]
         public Task InfoAsync(CommandContext ctx,
-                             [Description("desc-member")] DiscordMember? member = null)
+                             [Description(TranslationKey.desc_member)] DiscordMember? member = null)
         {
             member ??= ctx.Member;
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithTitle(member.ToDiscriminatorString());
                 emb.WithThumbnail(member.AvatarUrl);
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedTimestampField("str-regtime", member.CreationTimestamp, inline: true);
-                emb.AddLocalizedTimestampField("str-joined-at", member.JoinedAt, inline: true);
-                emb.AddLocalizedField("str-id", member.Id, inline: true);
-                emb.AddLocalizedField("str-hierarchy", member.Hierarchy, inline: true);
-                emb.AddLocalizedField("str-status", ToPresenceString(member.Presence), inline: true);
-                emb.AddLocalizedField("str-ahash", member.AvatarHash, inline: true, unknown: false);
-                emb.AddLocalizedField("str-verified", member.Verified, inline: true, unknown: false);
-                emb.AddLocalizedField("str-flags", member.Flags?.Humanize(), inline: true, unknown: false);
-                emb.AddLocalizedField("str-locale", member.Locale, inline: true, unknown: false);
-                emb.AddLocalizedField("str-mfa", member.MfaEnabled, inline: true, unknown: false);
-                emb.AddLocalizedField("str-flags-oauth", member.OAuthFlags?.Humanize(), inline: true, unknown: false);
-                emb.AddLocalizedField("str-premium-type", member.PremiumType?.Humanize(), inline: true, unknown: false);
-                emb.AddLocalizedTimestampField("str-premium-since", member.PremiumSince, inline: true);
-                emb.AddLocalizedField("str-email", member.Email, inline: true, unknown: false);
-                emb.AddLocalizedField("str-activity", member.Presence?.Activity?.ToDetailedString(), inline: true, unknown: false);
+                emb.AddLocalizedTimestampField(TranslationKey.str_regtime, member.CreationTimestamp, inline: true);
+                emb.AddLocalizedTimestampField(TranslationKey.str_joined_at, member.JoinedAt, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_id, member.Id, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_hierarchy, member.Hierarchy, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_status, ToPresenceString(member.Presence), inline: true);
+                emb.AddLocalizedField(TranslationKey.str_ahash, member.AvatarHash, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_verified, member.Verified, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_flags, member.Flags?.Humanize(), inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_locale, member.Locale, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_mfa, member.MfaEnabled, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_flags_oauth, member.OAuthFlags?.Humanize(), inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_premium_type, member.PremiumType?.Humanize(), inline: true, unknown: false);
+                emb.AddLocalizedTimestampField(TranslationKey.str_premium_since, member.PremiumSince, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_email, member.Email, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_activity, member.Presence?.Activity?.ToDetailedString(), inline: true, unknown: false);
                 if (member.Roles.Any())
-                    emb.AddLocalizedField("str-roles", member.Roles.Select(r => r.Mention).JoinWith(", "));
+                    emb.AddLocalizedField(TranslationKey.str_roles, member.Roles.Select(r => r.Mention).JoinWith(", "));
             });
 
 
@@ -159,31 +159,31 @@ namespace TheGodfather.Modules.Administration
             {
                 return presence is { }
                     ? $"{presence.Status} ({presence.ClientStatus.ToUserFriendlyString()})"
-                    : this.Localization.GetString(ctx.Guild.Id, "str-offline");
+                    : this.Localization.GetString(ctx.Guild.Id, TranslationKey.str_offline);
             }
         }
 
         [Command("info"), Priority(0)]
         public Task InfoAsync(CommandContext ctx,
-                             [Description("desc-user")] DiscordUser? user = null)
+                             [Description(TranslationKey.desc_user)] DiscordUser? user = null)
         {
             user ??= ctx.User;
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithTitle(user.ToDiscriminatorString());
                 emb.WithThumbnail(user.AvatarUrl);
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedTimestampField("str-regtime", user.CreationTimestamp, inline: true);
-                emb.AddLocalizedField("str-id", user.Id, inline: true);
-                emb.AddLocalizedField("str-status", ToPresenceString(user.Presence), inline: true);
-                emb.AddLocalizedField("str-ahash", user.AvatarHash, inline: true, unknown: false);
-                emb.AddLocalizedField("str-verified", user.Verified, inline: true, unknown: false);
-                emb.AddLocalizedField("str-flags", user.Flags?.Humanize(), inline: true, unknown: false);
-                emb.AddLocalizedField("str-locale", user.Locale, inline: true, unknown: false);
-                emb.AddLocalizedField("str-mfa", user.MfaEnabled, inline: true, unknown: false);
-                emb.AddLocalizedField("str-flags-oauth", user.OAuthFlags?.Humanize(), inline: true, unknown: false);
-                emb.AddLocalizedField("str-premium-type", user.PremiumType?.Humanize(), inline: true, unknown: false);
-                emb.AddLocalizedField("str-email", user.Email, inline: true, unknown: false);
-                emb.AddLocalizedField("str-activity", user.Presence?.Activity?.ToDetailedString(), inline: true, unknown: false);
+                emb.AddLocalizedTimestampField(TranslationKey.str_regtime, user.CreationTimestamp, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_id, user.Id, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_status, ToPresenceString(user.Presence), inline: true);
+                emb.AddLocalizedField(TranslationKey.str_ahash, user.AvatarHash, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_verified, user.Verified, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_flags, user.Flags?.Humanize(), inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_locale, user.Locale, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_mfa, user.MfaEnabled, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_flags_oauth, user.OAuthFlags?.Humanize(), inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_premium_type, user.PremiumType?.Humanize(), inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_email, user.Email, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_activity, user.Presence?.Activity?.ToDetailedString(), inline: true, unknown: false);
             });
 
 
@@ -191,7 +191,7 @@ namespace TheGodfather.Modules.Administration
             {
                 return presence is { }
                     ? $"{presence.Status} ({presence.ClientStatus.ToUserFriendlyString()})"
-                    : this.Localization.GetString(ctx.Guild.Id, "str-offline");
+                    : this.Localization.GetString(ctx.Guild.Id, TranslationKey.str_offline);
             }
         }
         #endregion
@@ -201,15 +201,15 @@ namespace TheGodfather.Modules.Administration
         [Aliases("k")]
         [RequireGuild, RequirePermissions(Permissions.KickMembers)]
         public async Task KickAsync(CommandContext ctx,
-                                   [Description("desc-member")] DiscordMember member,
-                                   [RemainingText, Description("desc-rsn")] string? reason = null)
+                                   [Description(TranslationKey.desc_member)] DiscordMember member,
+                                   [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             if (member == ctx.User)
-                throw new CommandFailedException(ctx, "cmd-err-self-action");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_self_action);
 
             string name = member.ToString();
             await this.Service.PunishMemberAsync(ctx.Guild, member, Punishment.Action.Kick, reason: ctx.BuildInvocationDetailsString(reason));
-            await ctx.ImpInfoAsync(this.ModuleColor, "fmt-kick", ctx.User.Mention, name);
+            await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_kick(ctx.User.Mention, name));
         }
         #endregion
 
@@ -218,11 +218,11 @@ namespace TheGodfather.Modules.Administration
         [Aliases("kv")]
         [RequireGuild, RequirePermissions(Permissions.MuteMembers)]
         public async Task KickVoiceAsync(CommandContext ctx,
-                                        [Description("desc-member")] DiscordMember member,
-                                        [RemainingText, Description("desc-rsn")] string? reason = null)
+                                        [Description(TranslationKey.desc_member)] DiscordMember member,
+                                        [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             if (ctx.Channel.PermissionsFor(member).HasPermission(Permissions.Administrator))
-                throw new CommandFailedException(ctx, "cmd-err-admin-immune");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_admin_immune);
 
             await member.ModifyAsync(m => {
                 m.VoiceChannel = null;
@@ -237,8 +237,8 @@ namespace TheGodfather.Modules.Administration
         [Aliases("m")]
         [RequireGuild, RequirePermissions(Permissions.ManageRoles)]
         public async Task MuteAsync(CommandContext ctx,
-                                   [Description("desc-member")] DiscordMember member,
-                                   [RemainingText, Description("desc-rsn")] string? reason = null)
+                                   [Description(TranslationKey.desc_member)] DiscordMember member,
+                                   [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             await this.Service.PunishMemberAsync(ctx.Guild, member, Punishment.Action.PermanentMute, reason: ctx.BuildInvocationDetailsString(reason));
             await ctx.InfoAsync(this.ModuleColor);
@@ -248,7 +248,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
                     Type = ActionHistoryEntry.Action.IndefiniteMute,
                     GuildId = ctx.Guild.Id,
-                    Notes = this.Localization.GetString(ctx.Guild.Id, "fmt-ah", ctx.User.Mention, reason),
+                    Notes = this.Localization.GetString(ctx.Guild.Id, TranslationKey.fmt_ah(ctx.User.Mention, reason)),
                     Time = DateTimeOffset.Now,
                     UserId = member.Id,
                 });
@@ -257,16 +257,16 @@ namespace TheGodfather.Modules.Administration
 
         [Command("mute"), Priority(1)]
         public Task MuteAsync(CommandContext ctx,
-                             [Description("desc-timespan")] TimeSpan timespan,
-                             [Description("desc-member")] DiscordMember member,
-                             [RemainingText, Description("desc-rsn")] string? reason = null)
+                             [Description(TranslationKey.desc_timespan)] TimeSpan timespan,
+                             [Description(TranslationKey.desc_member)] DiscordMember member,
+                             [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             => this.TempMuteAsync(ctx, timespan, member, reason);
 
         [Command("mute"), Priority(0)]
         public Task MuteAsync(CommandContext ctx,
-                             [Description("desc-user")] DiscordMember member,
-                             [Description("desc-timespan")] TimeSpan timespan,
-                             [RemainingText, Description("desc-rsn")] string? reason = null)
+                             [Description(TranslationKey.desc_user)] DiscordMember member,
+                             [Description(TranslationKey.desc_timespan)] TimeSpan timespan,
+                             [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             => this.TempMuteAsync(ctx, timespan, member, reason);
         #endregion
 
@@ -275,8 +275,8 @@ namespace TheGodfather.Modules.Administration
         [Aliases("mv", "voicemute", "vmute", "mutev", "vm", "gag")]
         [RequireGuild, RequirePermissions(Permissions.MuteMembers)]
         public async Task MuteVoiceAsync(CommandContext ctx,
-                                        [Description("desc-member")] DiscordMember member,
-                                        [RemainingText, Description("desc-rsn")] string? reason = null)
+                                        [Description(TranslationKey.desc_member)] DiscordMember member,
+                                        [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             await member.SetMuteAsync(true, reason: ctx.BuildInvocationDetailsString(reason));
             await ctx.InfoAsync(this.ModuleColor);
@@ -290,14 +290,14 @@ namespace TheGodfather.Modules.Administration
                  "revokeroles", "takeroles", "revrole", "revroles", "tr")]
         [RequireGuild, RequirePermissions(Permissions.ManageRoles)]
         public async Task RevokeRolesAsync(CommandContext ctx,
-                                          [Description("desc-member")] DiscordMember member,
-                                          [Description("desc-roles-del")] params DiscordRole[] roles)
+                                          [Description(TranslationKey.desc_member)] DiscordMember member,
+                                          [Description(TranslationKey.desc_roles_del)] params DiscordRole[] roles)
         {
             if (roles is null || !roles.Any())
-                throw new InvalidCommandUsageException(ctx, "cmd-err-missing-roles");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_missing_roles);
 
             if (member.Hierarchy >= ctx.Member.Hierarchy)
-                throw new CommandFailedException(ctx, "cmd-err-role-manage-403");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_role_manage_403);
 
             await Task.WhenAll(roles.Distinct().Select(r => member.GrantRoleAsync(r, ctx.BuildInvocationDetailsString())));
             await ctx.InfoAsync(this.ModuleColor);
@@ -305,8 +305,8 @@ namespace TheGodfather.Modules.Administration
 
         [Command("revokerole"), Priority(0)]
         public Task RevokeRolesAsync(CommandContext ctx,
-                                    [Description("desc-role")] DiscordRole role,
-                                    [Description("desc-member")] DiscordMember member)
+                                    [Description(TranslationKey.desc_role)] DiscordRole role,
+                                    [Description(TranslationKey.desc_member)] DiscordMember member)
             => this.RevokeRolesAsync(ctx, member, role);
         #endregion
 
@@ -315,11 +315,11 @@ namespace TheGodfather.Modules.Administration
         [Aliases("--roles", "--r", ">>>r", "rar", "removeallr", "remallr", "removeallroles", "takeallroles", "revallroles", "tar")]
         [RequireGuild, RequirePermissions(Permissions.ManageRoles)]
         public async Task RemoveAllRolesAsync(CommandContext ctx,
-                                             [Description("desc-member")] DiscordMember member,
-                                             [RemainingText, Description("desc-rsn")] string? reason = null)
+                                             [Description(TranslationKey.desc_member)] DiscordMember member,
+                                             [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             if (member.Hierarchy >= ctx.Member.Hierarchy)
-                throw new CommandFailedException(ctx, "cmd-err-role-manage-403");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_role_manage_403);
 
             await member.ReplaceRolesAsync(Enumerable.Empty<DiscordRole>(), reason: ctx.BuildInvocationDetailsString(reason));
             await ctx.InfoAsync(this.ModuleColor);
@@ -331,11 +331,11 @@ namespace TheGodfather.Modules.Administration
         [Aliases("nick", "newname", "name", "rename", "nickname")]
         [RequireGuild, RequirePermissions(Permissions.ManageNicknames)]
         public async Task SetNameAsync(CommandContext ctx,
-                                      [Description("desc-member")] DiscordMember member,
-                                      [RemainingText, Description("desc-name")] string? nickname = null)
+                                      [Description(TranslationKey.desc_member)] DiscordMember member,
+                                      [RemainingText, Description(TranslationKey.desc_name_new)] string? nickname = null)
         {
             if (string.IsNullOrWhiteSpace(nickname))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-missing-name");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_missing_name);
 
             await member.ModifyAsync(new Action<MemberEditModel>(m => {
                 m.Nickname = nickname;
@@ -351,23 +351,23 @@ namespace TheGodfather.Modules.Administration
         [Aliases("sb", "sban")]
         [RequireGuild, RequirePermissions(Permissions.BanMembers)]
         public async Task SoftbanAsync(CommandContext ctx,
-                                      [Description("desc-member")] DiscordMember member,
-                                      [Description("desc-ban-msg-days-del")] int days,
-                                      [RemainingText, Description("desc-rsn")] string? reason = null)
+                                      [Description(TranslationKey.desc_member)] DiscordMember member,
+                                      [Description(TranslationKey.desc_ban_msg_days_del)] int days,
+                                      [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             if (member == ctx.Member)
-                throw new CommandFailedException(ctx, "cmd-err-self-action");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_self_action);
 
             string name = member.ToString();
             await ctx.Guild.BanMemberAsync(member.Id, delete_message_days: days, reason: ctx.BuildInvocationDetailsString(reason));
             await ctx.Guild.UnbanMemberAsync(member.Id, reason: ctx.BuildInvocationDetailsString(reason));
-            await ctx.ImpInfoAsync(this.ModuleColor, "fmt-softban", ctx.User.Mention, name, days);
+            await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_softban(ctx.User.Mention, name, days));
         }
 
         [Command("softban"), Priority(0)]
         public Task SoftbanAsync(CommandContext ctx,
-                                [Description("desc-member")] DiscordMember member,
-                                [RemainingText, Description("desc-rsn")] string? reason = null)
+                                [Description(TranslationKey.desc_member)] DiscordMember member,
+                                [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             => this.SoftbanAsync(ctx, member, 0, reason);
         #endregion
 
@@ -376,25 +376,28 @@ namespace TheGodfather.Modules.Administration
         [Aliases("tb", "tban", "tmpban", "tmpb")]
         [RequireGuild, RequirePermissions(Permissions.BanMembers)]
         public async Task TempBanAsync(CommandContext ctx,
-                                      [Description("desc-timespan")] TimeSpan timespan,
-                                      [Description("desc-user")] DiscordUser user,
-                                      [RemainingText, Description("desc-rsn")] string? reason = null)
+                                      [Description(TranslationKey.desc_timespan)] TimeSpan timespan,
+                                      [Description(TranslationKey.desc_user)] DiscordUser user,
+                                      [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             if (user == ctx.Member)
-                throw new CommandFailedException(ctx, "cmd-err-self-action");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_self_action);
 
             if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-temp-time");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_temp_time);
 
             string name = user.ToString();
             await ctx.Guild.BanMemberAsync(user.Id, delete_message_days: 0, reason: ctx.BuildInvocationDetailsString(reason));
 
             DateTimeOffset until = DateTimeOffset.Now + timespan;
-            await ctx.InfoAsync(this.ModuleColor, "fmt-tempban",
-                ctx.User.Mention,
-                name,
-                timespan.Humanize(culture: this.Localization.GetGuildCulture(ctx.Guild.Id)),
-                this.Localization.GetLocalizedTimeString(ctx.Guild.Id, until)
+            await ctx.InfoAsync(
+                this.ModuleColor, 
+                TranslationKey.fmt_tempban(
+                    ctx.User.Mention,
+                    name,
+                    timespan.Humanize(culture: this.Localization.GetGuildCulture(ctx.Guild.Id)),
+                    this.Localization.GetLocalizedTimeString(ctx.Guild.Id, until)
+                )
             );
 
             var task = new GuildTask {
@@ -412,7 +415,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
                     Type = ActionHistoryEntry.Action.TemporaryBan,
                     GuildId = ctx.Guild.Id,
-                    Notes = this.Localization.GetString(ctx.Guild.Id, "fmt-ah-temp", ctx.User.Mention, timestamp, reason),
+                    Notes = this.Localization.GetString(ctx.Guild.Id, TranslationKey.fmt_ah_temp(ctx.User.Mention, timestamp, reason)),
                     Time = DateTimeOffset.Now,
                     UserId = user.Id,
                 });
@@ -421,23 +424,23 @@ namespace TheGodfather.Modules.Administration
 
         [Command("tempban"), Priority(2)]
         public Task TempBanAsync(CommandContext ctx,
-                                [Description("desc-member")] DiscordMember member,
-                                [Description("desc-timespan")] TimeSpan timespan,
-                                [RemainingText, Description("desc-rsn")] string? reason = null)
+                                [Description(TranslationKey.desc_member)] DiscordMember member,
+                                [Description(TranslationKey.desc_timespan)] TimeSpan timespan,
+                                [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             => this.TempBanAsync(ctx, timespan, member, reason);
 
         [Command("tempban"), Priority(1)]
         public Task TempBanAsync(CommandContext ctx,
-                                [Description("desc-timespan")] TimeSpan timespan,
-                                [Description("desc-member")] DiscordMember member,
-                                [RemainingText, Description("desc-rsn")] string? reason = null)
+                                [Description(TranslationKey.desc_timespan)] TimeSpan timespan,
+                                [Description(TranslationKey.desc_member)] DiscordMember member,
+                                [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             => this.TempBanAsync(ctx, timespan, member as DiscordUser, reason);
 
         [Command("tempban"), Priority(0)]
         public Task TempBanAsync(CommandContext ctx,
-                                [Description("desc-user")] DiscordUser user,
-                                [Description("desc-timespan")] TimeSpan timespan,
-                                [RemainingText, Description("desc-rsn")] string? reason = null)
+                                [Description(TranslationKey.desc_user)] DiscordUser user,
+                                [Description(TranslationKey.desc_timespan)] TimeSpan timespan,
+                                [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             => this.TempBanAsync(ctx, user, timespan, reason);
         #endregion
 
@@ -446,12 +449,12 @@ namespace TheGodfather.Modules.Administration
         [Aliases("tm", "tmute", "tmpmute", "tmpm")]
         [RequireGuild, RequirePermissions(Permissions.ManageRoles)]
         public async Task TempMuteAsync(CommandContext ctx,
-                                       [Description("desc-timespan")] TimeSpan timespan,
-                                       [Description("desc-member")] DiscordMember member,
-                                       [RemainingText, Description("desc-rsn")] string? reason = null)
+                                       [Description(TranslationKey.desc_timespan)] TimeSpan timespan,
+                                       [Description(TranslationKey.desc_member)] DiscordMember member,
+                                       [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             if (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-temp-time");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_temp_time);
 
             await this.Service.PunishMemberAsync(
                 guild: ctx.Guild,
@@ -462,11 +465,14 @@ namespace TheGodfather.Modules.Administration
             );
 
             DateTimeOffset until = DateTimeOffset.Now + timespan;
-            await ctx.InfoAsync(this.ModuleColor, "fmt-tempmute",
-                ctx.User.Mention,
-                member.Mention,
-                timespan.Humanize(culture: this.Localization.GetGuildCulture(ctx.Guild.Id)),
-                this.Localization.GetLocalizedTimeString(ctx.Guild.Id, until)
+            await ctx.InfoAsync(
+                this.ModuleColor, 
+                TranslationKey.fmt_tempmute (
+                    ctx.User.Mention,
+                    member.Mention,
+                    timespan.Humanize(culture: this.Localization.GetGuildCulture(ctx.Guild.Id)),
+                    this.Localization.GetLocalizedTimeString(ctx.Guild.Id, until)
+                )
             );
 
             if ((await ctx.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(ctx.Guild.Id)).ActionHistoryEnabled) {
@@ -475,7 +481,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
                     Type = ActionHistoryEntry.Action.TemporaryMute,
                     GuildId = ctx.Guild.Id,
-                    Notes = this.Localization.GetString(ctx.Guild.Id, "fmt-ah-temp", ctx.User.Mention, timestamp, reason),
+                    Notes = this.Localization.GetString(ctx.Guild.Id, TranslationKey.fmt_ah_temp(ctx.User.Mention, timestamp, reason)),
                     Time = DateTimeOffset.Now,
                     UserId = member.Id,
                 });
@@ -484,9 +490,9 @@ namespace TheGodfather.Modules.Administration
 
         [Command("tempmute"), Priority(0)]
         public Task TempMuteAsync(CommandContext ctx,
-                                 [Description("desc-user")] DiscordMember member,
-                                 [Description("desc-timespan")] TimeSpan timespan,
-                                 [RemainingText, Description("desc-rsn")] string? reason = null)
+                                 [Description(TranslationKey.desc_user)] DiscordMember member,
+                                 [Description(TranslationKey.desc_timespan)] TimeSpan timespan,
+                                 [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             => this.TempMuteAsync(ctx, timespan, member, reason);
         #endregion
 
@@ -495,14 +501,14 @@ namespace TheGodfather.Modules.Administration
         [Aliases("ub", "removeban", "revokeban", "rb")]
         [RequireGuild, RequirePermissions(Permissions.BanMembers)]
         public async Task UnbanAsync(CommandContext ctx,
-                                    [Description("desc-user")] DiscordUser user,
-                                    [RemainingText, Description("desc-rsn")] string? reason = null)
+                                    [Description(TranslationKey.desc_user)] DiscordUser user,
+                                    [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             if (user == ctx.Member)
-                throw new CommandFailedException(ctx, "cmd-err-self-action");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_self_action);
 
             await ctx.Guild.UnbanMemberAsync(user.Id, reason: ctx.BuildInvocationDetailsString(reason));
-            await ctx.InfoAsync(this.ModuleColor, "fmt-unban", ctx.User.Mention, user);
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_unban(ctx.User.Mention, user));
         }
         #endregion
 
@@ -511,8 +517,8 @@ namespace TheGodfather.Modules.Administration
         [Aliases("undeaf", "ud", "udf")]
         [RequireGuild, RequirePermissions(Permissions.DeafenMembers)]
         public async Task UndeafenAsync(CommandContext ctx,
-                                       [Description("desc-member")] DiscordMember member,
-                                       [RemainingText, Description("desc-rsn")] string? reason = null)
+                                       [Description(TranslationKey.desc_member)] DiscordMember member,
+                                       [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             await member.SetDeafAsync(false, reason: ctx.BuildInvocationDetailsString(reason));
             await ctx.InfoAsync(this.ModuleColor);
@@ -524,8 +530,8 @@ namespace TheGodfather.Modules.Administration
         [Aliases("um")]
         [RequireGuild, RequirePermissions(Permissions.MuteMembers)]
         public async Task UnmuteAsync(CommandContext ctx,
-                                     [Description("desc-member")] DiscordMember member,
-                                     [RemainingText, Description("desc-rsn")] string? reason = null)
+                                     [Description(TranslationKey.desc_member)] DiscordMember member,
+                                     [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             DiscordRole muteRole = await this.Service.GetOrCreateMuteRoleAsync(ctx.Guild);
             await member.RevokeRoleAsync(muteRole, ctx.BuildInvocationDetailsString(reason));
@@ -539,8 +545,8 @@ namespace TheGodfather.Modules.Administration
         [Aliases("umv", "voiceunmute", "vunmute", "unmutev", "vum")]
         [RequireGuild, RequirePermissions(Permissions.MuteMembers)]
         public async Task UnmuteVoiceAsync(CommandContext ctx,
-                                          [Description("desc-member")] DiscordMember member,
-                                          [RemainingText, Description("desc-rsn")] string? reason = null)
+                                          [Description(TranslationKey.desc_member)] DiscordMember member,
+                                          [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             await member.SetMuteAsync(false, reason: ctx.BuildInvocationDetailsString(reason));
             await ctx.InfoAsync(this.ModuleColor);
@@ -552,8 +558,8 @@ namespace TheGodfather.Modules.Administration
         [Aliases("w")]
         [RequireOwnerOrPermissions(Permissions.Administrator)]
         public async Task WarnAsync(CommandContext ctx,
-                                   [Description("desc-member")] DiscordMember member,
-                                   [RemainingText, Description("desc-warn")] string? msg = null)
+                                   [Description(TranslationKey.desc_member)] DiscordMember member,
+                                   [RemainingText, Description(TranslationKey.desc_warn)] string? msg = null)
         {
             var emb = new DiscordEmbedBuilder {
                 Title = "Warning received!",
@@ -569,7 +575,7 @@ namespace TheGodfather.Modules.Administration
                 DiscordDmChannel dm = await member.CreateDmChannelAsync();
                 await dm.SendMessageAsync(embed: emb.Build());
             } catch {
-                throw new CommandFailedException(ctx, "cmd-err-dm-create");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_dm_create);
             }
 
             await ctx.InfoAsync(this.ModuleColor);
@@ -579,7 +585,7 @@ namespace TheGodfather.Modules.Administration
                 await ctx.Services.GetRequiredService<ActionHistoryService>().LimitedAddAsync(new ActionHistoryEntry {
                     Type = ActionHistoryEntry.Action.Warning,
                     GuildId = ctx.Guild.Id,
-                    Notes = this.Localization.GetString(ctx.Guild.Id, "fmt-ah", ctx.User.Mention, msg),
+                    Notes = this.Localization.GetString(ctx.Guild.Id, TranslationKey.fmt_ah(ctx.User.Mention, msg)),
                     Time = DateTimeOffset.Now,
                     UserId = member.Id,
                 });

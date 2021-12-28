@@ -24,14 +24,14 @@ namespace TheGodfather.Modules.Administration
         #region levelroles
         [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("str-rank")] short rank,
-                                     [Description("desc-role-grant")] DiscordRole role)
+                                     [Description(TranslationKey.desc_rank)] short rank,
+                                     [Description(TranslationKey.desc_role_grant)] DiscordRole role)
             => this.AddAsync(ctx, rank, role);
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-role-grant")] DiscordRole role,
-                                     [Description("str-rank")] short rank)
+                                     [Description(TranslationKey.desc_role_grant)] DiscordRole role,
+                                     [Description(TranslationKey.desc_rank)] short rank)
             => this.AddAsync(ctx, rank, role);
 
         [GroupCommand, Priority(0)]
@@ -43,21 +43,21 @@ namespace TheGodfather.Modules.Administration
         [Command("add"), Priority(1)]
         [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-role-grant")] DiscordRole role,
-                            [Description("str-rank")] short rank)
+                            [Description(TranslationKey.desc_role_grant)] DiscordRole role,
+                            [Description(TranslationKey.desc_rank)] short rank)
             => this.AddAsync(ctx, rank, role);
 
         [Command("add"), Priority(0)]
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("str-rank")] short rank,
-                                  [Description("desc-role-grant")] DiscordRole role)
+                                  [Description(TranslationKey.desc_rank)] short rank,
+                                  [Description(TranslationKey.desc_role_grant)] DiscordRole role)
         {
             if (rank < 1 || rank > 1000)
-                throw new CommandFailedException(ctx, "cmd-err-rank", 1, 1000);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_rank(1, 1000));
 
             LevelRole? lr = await this.Service.GetAsync(ctx.Guild.Id, rank);
             if (lr is { })
-                throw new CommandFailedException(ctx, "cmd-err-lr");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_lr);
 
             await this.Service.AddAsync(new LevelRole {
                 GuildId = ctx.Guild.Id,
@@ -66,11 +66,11 @@ namespace TheGodfather.Modules.Administration
             });
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "evt-lr-change");
-                emb.AddLocalizedField("str-lr-role", role.Mention, inline: true);
-                emb.AddLocalizedField("str-lr-rank", rank, inline: true);
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, TranslationKey.evt_lr_change);
+                emb.AddLocalizedField(TranslationKey.str_lr_role, role.Mention, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_lr_rank, rank, inline: true);
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-lr-add", role.Mention, rank);
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_lr_add(role.Mention, rank));
         }
         #endregion
 
@@ -78,7 +78,7 @@ namespace TheGodfather.Modules.Administration
         [Command("delete"), Priority(1)]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task RemoveAsync(CommandContext ctx,
-                                     [Description("desc-roles-del")] params DiscordRole[] roles)
+                                     [Description(TranslationKey.desc_roles_del)] params DiscordRole[] roles)
         {
             if (roles is null || !roles.Any()) {
                 await this.RemoveAllAsync(ctx);
@@ -89,15 +89,15 @@ namespace TheGodfather.Modules.Administration
             int removed = await this.Service.RemoveAsync(lrs.Where(lr => roles.SelectIds().Contains(lr.RoleId)));
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-lr-change");
-                emb.AddLocalizedField("str-roles-rem", removed);
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_lr_change);
+                emb.AddLocalizedField(TranslationKey.str_roles_rem, removed);
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-lr-rem", removed);
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_lr_rem(removed));
         }
 
         [Command("delete"), Priority(1)]
         public async Task RemoveAsync(CommandContext ctx,
-                                     [Description("desc-ranks")] params short[] ranks)
+                                     [Description(TranslationKey.desc_ranks)] params short[] ranks)
         {
             if (ranks is null || !ranks.Any()) {
                 await this.RemoveAllAsync(ctx);
@@ -107,10 +107,10 @@ namespace TheGodfather.Modules.Administration
             int removed = await this.Service.RemoveAsync(ctx.Guild.Id, ranks);
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-lr-change");
-                emb.AddLocalizedField("str-roles-rem", removed);
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_lr_change);
+                emb.AddLocalizedField(TranslationKey.str_roles_rem, removed);
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-lr-rem", removed);
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_lr_rem(removed));
         }
         #endregion
 
@@ -119,12 +119,12 @@ namespace TheGodfather.Modules.Administration
         [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
         public async Task RemoveAllAsync(CommandContext ctx)
         {
-            if (!await ctx.WaitForBoolReplyAsync("q-lr-rem-all"))
+            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_lr_rem_all))
                 return;
 
             await this.Service.ClearAsync(ctx.Guild.Id);
-            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle("evt-lr-clear").WithColor(this.ModuleColor));
-            await ctx.InfoAsync(this.ModuleColor, "evt-lr-clear");
+            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle(TranslationKey.evt_lr_clear).WithColor(this.ModuleColor));
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_lr_clear);
         }
         #endregion
 
@@ -135,7 +135,7 @@ namespace TheGodfather.Modules.Administration
         {
             IReadOnlyList<LevelRole> lrs = await this.Service.GetAllAsync(ctx.Guild.Id);
             if (!lrs.Any()) {
-                await ctx.ImpInfoAsync(this.ModuleColor, "cmd-err-lr-none");
+                await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.cmd_err_lr_none);
                 return;
             }
 
@@ -146,15 +146,15 @@ namespace TheGodfather.Modules.Administration
                 await this.Service.RemoveAsync(ctx.Guild.Id, missingRoleRanks);
                 await ctx.GuildLogAsync(
                     emb => {
-                        emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-lr-change");
-                        emb.AddLocalizedField("str-roles-rem", missingRoleRanks.JoinWith());
+                        emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_lr_change);
+                        emb.AddLocalizedField(TranslationKey.str_roles_rem, missingRoleRanks.JoinWith());
                     },
                     addInvocationFields: false
                 );
             }
 
             await ctx.PaginateAsync(
-                "str-lr",
+                TranslationKey.str_lr,
                 roles.Where(kvp => !missingRoleRanks.Contains(kvp.LevelRole.Rank)).OrderBy(kvp => kvp.LevelRole.Rank),
                 kvp => $"{Formatter.InlineCode($"{kvp.LevelRole.Rank:D3}")} | {kvp.Role.Mention}",
                 this.ModuleColor

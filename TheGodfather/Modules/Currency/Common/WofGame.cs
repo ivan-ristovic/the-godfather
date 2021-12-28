@@ -69,7 +69,11 @@ namespace TheGodfather.Modules.Currency.Common
                 await this.Channel.SendMessageAsync(new DiscordMessageBuilder()
                     .WithFile("wof.png", ms)
                     .WithEmbed(new DiscordEmbedBuilder {
-                        Description = lcs.GetString(this.gid, "fmt-casino-win", this.user.Mention, this.WonAmount.ToWords(culture), this.WonAmount, this.currency),
+                        Description = lcs.GetString(
+                            this.gid, TranslationKey.fmt_casino_win(
+                                this.user.Mention, this.WonAmount.ToWords(culture), this.WonAmount, this.currency
+                            )
+                        ),
                         Color = DiscordColor.DarkGreen
                     })
                 );

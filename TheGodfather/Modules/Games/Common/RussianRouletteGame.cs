@@ -40,7 +40,7 @@ namespace TheGodfather.Modules.Games.Common
 
             var rng = new SecureRandom();
             for (int round = 1; round <= 5 && this.ParticipantCount > 1; round++) {
-                DiscordMessage msg = await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Gun, DiscordColor.DarkRed, "fmt-game-rr-starting", round);
+                DiscordMessage msg = await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Gun, DiscordColor.DarkRed, TranslationKey.fmt_game_rr_starting(round));
                 await Task.Delay(TimeSpan.FromSeconds(5));
 
                 var eb = new StringBuilder();
@@ -53,7 +53,7 @@ namespace TheGodfather.Modules.Games.Common
                     }
 
                     var emb = new LocalizedEmbedBuilder(lcs, this.Channel.GuildId);
-                    emb.WithLocalizedTitle("fmt-game-rr-round", round);
+                    emb.WithLocalizedTitle(TranslationKey.fmt_game_rr_round(round));
                     emb.WithDescription(eb.ToString());
                     emb.WithColor(DiscordColor.DarkRed);
                     msg = await msg.ModifyOrResendAsync(this.Channel, emb.Build());

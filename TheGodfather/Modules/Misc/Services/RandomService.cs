@@ -14,20 +14,47 @@ namespace TheGodfather.Modules.Misc.Services
 {
     public sealed class RandomService : ITheGodfatherService
     {
-        private static ImmutableArray<string> _regularAnswers = new[] {
-            "8b-00", "8b-01", "8b-02", "8b-03", "8b-04", "8b-05",
-            "8b-06", "8b-07", "8b-08", "8b-09", "8b-10", "8b-11",
-            "8b-12", "8b-13",
+        private static ImmutableArray<TranslationKey> _regularAnswers = new[] {
+            TranslationKey.eightball_00,
+            TranslationKey.eightball_01,
+            TranslationKey.eightball_02, 
+            TranslationKey.eightball_03, 
+            TranslationKey.eightball_04, 
+            TranslationKey.eightball_05,
+            TranslationKey.eightball_06, 
+            TranslationKey.eightball_07, 
+            TranslationKey.eightball_08, 
+            TranslationKey.eightball_09, 
+            TranslationKey.eightball_10, 
+            TranslationKey.eightball_11,
+            TranslationKey.eightball_12, 
+            TranslationKey.eightball_13,
         }.ToImmutableArray();
 
-        private static ImmutableArray<string> _timeAnswers = new[] {
-            "8b-t-00", "8b-t-01", "8b-t-02", "8b-t-03", "8b-t-04", "8b-t-05",
-            "8b-t-06", "8b-t-07", "8b-t-08", "8b-t-09", "8b-t-10",
+        private static ImmutableArray<TranslationKey> _timeAnswers = new[] {
+            TranslationKey.eightball_t_00,
+            TranslationKey.eightball_t_01,
+            TranslationKey.eightball_t_02,
+            TranslationKey.eightball_t_03,
+            TranslationKey.eightball_t_04,
+            TranslationKey.eightball_t_05,
+            TranslationKey.eightball_t_06,
+            TranslationKey.eightball_t_07,
+            TranslationKey.eightball_t_08,
+            TranslationKey.eightball_t_09,
+            TranslationKey.eightball_t_10,
         }.ToImmutableArray();
 
-        private static ImmutableArray<string> _quantityAnswers = new[] {
-            "8b-q-00", "8b-q-01", "8b-q-02", "8b-q-03", "8b-q-04",
-            "8b-q-05", "8b-q-06", "8b-q-07", "8b-q-08",
+        private static ImmutableArray<TranslationKey> _quantityAnswers = new[] {
+            TranslationKey.eightball_q_00,
+            TranslationKey.eightball_q_01,
+            TranslationKey.eightball_q_02,
+            TranslationKey.eightball_q_03,
+            TranslationKey.eightball_q_04,
+            TranslationKey.eightball_q_05,
+            TranslationKey.eightball_q_06,
+            TranslationKey.eightball_q_07,
+            TranslationKey.eightball_q_08,
         }.ToImmutableArray();
 
         public bool IsDisabled => false;
@@ -135,13 +162,13 @@ namespace TheGodfather.Modules.Misc.Services
             return this.rng.ChooseRandomElement(options);
         }
 
-        public string GetRandomYesNoAnswer()
+        public TranslationKey GetRandomYesNoAnswer()
             => this.rng.ChooseRandomElement(_regularAnswers);
 
-        public string GetRandomTimeAnswer()
+        public TranslationKey GetRandomTimeAnswer()
             => this.rng.ChooseRandomElement(_timeAnswers);
 
-        public string GetRandomQuantityAnswer()
+        public TranslationKey GetRandomQuantityAnswer()
             => this.rng.ChooseRandomElement(_quantityAnswers);
     }
 }

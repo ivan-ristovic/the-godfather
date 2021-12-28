@@ -25,12 +25,12 @@ namespace TheGodfather.Modules.Administration
             #region config antimention
             [GroupCommand, Priority(3)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("desc-enable")] bool enable,
-                                               [Description("desc-sens")] short sens,
-                                               [Description("desc-punish-action")] Punishment.Action action = Punishment.Action.TemporaryMute)
+                                               [Description(TranslationKey.desc_enable)] bool enable,
+                                               [Description(TranslationKey.desc_sens)] short sens,
+                                               [Description(TranslationKey.desc_punish_action)] Punishment.Action action = Punishment.Action.TemporaryMute)
             {
                 if (sens is < AntiMentionSettings.MinSensitivity or > AntiMentionSettings.MaxSensitivity)
-                    throw new CommandFailedException(ctx, "cmd-err-range-sens", AntiMentionSettings.MinSensitivity, AntiMentionSettings.MaxSensitivity);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_range_sens(AntiMentionSettings.MinSensitivity, AntiMentionSettings.MaxSensitivity));
 
                 var settings = new AntiMentionSettings {
                     Action = action,
@@ -41,30 +41,30 @@ namespace TheGodfather.Modules.Administration
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, gcfg => gcfg.AntiMentionSettings = settings);
 
                 await ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                     emb.WithColor(this.ModuleColor);
                     if (enable) {
-                        emb.WithLocalizedDescription("evt-am-enable");
-                        emb.AddLocalizedField("str-sensitivity", settings.Sensitivity, inline: true);
-                        emb.AddLocalizedField("str-punish-action", settings.Action.Humanize(), inline: true);
+                        emb.WithLocalizedDescription(TranslationKey.evt_am_enable);
+                        emb.AddLocalizedField(TranslationKey.str_sensitivity, settings.Sensitivity, inline: true);
+                        emb.AddLocalizedField(TranslationKey.str_punish_action, settings.Action.Humanize(), inline: true);
                     } else {
-                        emb.WithLocalizedDescription("evt-am-disable");
+                        emb.WithLocalizedDescription(TranslationKey.evt_am_disable);
                     }
                 });
 
-                await ctx.InfoAsync(enable ? "evt-am-enable" : "evt-am-disable");
+                await ctx.InfoAsync(enable ? TranslationKey.evt_am_enable : TranslationKey.evt_am_disable);
             }
 
             [GroupCommand, Priority(2)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("desc-enable")] bool enable,
-                                         [Description("desc-punish-action")] Punishment.Action action,
-                                         [Description("desc-sens")] short sens = 5)
+                                         [Description(TranslationKey.desc_enable)] bool enable,
+                                         [Description(TranslationKey.desc_punish_action)] Punishment.Action action,
+                                         [Description(TranslationKey.desc_sens)] short sens = 5)
                 => this.ExecuteGroupAsync(ctx, enable, sens, action);
 
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("desc-enable")] bool enable)
+                                         [Description(TranslationKey.desc_enable)] bool enable)
                 => this.ExecuteGroupAsync(ctx, enable, 5, Punishment.Action.TemporaryMute);
 
             [GroupCommand, Priority(0)]
@@ -74,11 +74,11 @@ namespace TheGodfather.Modules.Administration
                 string? exemptString = await exempts.FormatExemptionsAsync(ctx.Client);
                 await ctx.WithGuildConfigAsync(gcfg => {
                     return ctx.RespondWithLocalizedEmbedAsync(emb => {
-                        emb.WithLocalizedTitle("str-antimention");
-                        emb.WithDescription(gcfg.AntiMentionSettings.ToEmbedFieldString(ctx.Guild.Id, this.Localization));
+                        emb.WithLocalizedTitle(TranslationKey.str_antimention);
+                        emb.WithDescription(gcfg.AntiMentionSettings.ToEmbedFieldString());
                         emb.WithColor(this.ModuleColor);
                         if (exemptString is { })
-                            emb.AddLocalizedField("str-exempts", exemptString, inline: true);
+                            emb.AddLocalizedField(TranslationKey.str_exempts, exemptString, inline: true);
                     });
                 });
             }
@@ -88,10 +88,10 @@ namespace TheGodfather.Modules.Administration
             [Command("action")]
             [Aliases("setaction", "setact", "act", "a")]
             public async Task SetActionAsync(CommandContext ctx,
-                                            [Description("desc-punish-action")] Punishment.Action? action = null)
+                                            [Description(TranslationKey.desc_punish_action)] Punishment.Action? action = null)
             {
                 if (action is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-am-action", gcfg.AntispamAction.Humanize()));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_am_action(gcfg.AntispamAction.Humanize())));
                     return;
                 }
 
@@ -100,12 +100,12 @@ namespace TheGodfather.Modules.Administration
                 });
 
                 await ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                     emb.WithColor(this.ModuleColor);
-                    emb.WithLocalizedDescription("evt-am-action", action.Value.Humanize());
+                    emb.WithLocalizedDescription(TranslationKey.evt_am_action(action.Value.Humanize()));
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, "evt-am-action", action.Value.Humanize());
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_am_action(action.Value.Humanize()));
             }
             #endregion
 
@@ -113,27 +113,27 @@ namespace TheGodfather.Modules.Administration
             [Command("sensitivity")]
             [Aliases("setsensitivity", "setsens", "sens", "s")]
             public async Task SetSensitivityAsync(CommandContext ctx,
-                                                 [Description("desc-sens")] short? sens = null)
+                                                 [Description(TranslationKey.desc_sens)] short? sens = null)
             {
                 if (sens is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-am-sens", gcfg.AntispamSensitivity));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_am_sens(gcfg.AntispamSensitivity)));
                     return;
                 }
 
                 if (sens is < AntiMentionSettings.MinSensitivity or > AntiMentionSettings.MaxSensitivity)
-                    throw new CommandFailedException(ctx, "cmd-err-range-sens", AntiMentionSettings.MinSensitivity, AntiMentionSettings.MaxSensitivity);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_range_sens(AntiMentionSettings.MinSensitivity, AntiMentionSettings.MaxSensitivity));
 
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.AntispamSensitivity = sens.Value;
                 });
 
                 await ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                     emb.WithColor(this.ModuleColor);
-                    emb.WithLocalizedDescription("evt-am-sens", sens.Value);
+                    emb.WithLocalizedDescription(TranslationKey.evt_am_sens(sens.Value));
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, "evt-am-sens", sens.Value);
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_am_sens(sens.Value));
             }
             #endregion
 
@@ -143,10 +143,10 @@ namespace TheGodfather.Modules.Administration
             public async Task ResetAsync(CommandContext ctx)
             {
                 await ctx.WithGuildConfigAsync(gcfg => {
-                    return !gcfg.AntispamEnabled ? throw new CommandFailedException(ctx, "cmd-err-reset-am-off") : Task.CompletedTask;
+                    return !gcfg.AntispamEnabled ? throw new CommandFailedException(ctx, TranslationKey.cmd_err_reset_am_off) : Task.CompletedTask;
                 });
 
-                if (!await ctx.WaitForBoolReplyAsync("q-setup-reset"))
+                if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_reset))
                     return;
 
                 var settings = new AntiMentionSettings();
@@ -158,10 +158,10 @@ namespace TheGodfather.Modules.Administration
             [Command("exempt"), Priority(2)]
             [Aliases("ex", "exc")]
             public async Task ExemptAsync(CommandContext ctx,
-                                         [Description("desc-exempt-user")] params DiscordMember[] members)
+                                         [Description(TranslationKey.desc_exempt_user)] params DiscordMember[] members)
             {
                 if (members is null || !members.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_exempt);
 
                 await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Member, members.SelectIds());
                 await ctx.InfoAsync(this.ModuleColor);
@@ -169,10 +169,10 @@ namespace TheGodfather.Modules.Administration
 
             [Command("exempt"), Priority(1)]
             public async Task ExemptAsync(CommandContext ctx,
-                                         [Description("desc-exempt-role")] params DiscordRole[] roles)
+                                         [Description(TranslationKey.desc_exempt_role)] params DiscordRole[] roles)
             {
                 if (roles is null || !roles.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_exempt);
 
                 await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Role, roles.SelectIds());
                 await ctx.InfoAsync(this.ModuleColor);
@@ -180,10 +180,10 @@ namespace TheGodfather.Modules.Administration
 
             [Command("exempt"), Priority(0)]
             public async Task ExemptAsync(CommandContext ctx,
-                                         [Description("desc-exempt-chn")] params DiscordChannel[] channels)
+                                         [Description(TranslationKey.desc_exempt_chn)] params DiscordChannel[] channels)
             {
                 if (channels is null || !channels.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_exempt);
 
                 await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Channel, channels.SelectIds());
                 await ctx.InfoAsync(this.ModuleColor);
@@ -194,10 +194,10 @@ namespace TheGodfather.Modules.Administration
             [Command("unexempt"), Priority(2)]
             [Aliases("unex", "uex")]
             public async Task UnxemptAsync(CommandContext ctx,
-                                          [Description("desc-unexempt-user")] params DiscordMember[] members)
+                                          [Description(TranslationKey.desc_unexempt_user)] params DiscordMember[] members)
             {
                 if (members is null || !members.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_exempt);
 
                 await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Member, members.SelectIds());
                 await ctx.InfoAsync(this.ModuleColor);
@@ -205,10 +205,10 @@ namespace TheGodfather.Modules.Administration
 
             [Command("unexempt"), Priority(1)]
             public async Task UnxemptAsync(CommandContext ctx,
-                                          [Description("desc-unexempt-role")] params DiscordRole[] roles)
+                                          [Description(TranslationKey.desc_unexempt_role)] params DiscordRole[] roles)
             {
                 if (roles is null || !roles.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_exempt);
 
                 await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Role, roles.SelectIds());
                 await ctx.InfoAsync(this.ModuleColor);
@@ -216,10 +216,10 @@ namespace TheGodfather.Modules.Administration
 
             [Command("unexempt"), Priority(0)]
             public async Task UnxemptAsync(CommandContext ctx,
-                                          [Description("desc-unexempt-chn")] params DiscordChannel[] channels)
+                                          [Description(TranslationKey.desc_unexempt_chn)] params DiscordChannel[] channels)
             {
                 if (channels is null || !channels.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_exempt);
 
                 await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Channel, channels.SelectIds());
                 await ctx.InfoAsync(this.ModuleColor);

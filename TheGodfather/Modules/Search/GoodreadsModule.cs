@@ -19,7 +19,7 @@ namespace TheGodfather.Modules.Search
         #region goodreads
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [RemainingText, Description("desc-query")] string query)
+                                     [RemainingText, Description(TranslationKey.desc_query)] string query)
             => this.SearchBookAsync(ctx, query);
         #endregion
 
@@ -27,14 +27,14 @@ namespace TheGodfather.Modules.Search
         [Command("book")]
         [Aliases("books", "b")]
         public async Task SearchBookAsync(CommandContext ctx,
-                                         [RemainingText, Description("desc-query")] string query)
+                                         [RemainingText, Description(TranslationKey.desc_query)] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-query");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_query);
 
             GoodreadsSearchInfo? res = await this.Service.SearchBooksAsync(query);
             if (res is null) {
-                await ctx.FailAsync("cmd-err-res-none");
+                await ctx.FailAsync(TranslationKey.cmd_err_res_none);
                 return;
             }
 
@@ -42,15 +42,15 @@ namespace TheGodfather.Modules.Search
                 emb.WithTitle(r.Book.Title);
                 emb.WithThumbnail(r.Book.ImageUrl);
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedField("str-author", r.Book.Author.Name, inline: true);
-                emb.AddLocalizedField("str-rating", r.AverageRating, inline: true);
-                emb.AddLocalizedField("str-books-count", r.BooksCount, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_author, r.Book.Author.Name, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_rating, r.AverageRating, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_books_count, r.BooksCount, inline: true);
                 if (DateTimeOffset.TryParse($"{r.PublicationDayString}.{r.PublicationMonthString}.{r.PublicationYearString}", out DateTimeOffset dt))
-                    emb.AddLocalizedField("str-published", dt.Humanize(culture: this.Localization.GetGuildCulture(ctx.Guild.Id)), inline: true);
-                emb.AddLocalizedField("str-work-id", r.Id, inline: true);
-                emb.AddLocalizedField("str-book-id", r.Book.Id, inline: true);
-                emb.AddLocalizedField("str-reviews", r.TextReviewsCount, inline: true);
-                emb.WithLocalizedFooter("str-footer-gr", null, res.QueryTime);
+                    emb.AddLocalizedField(TranslationKey.str_published, dt.Humanize(culture: this.Localization.GetGuildCulture(ctx.Guild.Id)), inline: true);
+                emb.AddLocalizedField(TranslationKey.str_work_id, r.Id, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_book_id, r.Book.Id, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_reviews, r.TextReviewsCount, inline: true);
+                emb.WithLocalizedFooter(TranslationKey.str_footer_gr(res.QueryTime), null);
                 return emb;
             });
         }

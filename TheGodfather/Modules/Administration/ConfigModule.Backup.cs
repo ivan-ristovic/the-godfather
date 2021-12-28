@@ -22,7 +22,7 @@ namespace TheGodfather.Modules.Administration
             #region config backup
             [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("desc-enable")] bool enable)
+                                               [Description(TranslationKey.desc_enable)] bool enable)
             {
                 if (enable)
                     await this.Service.EnableAsync(ctx.Guild.Id);
@@ -30,16 +30,16 @@ namespace TheGodfather.Modules.Administration
                     await this.Service.DisableAsync(ctx.Guild.Id);
 
                 await ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                     emb.WithColor(this.ModuleColor);
                     if (enable) {
-                        emb.WithLocalizedDescription("evt-bak-enable");
+                        emb.WithLocalizedDescription(TranslationKey.evt_bak_enable);
                     } else {
-                        emb.WithLocalizedDescription("evt-bak-disable");
+                        emb.WithLocalizedDescription(TranslationKey.evt_bak_disable);
                     }
                 });
 
-                await ctx.InfoAsync(enable ? "evt-bak-enable" : "evt-bak-disable");
+                await ctx.InfoAsync(enable ? TranslationKey.evt_bak_enable : TranslationKey.evt_bak_disable);
             }
 
             [GroupCommand, Priority(0)]
@@ -49,10 +49,10 @@ namespace TheGodfather.Modules.Administration
                 string? exemptString = await exempts.FormatExemptionsAsync(ctx.Client);
                 await ctx.WithGuildConfigAsync(gcfg => {
                     return ctx.RespondWithLocalizedEmbedAsync(emb => {
-                        emb.WithLocalizedTitle("str-backup");
-                        emb.WithLocalizedDescription(gcfg.BackupEnabled ? "str-enabled" : "str-disabled");
+                        emb.WithLocalizedTitle(TranslationKey.str_backup);
+                        emb.WithLocalizedDescription(gcfg.BackupEnabled ? TranslationKey.str_enabled : TranslationKey.str_disabled);
                         emb.WithColor(this.ModuleColor);
-                        emb.AddLocalizedField("str-exempts", exemptString, inline: true, unknown: false);
+                        emb.AddLocalizedField(TranslationKey.str_exempts, exemptString, inline: true, unknown: false);
                     });
                 });
             }
@@ -65,7 +65,7 @@ namespace TheGodfather.Modules.Administration
             public async Task DownloadAsync(CommandContext ctx)
             {
                 if (!await this.Service.WithBackupZipAsync(ctx.Guild.Id, s => ctx.RespondAsync(new DiscordMessageBuilder().WithFile("backup.zip", s))))
-                    throw new CommandFailedException(ctx, "cmd-err-backup");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_backup);
             }
             #endregion
 
@@ -73,10 +73,10 @@ namespace TheGodfather.Modules.Administration
             [Command("exempt")]
             [Aliases("ex", "exc")]
             public async Task ExemptAsync(CommandContext ctx,
-                                         [Description("desc-exempt-chn")] params DiscordChannel[] channels)
+                                         [Description(TranslationKey.desc_exempt_chn)] params DiscordChannel[] channels)
             {
                 if (channels is null || !channels.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_exempt);
 
                 await this.Service.ExemptAsync(ctx.Guild.Id, this.SelectChildChannelIds(channels));
                 await ctx.InfoAsync(this.ModuleColor);
@@ -87,10 +87,10 @@ namespace TheGodfather.Modules.Administration
             [Command("unexempt")]
             [Aliases("unex", "uex")]
             public async Task UnxemptAsync(CommandContext ctx,
-                                          [Description("desc-unexempt-chn")] params DiscordChannel[] channels)
+                                          [Description(TranslationKey.desc_unexempt_chn)] params DiscordChannel[] channels)
             {
                 if (channels is null || !channels.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_exempt);
 
                 await this.Service.UnexemptAsync(ctx.Guild.Id, this.SelectChildChannelIds(channels));
                 await ctx.InfoAsync(this.ModuleColor);

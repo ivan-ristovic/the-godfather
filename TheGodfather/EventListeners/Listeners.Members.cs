@@ -360,7 +360,7 @@ namespace TheGodfather.EventListeners
                 emb.AddLocalizedPropertyChangeField(TranslationKey.str_verified, e.UserBefore.Verified, e.UserAfter.Verified);
 
                 // TODO improve
-                // emb.AddLocalizedField("str-activity", e.Activity.ToDetailedString());
+                // emb.AddLocalizedField(TranslationKey.str_activity, e.Activity.ToDetailedString());
 
                 if (emb.FieldCount == 0)
                     return;

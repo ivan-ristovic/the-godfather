@@ -19,20 +19,20 @@ namespace TheGodfather.Modules.Music
         {
             if (this.Player.RepeatMode == RepeatMode.Single) {
                 Song song = this.Player.NowPlaying;
-                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-queue-rep",
-                    Formatter.Sanitize(song.Track.Title), Formatter.Sanitize(song.Track.Author)
+                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Headphones, 
+                    TranslationKey.fmt_music_queue_rep(Formatter.Sanitize(song.Track.Title), Formatter.Sanitize(song.Track.Author))
                 );
             }
 
             if (!this.Player.Queue.Any())
-                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Headphones, "str-music-queue-none");
+                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.str_music_queue_none);
 
             return ctx.PaginateAsync(this.Player.Queue, (emb, s) => {
-                emb.WithLocalizedTitle("str-music-queue");
+                emb.WithLocalizedTitle(TranslationKey.str_music_queue);
                 emb.WithDescription(Formatter.Bold(Formatter.Sanitize(s.Track.Title)));
-                emb.AddLocalizedField("str-author", s.Track.Author, inline: true);
-                emb.AddLocalizedField("str-duration", s.Track.Length.ToDurationString(), inline: true);
-                emb.AddLocalizedField("str-requested-by", s.RequestedBy?.Mention, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_author, s.Track.Author, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_duration, s.Track.Length.ToDurationString(), inline: true);
+                emb.AddLocalizedField(TranslationKey.str_requested_by, s.RequestedBy?.Mention, inline: true);
                 return emb;
             }, this.ModuleColor);
         }
@@ -42,17 +42,17 @@ namespace TheGodfather.Modules.Music
         [Command("remove")]
         [Aliases("dequeue", "delete", "rm", "del", "d", "-", "-=")]
         public Task RemoveAsync(CommandContext ctx,
-                               [Description("desc-index-1")] int index)
+                               [Description(TranslationKey.desc_index_1)] int index)
         {
             if (index < 1 || index > this.Player.Queue.Count)
-                throw new CommandFailedException(ctx, "cmd-err-index", 1, this.Player.Queue.Count);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_index(1, this.Player.Queue.Count));
 
             Song? removed = this.Player.Remove(index - 1);
             if (removed is null)
                 throw new CommandFailedException(ctx);
 
             Song song = removed.Value;
-            return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, "fmt-music-del", Formatter.Sanitize(song.Track.Title), Formatter.Sanitize(song.Track.Author));
+            return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.fmt_music_del(Formatter.Sanitize(song.Track.Title), Formatter.Sanitize(song.Track.Author)));
         }
         #endregion
     }

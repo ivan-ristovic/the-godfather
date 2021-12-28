@@ -4,148 +4,146 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using TheGodfather.Services;
 
-namespace TheGodfather.Tests.Services
+namespace TheGodfather.Tests.Services;
+
+[TestFixture]
+public sealed class AsyncExecutionServiceTests : ITheGodfatherServiceTest<AsyncExecutionService>
 {
-    [TestFixture]
-    public sealed class AsyncExecutionServiceTests : ITheGodfatherServiceTest<AsyncExecutionService>
+    public AsyncExecutionService Service { get; private set; } = null!;
+
+
+    [SetUp]
+    public void InitializeService() => this.Service = new AsyncExecutionService();
+
+
+    [Test]
+    public void VoidTests()
     {
-        public AsyncExecutionService Service { get; private set; } = null!;
+        Box<int> x = 1;
+
+        this.Service.Execute(WorkingVoid1Async(x));
+        Assert.That(x.Value, Is.EqualTo(5));
+
+        Assert.That(() => this.Service.Execute(FailingVoid1Async(x)), Throws.Exception);
+        Assert.That(x.Value, Is.EqualTo(25));
+
+        Assert.That(() => this.Service.Execute(FailingVoid2Async()), Throws.InvalidOperationException);
 
 
-        [SetUp]
-        public void InitializeService()
+        static async Task WorkingVoid1Async(Box<int> value)
         {
-            this.Service = new AsyncExecutionService();
+            await Task.Yield();
+
+            await Task.Delay(500);
+            value.Value *= 5;
         }
 
-
-        [Test]
-        public void VoidTests()
+        static async Task FailingVoid1Async(Box<int> value)
         {
-            Box<int> x = 1;
+            await Task.Yield();
 
-            this.Service.Execute(WorkingVoid1Async(x));
-            Assert.That(x.Value, Is.EqualTo(5));
+            await Task.Delay(500);
+            value.Value *= 5;
 
-            Assert.That(() => this.Service.Execute(FailingVoid1Async(x)), Throws.Exception);
-            Assert.That(x.Value, Is.EqualTo(25));
-
-            Assert.That(() => this.Service.Execute(FailingVoid2Async()), Throws.InvalidOperationException);
-
-
-            static async Task WorkingVoid1Async(Box<int> value)
-            {
-                await Task.Yield();
-
-                await Task.Delay(500);
-                value.Value *= 5;
-            }
-
-            static async Task FailingVoid1Async(Box<int> value)
-            {
-                await Task.Yield();
-
-                await Task.Delay(500);
-                value.Value *= 5;
-
-                await Task.Delay(500);
-                throw new Exception("Test exception.");
+            await Task.Delay(500);
+            throw new Exception("Test exception.");
 #pragma warning disable 0162
-                value.Value *= 5;
+            value.Value *= 5;
 #pragma warning restore 0162
-            }
-
-            static async Task FailingVoid2Async()
-            {
-                await Task.Yield();
-
-                await Task.Delay(500);
-
-                await Task.Delay(500);
-                throw new InvalidOperationException("Test exception.");
-            }
         }
 
-        [Test]
-        public void RetTests()
+        static async Task FailingVoid2Async()
         {
-            Box<int> x = 1;
+            await Task.Yield();
 
-            Box<int>? y = this.Service.Execute(WorkingRet1Async(x));
-            Assert.That(x.Value, Is.EqualTo(5));
-            Assert.That(y.Value, Is.EqualTo(5));
-            Assert.That(ReferenceEquals(x, y));
+            await Task.Delay(500);
 
-            Assert.That(() => y = this.Service.Execute(FailingRet1Async(x)), Throws.Exception);
-            Assert.That(x.Value, Is.EqualTo(25));
-            Assert.That(y.Value, Is.EqualTo(25));
-            Assert.That(ReferenceEquals(x, y));
+            await Task.Delay(500);
+            throw new InvalidOperationException("Test exception.");
+        }
+    }
 
-            Assert.That(() => y = this.Service.Execute(FailingRet2Async()), Throws.InvalidOperationException);
+    [Test]
+    public void RetTests()
+    {
+        Box<int> x = 1;
+
+        Box<int>? y = this.Service.Execute(WorkingRet1Async(x));
+        Assert.That(x.Value, Is.EqualTo(5));
+        Assert.That(y.Value, Is.EqualTo(5));
+        Assert.That(ReferenceEquals(x, y));
+
+        Assert.That(() => y = this.Service.Execute(FailingRet1Async(x)), Throws.Exception);
+        Assert.That(x.Value, Is.EqualTo(25));
+        Assert.That(y.Value, Is.EqualTo(25));
+        Assert.That(ReferenceEquals(x, y));
+
+        Assert.That(() => y = this.Service.Execute(FailingRet2Async()), Throws.InvalidOperationException);
 
 
-            static async Task<Box<int>> WorkingRet1Async(Box<int> value)
-            {
-                await Task.Yield();
+        static async Task<Box<int>> WorkingRet1Async(Box<int> value)
+        {
+            await Task.Yield();
 
-                await Task.Delay(500);
-                value.Value *= 5;
+            await Task.Delay(500);
+            value.Value *= 5;
 
-                return value;
-            }
+            return value;
+        }
 
-            static async Task<Box<int>> FailingRet1Async(Box<int> value)
-            {
-                await Task.Yield();
+        static async Task<Box<int>> FailingRet1Async(Box<int> value)
+        {
+            await Task.Yield();
 
-                await Task.Delay(500);
-                value.Value *= 5;
+            await Task.Delay(500);
+            value.Value *= 5;
 
-                await Task.Delay(500);
-                throw new Exception("Test exception.");
+            await Task.Delay(500);
+            throw new Exception("Test exception.");
 #pragma warning disable 0162
-                value.Value *= 5;
-                return value.Value;
+            value.Value *= 5;
+            return value.Value;
 #pragma warning restore 0162
-            }
-
-            static async Task<int> FailingRet2Async()
-            {
-                await Task.Yield();
-
-                await Task.Delay(1000);
-                throw new InvalidOperationException("Test exception.");
-            }
         }
 
-        [Test]
-        public void TestCancellationAsync()
+        static async Task<int> FailingRet2Async()
         {
-            using (var cts = new CancellationTokenSource()) {
-                _ = Task.Delay(100).ContinueWith(t => cts.Cancel());
-                Assert.That(() => this.Service.Execute(Task.Delay(500, cts.Token)), Throws.InstanceOf<TaskCanceledException>());
-            }
+            await Task.Yield();
 
-            using (var cts = new CancellationTokenSource()) {
-                _ = Task.Delay(100).ContinueWith(t => cts.Cancel());
-                Assert.That(() => this.Service.Execute(Task.Delay(-1, cts.Token)), Throws.InstanceOf<TaskCanceledException>());
-            }
+            await Task.Delay(1000);
+            throw new InvalidOperationException("Test exception.");
+        }
+    }
 
-            Assume.That(true, "This line is reached");
+    [Test]
+    public void TestCancellationAsync()
+    {
+        using (var cts = new CancellationTokenSource()) {
+            _ = Task.Delay(100).ContinueWith(t => cts.Cancel());
+            Assert.That(() => this.Service.Execute(Task.Delay(500, cts.Token)),
+                Throws.InstanceOf<TaskCanceledException>());
         }
 
+        using (var cts = new CancellationTokenSource()) {
+            _ = Task.Delay(100).ContinueWith(t => cts.Cancel());
+            Assert.That(() => this.Service.Execute(Task.Delay(-1, cts.Token)),
+                Throws.InstanceOf<TaskCanceledException>());
+        }
 
-        private sealed class Box<T>
+        Assume.That(true, "This line is reached");
+    }
+
+
+    private sealed class Box<T>
+    {
+        public static implicit operator Box<T>(T v) => new(v);
+
+        public T Value { get; set; }
+
+
+        public Box(T v)
         {
-            public static implicit operator Box<T>(T v) => new Box<T>(v);
-
-            public T Value { get; set; }
-
-
-            public Box(T v)
-            {
-                this.Value = v;
-            }
+            this.Value = v;
         }
     }
 }

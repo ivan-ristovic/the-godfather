@@ -32,7 +32,7 @@ namespace TheGodfather.Modules.Misc.Common
         {
             this.lcs = ctx.Services.GetRequiredService<LocalizationService>();
             this.emb = new LocalizedEmbedBuilder(this.lcs, this.GuildId);
-            this.emb.WithLocalizedFooter("h-footer", ctx.Client.CurrentUser.AvatarUrl);
+            this.emb.WithLocalizedFooter(TranslationKey.h_footer, ctx.Client.CurrentUser.AvatarUrl);
         }
 
 
@@ -40,12 +40,12 @@ namespace TheGodfather.Modules.Misc.Common
         {
             this.emb.WithColor(DiscordColor.SpringGreen);
 
-            string desc = this.GetS("h-desc-def");
+            string desc = this.GetS(TranslationKey.h_desc_def);
             if (!string.IsNullOrWhiteSpace(this.name)) {
                 this.emb.WithTitle(this.name);
-                desc = string.IsNullOrWhiteSpace(this.desc) ? this.GetS("h-desc-none") : this.desc;
+                desc = string.IsNullOrWhiteSpace(this.desc) ? this.GetS(TranslationKey.h_desc_none) : this.desc;
             } else {
-                this.emb.WithLocalizedTitle("h-title");
+                this.emb.WithLocalizedTitle(TranslationKey.h_title);
             }
             this.emb.WithDescription(desc);
 
@@ -54,19 +54,19 @@ namespace TheGodfather.Modules.Misc.Common
 
         public override BaseHelpFormatter WithCommand(Command cmd)
         {
-            this.name = cmd is CommandGroup ? this.GetS("fmt-group", cmd.QualifiedName) : cmd.QualifiedName;
+            this.name = cmd is CommandGroup ? this.GetS(TranslationKey.fmt_group(cmd.QualifiedName)) : cmd.QualifiedName;
             CommandService cs = this.Context.Services.GetRequiredService<CommandService>();
             try {
                 this.desc = cs.GetCommandDescription(this.GuildId, cmd.QualifiedName);
             } catch (Exception e) when (e is LocalizationException or KeyNotFoundException) {
                 LogExt.Warning(this.Context, e, "Failed to find description for: {Command}", cmd.QualifiedName);
-                this.desc = this.GetS("h-desc-none");
+                this.desc = this.GetS(TranslationKey.h_desc_none);
             }
 
             if (cmd.Aliases?.Any() ?? false)
-                this.emb.AddLocalizedField("str-aliases", cmd.Aliases.Select(a => Formatter.InlineCode(a)).JoinWith(", "), inline: true);
+                this.emb.AddLocalizedField(TranslationKey.str_aliases, cmd.Aliases.Select(a => Formatter.InlineCode(a)).JoinWith(", "), inline: true);
 
-            this.emb.AddLocalizedField("str-category", ModuleAttribute.AttachedTo(cmd).Module.ToString(), inline: true);
+            this.emb.AddLocalizedField(TranslationKey.str_category, ModuleAttribute.AttachedTo(cmd).Module.ToString(), inline: true);
 
             IEnumerable<CheckBaseAttribute> checks = cmd.ExecutionChecks
                 .Union(cmd.Parent?.ExecutionChecks ?? Enumerable.Empty<CheckBaseAttribute>());
@@ -86,19 +86,19 @@ namespace TheGodfather.Modules.Misc.Common
 
             var pb = new StringBuilder();
             if (checks.Any(chk => chk is RequireOwnerAttribute))
-                pb.AppendLine(Formatter.Bold(this.GetS("str-owner-only")));
+                pb.AppendLine(Formatter.Bold(this.GetS(TranslationKey.str_owner_only)));
             if (checks.Any(chk => chk is RequirePrivilegedUserAttribute))
-                pb.AppendLine(Formatter.Bold(this.GetS("str-priv-only")));
+                pb.AppendLine(Formatter.Bold(this.GetS(TranslationKey.str_priv_only)));
             if (perms.Any())
                 pb.AppendLine(Formatter.InlineCode(perms.JoinWith(", ")));
             if (uperms.Any())
-                pb.Append(this.GetS("str-perms-user")).Append(' ').AppendLine(Formatter.InlineCode(uperms.JoinWith(", ")));
+                pb.Append(this.GetS(TranslationKey.str_perms_user)).Append(' ').AppendLine(Formatter.InlineCode(uperms.JoinWith(", ")));
             if (bperms.Any())
-                pb.Append(this.GetS("str-perms-bot")).Append(' ').AppendLine(Formatter.InlineCode(bperms.JoinWith(", ")));
+                pb.Append(this.GetS(TranslationKey.str_perms_bot)).Append(' ').AppendLine(Formatter.InlineCode(bperms.JoinWith(", ")));
 
             string pstr = pb.ToString();
             if (!string.IsNullOrWhiteSpace(pstr))
-                this.emb.AddLocalizedField("str-perms-req", pstr);
+                this.emb.AddLocalizedField(TranslationKey.str_perms_req, pstr);
 
             if (cmd.Overloads?.Any() ?? false) {
                 foreach (CommandOverload overload in cmd.Overloads.OrderByDescending(o => o.Priority)) {
@@ -106,52 +106,55 @@ namespace TheGodfather.Modules.Misc.Common
 
                     foreach (CommandArgument arg in overload.Arguments) {
                         if (arg.IsOptional)
-                            ab.Append(this.GetS("str-optional")).Append(' ');
+                            ab.Append(this.GetS(TranslationKey.str_optional)).Append(' ');
 
                         ab.Append("[`").Append(this.CommandsNext.GetUserFriendlyTypeName(arg.Type));
                         if (arg.IsCatchAll)
                             ab.Append("...");
                         ab.Append("`] ");
 
-                        ab.Append(Formatter.Bold(this.GetS(string.IsNullOrWhiteSpace(arg.Description) ? "h-desc-none" : arg.Description)));
+                        string desc = string.IsNullOrWhiteSpace(arg.Description) 
+                            ? this.GetS(TranslationKey.h_desc_none) 
+                            : this.lcs.GetStringUnsafe(this.GuildId, arg.Description);
+                        ab.Append(Formatter.Bold(desc));
 
                         if (arg.IsOptional) {
                             ab.Append(" (")
-                              .Append(this.GetS("str-def"))
+                              .Append(this.GetS(TranslationKey.str_def))
                               .Append(' ')
-                              .Append(Formatter.InlineCode(arg.DefaultValue is null ? this.GetS("str-none") : arg.DefaultValue.ToString()))
+                              .Append(Formatter.InlineCode(arg.DefaultValue is null ? this.GetS(TranslationKey.str_none) : arg.DefaultValue.ToString()))
                               .Append(')');
                         }
 
                         ab.AppendLine();
                     }
 
-                    string args = ab.Length > 0 ? ab.ToString() : this.GetS("str-args-none");
+                    string args = ab.Length > 0 ? ab.ToString() : this.GetS(TranslationKey.str_args_none);
                     if (cmd.Overloads.Count > 1)
-                        this.emb.AddLocalizedField("str-overload", args, inline: true, titleArgs: overload.Priority);
+                        this.emb.AddLocalizedField(TranslationKey.fmt_overload(overload.Priority), args, inline: true);
                     else
-                        this.emb.AddLocalizedField("str-args", args, inline: true);
+                        this.emb.AddLocalizedField(TranslationKey.str_args, args, inline: true);
                 }
             }
 
             if (cmd is CommandGroup { IsExecutableWithoutSubcommands: false })
                 return this;
 
-            this.emb.AddLocalizedField("str-usage-examples", Formatter.BlockCode(cs.GetCommandUsageExamples(this.GuildId, cmd.QualifiedName).JoinWith()));
+            this.emb.AddLocalizedField(TranslationKey.str_usage_examples, Formatter.BlockCode(cs.GetCommandUsageExamples(this.GuildId, cmd.QualifiedName).JoinWith()));
             return this;
         }
 
         public override BaseHelpFormatter WithSubcommands(IEnumerable<Command> subcommands)
         {
             if (subcommands.Any()) {
-                string title = string.IsNullOrWhiteSpace(this.name) ? "str-cmds" : "str-subcmds";
+                TranslationKey title = string.IsNullOrWhiteSpace(this.name) ? TranslationKey.str_cmds : TranslationKey.str_subcmds;
                 this.emb.AddLocalizedField(title, subcommands.Select(c => Formatter.InlineCode(c.Name)).JoinWith(", "));
             }
             return this;
         }
 
 
-        private string GetS(string key, params object?[]? args)
-            => this.lcs.GetString(this.GuildId, key, args);
+        private string GetS(TranslationKey key)
+            => this.lcs.GetString(this.GuildId, key);
     }
 }

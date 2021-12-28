@@ -39,10 +39,10 @@ namespace TheGodfather.Modules.Games
                 }
 
                 if (userPick is null)
-                    throw new CommandFailedException(ctx, "cmd-err-timed-out");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_timed_out);
 
                 DiscordEmoji gfPick = new SecureRandom().ChooseRandomElement(rpsEmojis);
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Joystick, "fmt-rps", ctx.User.Mention, userPick, gfPick, ctx.Client.CurrentUser.Mention);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Joystick, TranslationKey.fmt_rps(ctx.User.Mention, userPick, gfPick, ctx.Client.CurrentUser.Mention));
             }
             #endregion
 
@@ -50,7 +50,7 @@ namespace TheGodfather.Modules.Games
             [Command("rules")]
             [Aliases("help", "h", "ruling", "rule")]
             public Task RulesAsync(CommandContext ctx)
-                => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, "str-game-rps");
+                => ctx.ImpInfoAsync(this.ModuleColor, Emojis.Information, TranslationKey.str_game_rps);
             #endregion
         }
     }

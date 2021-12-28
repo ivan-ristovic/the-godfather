@@ -64,8 +64,8 @@ namespace TheGodfather.Modules.Games.Common
             this.FinishingMove = await this.WaitForFinishingMoveAsync(lcs);
 
             string toSend = string.IsNullOrWhiteSpace(this.FinishingMove)
-                ? lcs.GetString(this.Channel.GuildId, "fmt-game-duel-win", Emojis.DuelSwords, this.Winner.Mention)
-                : lcs.GetString(this.Channel.GuildId, "fmt-game-duel-winf", Emojis.DuelSwords, this.Winner.Mention, this.FinishingMove);
+                ? lcs.GetString(this.Channel.GuildId, TranslationKey.fmt_game_duel_win(Emojis.DuelSwords, this.Winner.Mention))
+                : lcs.GetString(this.Channel.GuildId, TranslationKey.fmt_game_duel_winf(Emojis.DuelSwords, this.Winner.Mention, this.FinishingMove));
             await this.Channel.EmbedAsync(toSend);
         }
 
@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Games.Common
             if (this.Winner is null)
                 return null;
 
-            string fstr = lcs.GetString(this.Channel.GuildId, "fmt-game-duel-f", Emojis.DuelSwords, this.Winner.Mention, Emojis.DuelSwords);
+            string fstr = lcs.GetString(this.Channel.GuildId, TranslationKey.fmt_game_duel_f(Emojis.DuelSwords, this.Winner.Mention, Emojis.DuelSwords));
             DiscordMessage msg = await this.Channel.EmbedAsync(fstr);
 
             InteractivityResult<DiscordMessage> mctx = await this.Interactivity.WaitForMessageAsync(

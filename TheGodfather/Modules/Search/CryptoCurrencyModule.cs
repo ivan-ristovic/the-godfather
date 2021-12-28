@@ -26,17 +26,17 @@ namespace TheGodfather.Modules.Search
 
         [GroupCommand, Priority(0)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [RemainingText, Description("desc-currency-name")] string currency)
+                                           [RemainingText, Description(TranslationKey.desc_currency_name)] string currency)
         {
             CryptoResponseData? res = null;
             try {
                 res = await this.Service.SearchAsync(currency);
             } catch (SearchServiceException<CryptoResponseStatus> e) {
-                throw new CommandFailedException(ctx, "cmd-err-bad-req", $"{e.Details.ErrorCode}: {e.Details.ErrorMessage}");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_bad_req($"{e.Details.ErrorCode}: {e.Details.ErrorMessage}"));
             }
 
             if (res is null)
-                throw new CommandFailedException(ctx, "cmd-err-res-none");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_res_none);
 
             await ctx.RespondWithLocalizedEmbedAsync(emb => this.AddDataToEmbed(ctx, res, emb));
         }
@@ -46,20 +46,20 @@ namespace TheGodfather.Modules.Search
         [Command("list")]
         [Aliases("print", "show", "view", "ls", "l", "p")]
         public async Task ListAsync(CommandContext ctx,
-                                   [Description("desc-start-index")] int from = 0)
+                                   [Description(TranslationKey.desc_start_index)] int from = 0)
         {
             if (from < 0 || from > CryptoCurrencyService.CurrencyPoolSize)
-                throw new CommandFailedException(ctx, "cmd-err-index", 0, CryptoCurrencyService.CurrencyPoolSize);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_index(0, CryptoCurrencyService.CurrencyPoolSize));
 
             IReadOnlyList<CryptoResponseData>? res = null;
             try {
                 res = await this.Service.GetAllAsync(start: from);
             } catch (SearchServiceException<CryptoResponseStatus> e) {
-                throw new CommandFailedException(ctx, "cmd-err-bad-req", $"{e.Details.ErrorCode}: {e.Details.ErrorMessage}");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_bad_req($"{e.Details.ErrorCode}: {e.Details.ErrorMessage}"));
             }
 
             if (res is null || !res.Any())
-                throw new CommandFailedException(ctx, "cmd-err-res-none");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_res_none);
 
             await ctx.PaginateAsync(res, (emb, data) => this.AddDataToEmbed(ctx, data, emb));
         }
@@ -80,12 +80,12 @@ namespace TheGodfather.Modules.Search
             emb.WithThumbnail(this.Service.GetCoinUrl(res));
             emb.WithUrl(this.Service.GetSlugUrl(res));
             emb.WithImageUrl(this.Service.GetWeekGraphUrl(res));
-            emb.AddLocalizedField("str-crypto-market-cap", $"{FormatAmount(res.Quotes.USD.MarketCap)}$", inline: true);
-            emb.AddLocalizedField("str-crypto-price", $"{FormatAmount(res.Quotes.USD.Price)}$", inline: true);
+            emb.AddLocalizedField(TranslationKey.str_crypto_market_cap, $"{FormatAmount(res.Quotes.USD.MarketCap)}$", inline: true);
+            emb.AddLocalizedField(TranslationKey.str_crypto_price, $"{FormatAmount(res.Quotes.USD.Price)}$", inline: true);
             if (res.Quotes.USD.VolumeDay is { })
-                emb.AddLocalizedField("str-crypto-volume-24h", $"{FormatAmount(res.Quotes.USD.VolumeDay.Value)}$", inline: true);
-            emb.AddLocalizedField("str-crypto-change", $"{percentHour}%/{percentDay}%/{percentWeek}%/{percentMonth}%", inline: true);
-            emb.WithLocalizedFooter("fmt-last-updated-at", null, this.Localization.GetLocalizedTime(ctx.Guild.Id, res.UpdatedAt));
+                emb.AddLocalizedField(TranslationKey.str_crypto_volume_24h, $"{FormatAmount(res.Quotes.USD.VolumeDay.Value)}$", inline: true);
+            emb.AddLocalizedField(TranslationKey.str_crypto_change, $"{percentHour}%/{percentDay}%/{percentWeek}%/{percentMonth}%", inline: true);
+            emb.WithLocalizedFooter(TranslationKey.fmt_last_updated_at(this.Localization.GetLocalizedTime(ctx.Guild.Id, res.UpdatedAt)), null);
             
             return emb;
 

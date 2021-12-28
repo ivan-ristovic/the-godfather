@@ -22,15 +22,15 @@ namespace TheGodfather.Modules.Misc
         {
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(this.ModuleColor);
-                emb.WithLocalizedTitle("h-title");
-                emb.WithLocalizedDescription("fmt-modules", Enum.GetNames<ModuleType>().Select(s => $"• {s}").JoinWith());
-                emb.WithLocalizedFooter("h-footer", ctx.Client.CurrentUser.AvatarUrl);
+                emb.WithLocalizedTitle(TranslationKey.h_title);
+                emb.WithLocalizedDescription(TranslationKey.fmt_modules(Enum.GetNames<ModuleType>().Select(s => $"• {s}").JoinWith()));
+                emb.WithLocalizedFooter(TranslationKey.h_footer, ctx.Client.CurrentUser.AvatarUrl);
             });
         }
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-module")] ModuleType module)
+                                     [Description(TranslationKey.desc_module)] ModuleType module)
         {
             Command? cmd = ctx.CommandsNext.FindCommand(module.ToString(), out string _);
             if (cmd is CommandGroup group && group.IsExecutableWithoutSubcommands)
@@ -39,15 +39,15 @@ namespace TheGodfather.Modules.Misc
             IEnumerable<string> cmds = this.Service.GetCommandsInModule(module).OrderBy(cmd => cmd);
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(module.ToDiscordColor());
-                emb.WithLocalizedTitle("h-title-m", module);
-                emb.WithLocalizedDescription(module.ToLocalizedDescriptionKey(), cmds.Select(s => Formatter.InlineCode(s)).JoinWith(", "));
-                emb.WithLocalizedFooter("h-footer", ctx.Client.CurrentUser.AvatarUrl);
+                emb.WithLocalizedTitle(TranslationKey.h_title_m(module));
+                emb.WithLocalizedDescription(module.ToLocalizedDescription(cmds.Select(s => Formatter.InlineCode(s)).JoinWith(", ")));
+                emb.WithLocalizedFooter(TranslationKey.h_footer, ctx.Client.CurrentUser.AvatarUrl);
             });
         }
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [RemainingText, Description("desc-cmd")] params string[] cmd)
+                                     [RemainingText, Description(TranslationKey.desc_cmd)] params string[] cmd)
             => new CommandsNextExtension.DefaultHelpModule().DefaultHelpAsync(ctx, cmd);
         #endregion
     }

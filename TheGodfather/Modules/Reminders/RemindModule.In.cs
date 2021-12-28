@@ -14,22 +14,22 @@ namespace TheGodfather.Modules.Reminders
             #region remind in
             [GroupCommand, Priority(2)]
             public new Task ExecuteGroupAsync(CommandContext ctx,
-                                             [Description("desc-remind-t")] TimeSpan timespan,
-                                             [Description("desc-remind-chn")] DiscordChannel channel,
-                                             [RemainingText, Description("desc-remind-text")] string message)
+                                             [Description(TranslationKey.desc_remind_t)] TimeSpan timespan,
+                                             [Description(TranslationKey.desc_remind_chn)] DiscordChannel channel,
+                                             [RemainingText, Description(TranslationKey.desc_remind_text)] string message)
                 => this.AddReminderAsync(ctx, timespan, channel, message);
 
             [GroupCommand, Priority(1)]
             public new Task ExecuteGroupAsync(CommandContext ctx,
-                                             [Description("desc-remind-chn")] DiscordChannel channel,
-                                             [Description("desc-remind-t")] TimeSpan timespan,
-                                             [RemainingText, Description("desc-remind-text")] string message)
+                                             [Description(TranslationKey.desc_remind_chn)] DiscordChannel channel,
+                                             [Description(TranslationKey.desc_remind_t)] TimeSpan timespan,
+                                             [RemainingText, Description(TranslationKey.desc_remind_text)] string message)
                 => this.AddReminderAsync(ctx, timespan, channel, message);
 
             [GroupCommand, Priority(0)]
             public new Task ExecuteGroupAsync(CommandContext ctx,
-                                             [Description("desc-remind-t")] TimeSpan timespan,
-                                             [RemainingText, Description("desc-remind-text")] string message)
+                                             [Description(TranslationKey.desc_remind_t)] TimeSpan timespan,
+                                             [RemainingText, Description(TranslationKey.desc_remind_text)] string message)
                 => this.AddReminderAsync(ctx, timespan, null, message);
             #endregion
         }

@@ -40,7 +40,7 @@ namespace TheGodfather.Tests.Services
             Assert.That(() => this.Service.GetCommandDescription(0, "not loaded"), Throws.InvalidOperationException);
             Assert.That(() => this.Service.GetGuildLocale(0), Throws.Nothing);
             Assert.That(() => this.Service.GetGuildCulture(0), Throws.Nothing);
-            Assert.That(() => this.Service.GetString(0, "not loaded"), Throws.InvalidOperationException);
+            Assert.That(() => this.Service.GetStringUnsafe(0, "not loaded"), Throws.InvalidOperationException);
             Assert.That(() => this.Service.SetGuildLocaleAsync(0, "not loaded"), Throws.InvalidOperationException);
             Assert.That(() => this.Service.SetGuildTimezoneIdAsync(0, "UTC"), Throws.InstanceOf<KeyNotFoundException>());
 
@@ -125,12 +125,12 @@ namespace TheGodfather.Tests.Services
                     this.Service.LoadData(this.ValidTestDataPath);
                 },
                 verify: db => {
-                    Assert.That(this.Service.GetString(MockData.Ids[0], "suc"), Is.EqualTo("Success!"));
-                    Assert.That(this.Service.GetString(MockData.Ids[0], "err"), Is.EqualTo("Error!"));
-                    Assert.That(this.Service.GetString(MockData.Ids[1], "suc"), Is.EqualTo("Uspeh!"));
-                    Assert.That(this.Service.GetString(MockData.Ids[1], "err"), Is.EqualTo("Greska!"));
-                    Assert.That(this.Service.GetString(123, "err"), Is.EqualTo("Error!"));
-                    Assert.That(() => this.Service.GetString(MockData.Ids[0], "does not exist"), Throws.InstanceOf<LocalizationException>());
+                    Assert.That(this.Service.GetStringUnsafe(MockData.Ids[0], "suc"), Is.EqualTo("Success!"));
+                    Assert.That(this.Service.GetStringUnsafe(MockData.Ids[0], "err"), Is.EqualTo("Error!"));
+                    Assert.That(this.Service.GetStringUnsafe(MockData.Ids[1], "suc"), Is.EqualTo("Uspeh!"));
+                    Assert.That(this.Service.GetStringUnsafe(MockData.Ids[1], "err"), Is.EqualTo("Greska!"));
+                    Assert.That(this.Service.GetStringUnsafe(123, "err"), Is.EqualTo("Error!"));
+                    Assert.That(() => this.Service.GetStringUnsafe(MockData.Ids[0], "does not exist"), Throws.InstanceOf<LocalizationException>());
                 }
             );
 

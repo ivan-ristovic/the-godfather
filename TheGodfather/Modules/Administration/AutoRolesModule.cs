@@ -11,6 +11,7 @@ using TheGodfather.Exceptions;
 using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Modules.Administration
 {
@@ -27,7 +28,7 @@ namespace TheGodfather.Modules.Administration
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-roles-add")] params DiscordRole[] roles)
+                                     [Description(TranslationKey.desc_roles_add)] params DiscordRole[] roles)
             => this.AddAsync(ctx, roles);
         #endregion
 
@@ -35,19 +36,19 @@ namespace TheGodfather.Modules.Administration
         [Command("add")]
         [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("desc-roles-add")] params DiscordRole[] roles)
+                                  [Description(TranslationKey.desc_roles_add)] params DiscordRole[] roles)
         {
             if (roles is null || !roles.Any())
-                throw new CommandFailedException(ctx, "cmd-err-missing-roles");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_missing_roles);
 
             await this.Service.AddAsync(ctx.Guild.Id, roles.Select(r => r.Id));
 
             string roleStr = roles.OrderBy(r => r.Name).JoinWith();
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "evt-ar-change");
-                emb.AddLocalizedField("str-roles-add", roleStr);
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, TranslationKey.evt_ar_change);
+                emb.AddLocalizedField(TranslationKey.str_roles_add, roleStr);
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-ar-add", roleStr);
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_ar_add(roleStr));
         }
         #endregion
 
@@ -55,7 +56,7 @@ namespace TheGodfather.Modules.Administration
         [Command("delete")]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task RemoveAsync(CommandContext ctx,
-                                     [Description("desc-roles-del")] params DiscordRole[] roles)
+                                     [Description(TranslationKey.desc_roles_del)] params DiscordRole[] roles)
         {
             if (roles is null || !roles.Any()) {
                 await this.RemoveAllAsync(ctx);
@@ -66,10 +67,10 @@ namespace TheGodfather.Modules.Administration
 
             string roleStr = roles.OrderBy(r => r.Name).JoinWith();
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-ar-change");
-                emb.AddLocalizedField("str-roles-rem", roleStr);
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_ar_change);
+                emb.AddLocalizedField(TranslationKey.str_roles_rem, roleStr);
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-ar-rem", roleStr);
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_ar_rem(roleStr));
         }
         #endregion
 
@@ -78,12 +79,12 @@ namespace TheGodfather.Modules.Administration
         [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
         public async Task RemoveAllAsync(CommandContext ctx)
         {
-            if (!await ctx.WaitForBoolReplyAsync("q-ar-rem-all"))
+            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_ar_rem_all))
                 return;
 
             await this.Service.ClearAsync(ctx.Guild.Id);
-            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle("evt-ar-clear").WithColor(this.ModuleColor));
-            await ctx.InfoAsync(this.ModuleColor, "evt-ar-clear");
+            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle(TranslationKey.evt_ar_clear).WithColor(this.ModuleColor));
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_ar_clear);
         }
         #endregion
 
@@ -94,7 +95,7 @@ namespace TheGodfather.Modules.Administration
         {
             IReadOnlyList<ulong> rids = this.Service.GetIds(ctx.Guild.Id);
             if (!rids.Any()) {
-                await ctx.ImpInfoAsync(this.ModuleColor, "cmd-err-ar-none");
+                await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.cmd_err_ar_none);
                 return;
             }
 
@@ -105,14 +106,14 @@ namespace TheGodfather.Modules.Administration
                 await this.Service.RemoveAsync(ctx.Guild.Id, missingRoles);
                 await ctx.GuildLogAsync(
                     emb => {
-                        emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-ar-change");
-                        emb.AddLocalizedField("str-roles-rem", missingRoles.JoinWith());
+                        emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_ar_change);
+                        emb.AddLocalizedField(TranslationKey.str_roles_rem, missingRoles.JoinWith());
                     },
                     addInvocationFields: false
                 );
             }
             await ctx.PaginateAsync(
-                "str-ar",
+                TranslationKey.str_ar,
                 roles.Where(kvp => !missingRoles.Contains(kvp.rid)).Select(kvp => kvp.Item2).OrderByDescending(r => r.Position),
                 r => r.ToString(),
                 this.ModuleColor

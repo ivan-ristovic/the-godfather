@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Administration
         {
             IReadOnlyList<DiscordBan> bans = await ctx.Guild.GetBansAsync();
             await ctx.PaginateAsync(
-                "str-bans",
+                TranslationKey.str_bans,
                 bans,
                 b => $"{b.User} | {b.Reason}",
                 this.ModuleColor,
@@ -52,11 +52,11 @@ namespace TheGodfather.Modules.Administration
         [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
         [RequirePermissions(Permissions.ViewAuditLog)]
         public async Task GetAuditLogsAsync(CommandContext ctx,
-                                           [Description("desc-auditlog-amount")] int amount = 10,
-                                           [Description("desc-auditlog-mem")] DiscordMember? member = null)
+                                           [Description(TranslationKey.desc_auditlog_amount)] int amount = 10,
+                                           [Description(TranslationKey.desc_auditlog_mem)] DiscordMember? member = null)
         {
-            if (amount is < 1 or > 50)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-auditlog-amount", 50);
+            if (amount is < 1 or > DiscordLimits.AuditLogHistoryLimit)
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_auditlog_amount(DiscordLimits.AuditLogHistoryLimit));
 
             IReadOnlyList<DiscordAuditLogEntry> logs = await ctx.Guild.GetAuditLogsAsync(amount, member);
 
@@ -80,22 +80,22 @@ namespace TheGodfather.Modules.Administration
         [Aliases("seticon", "si")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task SetIconAsync(CommandContext ctx,
-                                      [Description("desc-icon-url")] Uri? url)
+                                      [Description(TranslationKey.desc_icon_url)] Uri? url)
         {
             if (url is null) {
                 if (!ctx.Message.Attachments.Any() || !Uri.TryCreate(ctx.Message.Attachments[0].Url, UriKind.Absolute, out url) || url is null)
-                    throw new InvalidCommandUsageException(ctx, "cmd-err-image-url");
+                    throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_image_url);
             }
 
             if (!await url.ContentTypeHeaderIsImageAsync(DiscordLimits.GuildIconLimit))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-image-url-fail", DiscordLimits.EmojiSizeLimit.ToMetric());
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_image_url_fail(DiscordLimits.EmojiSizeLimit.ToMetric()));
 
             try {
                 using Stream stream = await HttpService.GetMemoryStreamAsync(url);
                 await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(e => e.Icon = stream));
                 await ctx.InfoAsync(this.ModuleColor);
             } catch (WebException e) {
-                throw new CommandFailedException(ctx, e, "err-url-image-fail");
+                throw new CommandFailedException(ctx, e, TranslationKey.err_url_image_fail);
             }
         }
 
@@ -114,22 +114,22 @@ namespace TheGodfather.Modules.Administration
                 emb.WithColor(this.ModuleColor);
                 emb.WithThumbnail(ctx.Guild.IconUrl);
                 emb.WithDescription(ctx.Guild.Description, unknown: false);
-                emb.AddLocalizedField("str-members", ctx.Guild.MemberCount, inline: true);
-                emb.AddLocalizedField("str-owner", ctx.Guild.Owner.Mention, inline: true);
-                emb.AddLocalizedField("str-created-at", ctx.Guild.CreationTimestamp, inline: true);
-                emb.AddLocalizedField("str-region", ctx.Guild.VoiceRegion.Name, inline: true);
-                emb.AddLocalizedField("str-verlvl", ctx.Guild.VerificationLevel, inline: true);
-                emb.AddLocalizedField("str-vanity-url", ctx.Guild.VanityUrlCode, inline: true, unknown: false);
-                emb.AddLocalizedField("str-discovery-url", ctx.Guild.DiscoverySplashUrl, inline: true, unknown: false);
-                emb.AddLocalizedField("str-banner", ctx.Guild.BannerUrl, inline: true, unknown: false);
-                emb.AddLocalizedField("str-banner-hash", ctx.Guild.Banner, inline: true, unknown: false);
-                emb.AddLocalizedField("str-boosters", ctx.Guild.PremiumSubscriptionCount, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_members, ctx.Guild.MemberCount, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_owner, ctx.Guild.Owner.Mention, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_created_at, ctx.Guild.CreationTimestamp, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_region, ctx.Guild.VoiceRegion.Name, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_verlvl, ctx.Guild.VerificationLevel, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_vanity_url, ctx.Guild.VanityUrlCode, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_discovery_url, ctx.Guild.DiscoverySplashUrl, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_banner, ctx.Guild.BannerUrl, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_banner_hash, ctx.Guild.Banner, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_boosters, ctx.Guild.PremiumSubscriptionCount, inline: true, unknown: false);
                 if (ctx.Guild.PremiumTier != PremiumTier.Unknown)
-                    emb.AddLocalizedField("str-tier", (int)ctx.Guild.PremiumTier, inline: true, unknown: false);
-                emb.AddLocalizedField("str-members-max", ctx.Guild.MaxMembers, inline: true, unknown: false);
-                emb.AddLocalizedField("str-members-max-vid", ctx.Guild.MaxVideoChannelUsers, inline: true, unknown: false);
+                    emb.AddLocalizedField(TranslationKey.str_tier, (int)ctx.Guild.PremiumTier, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_members_max, ctx.Guild.MaxMembers, inline: true, unknown: false);
+                emb.AddLocalizedField(TranslationKey.str_members_max_vid, ctx.Guild.MaxVideoChannelUsers, inline: true, unknown: false);
                 if (ctx.Guild.Features?.Any() ?? false)
-                    emb.AddLocalizedField("str-features", ctx.Guild.Features.JoinWith(", "));
+                    emb.AddLocalizedField(TranslationKey.str_features, ctx.Guild.Features.JoinWith(", "));
             });
         }
         #endregion
@@ -141,7 +141,7 @@ namespace TheGodfather.Modules.Administration
         {
             IReadOnlyCollection<DiscordMember> members = await ctx.Guild.GetAllMembersAsync();
             await ctx.PaginateAsync(
-                "str-members",
+                TranslationKey.str_members,
                 members.OrderBy(m => m.DisplayName),
                 m => $"{m.Id} | {m.Mention}",
                 this.ModuleColor
@@ -155,41 +155,41 @@ namespace TheGodfather.Modules.Administration
         [RequirePermissions(Permissions.KickMembers)]
         [RequireUserPermissions(Permissions.Administrator)]
         public Task PruneMembersAsync(CommandContext ctx,
-                                     [Description("desc-prune-days")] int days,
-                                     [Description("desc-rsn")] string reason,
-                                     [Description("desc-prune-roles")] params DiscordRole[] roles)
+                                     [Description(TranslationKey.desc_prune_days)] int days,
+                                     [Description(TranslationKey.desc_rsn)] string reason,
+                                     [Description(TranslationKey.desc_prune_roles)] params DiscordRole[] roles)
             => this.InternalPruneAsync(ctx, days, reason, roles);
 
         [Command("prune"), Priority(5)]
         public Task PruneMembersAsync(CommandContext ctx,
-                                     [Description("desc-rsn")] string reason,
-                                     [Description("desc-prune-days")] int days,
-                                     [Description("desc-prune-roles")] params DiscordRole[] roles)
+                                     [Description(TranslationKey.desc_rsn)] string reason,
+                                     [Description(TranslationKey.desc_prune_days)] int days,
+                                     [Description(TranslationKey.desc_prune_roles)] params DiscordRole[] roles)
             => this.InternalPruneAsync(ctx, days, reason, roles);
 
         [Command("prune"), Priority(4)]
         public Task PruneMembersAsync(CommandContext ctx,
-                                     [Description("desc-rsn")] string reason,
-                                     [Description("desc-prune-roles")] params DiscordRole[] roles)
+                                     [Description(TranslationKey.desc_rsn)] string reason,
+                                     [Description(TranslationKey.desc_prune_roles)] params DiscordRole[] roles)
             => this.InternalPruneAsync(ctx, reason: reason, roles: roles);
 
         [Command("prune"), Priority(3)]
         public Task PruneMembersAsync(CommandContext ctx,
-                                     [Description("desc-prune-days")] int days,
-                                     [Description("desc-prune-roles")] params DiscordRole[] roles)
+                                     [Description(TranslationKey.desc_prune_days)] int days,
+                                     [Description(TranslationKey.desc_prune_roles)] params DiscordRole[] roles)
             => this.InternalPruneAsync(ctx, days, roles: roles);
 
         [Command("prune"), Priority(2)]
         public Task PruneMembersAsync(CommandContext ctx,
-                                     [Description("desc-prune-days")] int days,
-                                     [Description("desc-prune-roles")] DiscordRole role,
-                                     [RemainingText, Description("desc-rsn")] string reason)
+                                     [Description(TranslationKey.desc_prune_days)] int days,
+                                     [Description(TranslationKey.desc_prune_roles)] DiscordRole role,
+                                     [RemainingText, Description(TranslationKey.desc_rsn)] string reason)
             => this.InternalPruneAsync(ctx, days, reason, new[] { role });
 
         [Command("prune"), Priority(1)]
         public Task PruneMembersAsync(CommandContext ctx,
-                                     [Description("desc-prune-days")] int days,
-                                     [RemainingText, Description("desc-rsn")] string? reason = null)
+                                     [Description(TranslationKey.desc_prune_days)] int days,
+                                     [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             => this.InternalPruneAsync(ctx, days, reason);
 
         [Command("prune"), Priority(0)]
@@ -202,13 +202,13 @@ namespace TheGodfather.Modules.Administration
         [Aliases("r", "name", "setname", "mv")]
         [RequirePermissions(Permissions.ManageGuild)]
         public async Task RenameGuildAsync(CommandContext ctx,
-                                          [RemainingText, Description("desc-name")] string name)
+                                          [RemainingText, Description(TranslationKey.desc_name_new)] string name)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-missing-name");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_missing_name);
 
             if (name.Length > DiscordLimits.GuildNameLimit)
-                throw new CommandFailedException(ctx, "cmd-err-name", DiscordLimits.GuildNameLimit);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_name(DiscordLimits.GuildNameLimit));
 
             await ctx.Guild.ModifyAsync(new Action<GuildEditModel>(m => {
                 m.Name = name;
@@ -222,14 +222,14 @@ namespace TheGodfather.Modules.Administration
         #region internals
         public async Task InternalPruneAsync(CommandContext ctx, int days = 7, string? reason = null, params DiscordRole[] roles)
         {
-            if (days is < 1 or > 30)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-prune-days", 1, 30);
+            if (days is < 1 or > DiscordLimits.PruneDaysLimit)
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_prune_days(1, DiscordLimits.PruneDaysLimit));
 
             int count = await ctx.Guild.GetPruneCountAsync(days);
             if (count == 0)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-prune-none");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_prune_none);
 
-            if (!await ctx.WaitForBoolReplyAsync("q-prune", args: count))
+            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_prune(count)))
                 return;
 
             await ctx.Guild.PruneAsync(days, false, roles, ctx.BuildInvocationDetailsString(reason));

@@ -26,7 +26,7 @@ namespace TheGodfather.Modules.Administration
 
             [GroupCommand, Priority(0)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [RemainingText, Description("desc-tz")] string tzid)
+                                         [RemainingText, Description(TranslationKey.desc_tz)] string tzid)
                 => this.SetAsync(ctx, tzid);
             #endregion
 
@@ -36,7 +36,7 @@ namespace TheGodfather.Modules.Administration
             public Task CurrentAsync(CommandContext ctx)
             {
                 TimeZoneInfo tzInfo = this.Localization.GetGuildTimeZone(ctx.Guild.Id);
-                return ctx.InfoAsync(this.ModuleColor, "fmt-tz-curr", tzInfo.DisplayName, tzInfo.StandardName);
+                return ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_tz_curr(tzInfo.DisplayName, tzInfo.StandardName));
             }
             #endregion
 
@@ -44,11 +44,11 @@ namespace TheGodfather.Modules.Administration
             [Command("info")]
             [Aliases("i", "information")]
             public Task InfoAsync(CommandContext ctx,
-                                 [RemainingText, Description("desc-tz")] string? tzid = null)
+                                 [RemainingText, Description(TranslationKey.desc_tz)] string? tzid = null)
             {
                 TimeZoneInfo tzInfo = this.GetTimeZoneInfo(ctx, tzid);
                 DateTimeOffset time = TimeZoneInfo.ConvertTime(DateTimeOffset.Now, tzInfo);
-                return ctx.InfoAsync(this.ModuleColor, "fmt-tz", tzInfo.DisplayName, tzInfo.StandardName, time);
+                return ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_tz(tzInfo.DisplayName, tzInfo.StandardName, time));
             }
             #endregion
 
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Administration
                     .Concat(TZConvert.KnownRailsTimeZoneNames.Select(tz => ("Rails", tz)))
                     ;
                 return ctx.PaginateAsync(
-                    "str-tz-list",
+                    TranslationKey.str_tz_list,
                     timezones,
                     tup => $"({Formatter.InlineCode(tup.Group)}) {Formatter.Bold(tup.Name)}",
                     this.ModuleColor,
@@ -75,11 +75,11 @@ namespace TheGodfather.Modules.Administration
             [Command("set")]
             [Aliases("s")]
             public async Task SetAsync(CommandContext ctx,
-                                      [RemainingText, Description("desc-tz")] string tzid)
+                                      [RemainingText, Description(TranslationKey.desc_tz)] string tzid)
             {
                 TimeZoneInfo tzInfo = this.GetTimeZoneInfo(ctx, tzid);
                 await this.Service.ModifyConfigAsync(ctx.Guild.Id, gcfg => gcfg.TimezoneId = tzid);
-                await ctx.InfoAsync(this.ModuleColor, "fmt-tz-set", tzInfo.DisplayName, tzInfo.StandardName);
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_tz_set(tzInfo.DisplayName, tzInfo.StandardName));
             }
             #endregion
 
@@ -88,10 +88,10 @@ namespace TheGodfather.Modules.Administration
             [Aliases("default", "def", "rr")]
             public async Task ResetAsync(CommandContext ctx)
             {
-                if (!await ctx.WaitForBoolReplyAsync("q-setup-reset"))
+                if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_reset))
                     return;
                 await this.Service.ModifyConfigAsync(ctx.Guild.Id, gcfg => gcfg.TimezoneId = null);
-                await ctx.InfoAsync(this.ModuleColor, "str-cfg-tz-reset");
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_cfg_tz_reset);
             }
             #endregion
 
@@ -103,7 +103,7 @@ namespace TheGodfather.Modules.Administration
                 try {
                     return TZConvert.GetTimeZoneInfo(tzid);
                 } catch (TimeZoneNotFoundException) {
-                    throw new CommandFailedException(ctx, "cmd-err-tz");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_tz);
                 }
             }
             #endregion

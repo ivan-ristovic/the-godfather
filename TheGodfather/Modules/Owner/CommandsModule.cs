@@ -28,20 +28,20 @@ namespace TheGodfather.Modules.Owner
         [Command("add")]
         [Aliases("register", "reg", "new", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public Task AddAsync(CommandContext ctx,
-                            [RemainingText, Description("desc-code")] string code)
+                            [RemainingText, Description(TranslationKey.desc_code)] string code)
         {
             if (string.IsNullOrWhiteSpace(code))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-cmd-add-cb");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_cmd_add_cb);
 
             try {
                 Type? t = CSharpCompilationService.CompileCommand(code);
                 if (t is null)
-                    throw new InvalidCommandUsageException(ctx, "cmd-err-cmd-add-cb");
+                    throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_cmd_add_cb);
 
                 ctx.CommandsNext.RegisterCommands(t);
                 return ctx.InfoAsync(this.ModuleColor);
             } catch (Exception ex) {
-                return ctx.FailAsync("fmt-compile-fail", ex.GetType(), ex.Message);
+                return ctx.FailAsync(TranslationKey.fmt_compile_fail(ex.GetType(), ex.Message));
             }
         }
         #endregion
@@ -50,14 +50,14 @@ namespace TheGodfather.Modules.Owner
         [Command("delete")]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public Task DeleteAsync(CommandContext ctx,
-                               [RemainingText, Description("desc-cmd")] string command)
+                               [RemainingText, Description(TranslationKey.desc_cmd)] string command)
         {
             Command cmd = ctx.CommandsNext.FindCommand(command, out _);
             if (cmd is null)
-                throw new CommandFailedException(ctx, "cmd-name-404");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_name_404(command));
             ctx.CommandsNext.UnregisterCommands(cmd);
             bool success = this.Service.RemoveCommand(cmd.QualifiedName);
-            return success ? ctx.InfoAsync(this.ModuleColor) : ctx.FailAsync("cmd-err-cmd-del", cmd.QualifiedName);
+            return success ? ctx.InfoAsync(this.ModuleColor) : ctx.FailAsync(TranslationKey.cmd_err_cmd_del(cmd.QualifiedName));
         }
         #endregion
 
@@ -67,7 +67,7 @@ namespace TheGodfather.Modules.Owner
         public Task ListAsync(CommandContext ctx)
         {
             return ctx.PaginateAsync(
-                "str-cmds",
+                TranslationKey.str_cmds,
                 ctx.CommandsNext.GetRegisteredCommands().OrderBy(cmd => cmd.QualifiedName),
                 cmd => Formatter.InlineCode(cmd.QualifiedName),
                 this.ModuleColor,

@@ -31,7 +31,7 @@ namespace TheGodfather.Modules.Currency.Extensions
         public static Task SendAsync(this SlotMachineRoll roll, CommandContext ctx, DiscordColor color)
         {
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
-                emb.WithLocalizedTitle("fmt-casino-slot", Emojis.LargeOrangeDiamond, Emojis.LargeOrangeDiamond);
+                emb.WithLocalizedTitle(TranslationKey.fmt_casino_slot(Emojis.LargeOrangeDiamond, Emojis.LargeOrangeDiamond));
                 emb.WithColor(color);
                 emb.WithDescription(roll.ToEmojiString());
                 emb.WithThumbnail(ctx.User.AvatarUrl);
@@ -40,12 +40,13 @@ namespace TheGodfather.Modules.Currency.Extensions
                 foreach ((DiscordEmoji e, int m) in _emoji.Zip(SlotMachineRoll.Multipliers))
                     sb.Append(e).Append(Formatter.InlineCode($" x{m} "));
 
-                emb.AddLocalizedField("str-multipliers", sb);
+                emb.AddLocalizedField(TranslationKey.str_multipliers, sb);
 
                 string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
                 CultureInfo culture = ctx.Services.GetRequiredService<LocalizationService>().GetGuildCulture(ctx.Guild.Id);
-                emb.AddLocalizedField("str-result", "fmt-casino-win", 
-                    contentArgs: new object[] { ctx.User.Mention, roll.WonAmount.ToWords(culture), roll.WonAmount, currency }
+                emb.AddLocalizedField(
+                    TranslationKey.str_result, 
+                    TranslationKey.fmt_casino_win(ctx.User.Mention, roll.WonAmount.ToWords(culture), roll.WonAmount, currency)
                 );
             });
         }

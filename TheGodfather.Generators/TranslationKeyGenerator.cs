@@ -12,25 +12,26 @@ namespace TheGodfather.Generators;
 [Generator]
 public class TranslationKeyGenerator : ISourceGenerator
 {
-    private static readonly Regex _placeholderRegex = new Regex(@"{(?<num>\d)[}:]", RegexOptions.Compiled);
-        
-    private static string SanitizeName(string name) 
+    private static readonly Regex _placeholderRegex = new(@"{(?<num>\d)[}:]", RegexOptions.Compiled);
+
+    private static string SanitizeName(string name)
         => name.Replace("-", "_");
-        
+
 
     public void Initialize(GeneratorInitializationContext context) { }
 
     public void Execute(GeneratorExecutionContext context)
     {
         AdditionalText defLocaleFile = context.AdditionalFiles.First(f => f.Path.EndsWith("en-GB.json"));
-         string defLocaleContents = defLocaleFile.GetText()?.ToString() 
-             ?? throw new FileNotFoundException("Default locale en-GB not found.");
-        Dictionary<string, string> properties = JsonConvert.DeserializeObject<Dictionary<string, string>>(defLocaleContents) 
-                                                ?? throw new JsonSerializationException();
+        string defLocaleContents = defLocaleFile.GetText()?.ToString()
+                                   ?? throw new FileNotFoundException("Default locale en-GB not found.");
+        Dictionary<string, string> properties =
+            JsonConvert.DeserializeObject<Dictionary<string, string>>(defLocaleContents)
+            ?? throw new JsonSerializationException();
 
         using var stringWriter = new StringWriter();
         using var sw = new IndentedTextWriter(stringWriter);
-            
+
         sw.WriteLine(@"#nullable enable
 
 using System;
@@ -54,27 +55,29 @@ public readonly partial struct TranslationKey
 
 ");
         sw.Indent++;
-        
+
         foreach (KeyValuePair<string, string> property in properties) {
             MatchCollection matches = _placeholderRegex.Matches(property.Value);
 
             int argc = 0;
-            foreach (Match m in matches) {
-                argc = Math.Max(argc, int.Parse(m.Groups["num"].Value) + 1);
-            }
+            foreach (Match m in matches) argc = Math.Max(argc, int.Parse(m.Groups["num"].Value) + 1);
 
             var typedParamStrings = new List<string>();
-            var paramStrings = string.Empty;
+            string paramStrings = string.Empty;
             for (int i = 0; i < argc; i++) {
                 typedParamStrings.Add($"object? p{i}");
                 paramStrings += $", p{i}";
             }
 
-            var args = string.Empty;
+            string args = string.Empty;
             if (argc > 0)
                 args = $"({string.Join(", ", typedParamStrings)})";
 
-            sw.WriteLine($"public static TranslationKey {SanitizeName(property.Key)}{args} => new(\"{property.Key}\"{paramStrings});");
+            if (property.Key.StartsWith("desc-"))
+                sw.WriteLine($"public const string {SanitizeName(property.Key)} = \"{property.Key}\";");
+            else
+                sw.WriteLine(
+                    $"public static TranslationKey {SanitizeName(property.Key)}{args} => new(\"{property.Key}\"{paramStrings});");
         }
 
         sw.Indent--;

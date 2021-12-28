@@ -38,7 +38,7 @@ namespace TheGodfather.Modules.Games
 
         public override async Task RunAsync(LocalizationService lcs)
         {
-            this.msgHandle = await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Joystick, null, "str-game-hm-starting");
+            this.msgHandle = await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Joystick, null, TranslationKey.str_game_hm_starting);
 
             await this.UpdateHangmanAsync();
 
@@ -47,17 +47,17 @@ namespace TheGodfather.Modules.Games
 
             if (this.IsTimeoutReached) {
                 this.Winner = this.initiator;
-                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.X, null, "cmd-err-game-timeout-w", this.Winner.Mention);
-                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Trophy, null, "fmt-game-hm-w", this.word);
+                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.X, null, TranslationKey.cmd_err_game_timeout_w(this.Winner.Mention));
+                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Trophy, null, TranslationKey.fmt_game_hm_w(this.word));
                 return;
             }
 
             if (this.lives > 0 && this.Winner is { }) {
-                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.X, null, "fmt-winners", this.Winner.Mention);
+                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.X, null, TranslationKey.fmt_winners(this.Winner.Mention));
             } else {
                 this.Winner = this.initiator;
-                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Trophy, null, "fmt-game-hm-win", this.Winner.Mention);
-                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Joystick, null, "fmt-game-hm-w", this.word);
+                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Trophy, null, TranslationKey.fmt_game_hm_win(this.Winner.Mention));
+                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Joystick, null, TranslationKey.fmt_game_hm_w(this.word));
             }
         }
 

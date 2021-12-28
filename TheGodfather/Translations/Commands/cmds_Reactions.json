@@ -2,27 +2,51 @@
   "emojireaction": {
     "usage": [
       [],
-      [ "arg-emoji", "arg-trigger" ],
-      [ "arg-trigger", "arg-emoji" ]
+      [
+        "arg-emoji",
+        "arg-trigger"
+      ],
+      [
+        "arg-trigger",
+        "arg-emoji"
+      ]
     ]
   },
   "emojireaction add": {
     "usage": [
-      [ "arg-emoji", "arg-trigger" ],
-      [ "arg-trigger", "arg-emoji" ]
+      [
+        "arg-emoji",
+        "arg-trigger"
+      ],
+      [
+        "arg-trigger",
+        "arg-emoji"
+      ]
     ]
   },
   "emojireaction addregex": {
     "usage": [
-      [ "arg-emoji", "arg-regex" ],
-      [ "arg-regex", "arg-emoji" ]
+      [
+        "arg-emoji",
+        "arg-regex"
+      ],
+      [
+        "arg-regex",
+        "arg-emoji"
+      ]
     ]
   },
   "emojireaction delete": {
     "usage": [
-      [ "arg-id" ],
-      [ "arg-emoji" ],
-      [ "arg-trigger" ]
+      [
+        "arg-id"
+      ],
+      [
+        "arg-emoji"
+      ],
+      [
+        "arg-trigger"
+      ]
     ]
   },
   "emojireaction deleteall": {
@@ -32,7 +56,9 @@
   },
   "emojireaction find": {
     "usage": [
-      [ "arg-trigger" ]
+      [
+        "arg-trigger"
+      ]
     ]
   },
   "emojireaction list": {
@@ -43,23 +69,36 @@
   "textreaction": {
     "usage": [
       [],
-      [ "arg-trigger", "arg-response" ]
+      [
+        "arg-trigger",
+        "arg-response"
+      ]
     ]
   },
   "textreaction add": {
     "usage": [
-      [ "arg-trigger", "arg-response" ]
+      [
+        "arg-trigger",
+        "arg-response"
+      ]
     ]
   },
   "textreaction addregex": {
     "usage": [
-      [ "arg-regex", "arg-response" ]
+      [
+        "arg-regex",
+        "arg-response"
+      ]
     ]
   },
   "textreaction delete": {
     "usage": [
-      [ "arg-id" ],
-      [ "arg-trigger" ]
+      [
+        "arg-id"
+      ],
+      [
+        "arg-trigger"
+      ]
     ]
   },
   "textreaction deleteall": {
@@ -69,7 +108,9 @@
   },
   "textreaction find": {
     "usage": [
-      [ "arg-trigger" ]
+      [
+        "arg-trigger"
+      ]
     ]
   },
   "textreaction list": {

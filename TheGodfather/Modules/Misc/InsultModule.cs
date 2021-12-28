@@ -17,7 +17,7 @@ namespace TheGodfather.Modules.Misc
         #region insult
         [GroupCommand, Priority(1)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("desc-user")] DiscordUser? user = null)
+                                           [Description(TranslationKey.desc_user)] DiscordUser? user = null)
         {
             user ??= ctx.User;
             if (user == ctx.Client.CurrentUser)
@@ -27,19 +27,19 @@ namespace TheGodfather.Modules.Misc
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(this.ModuleColor);
                 emb.WithDescription(Formatter.Italic(insult));
-                emb.WithLocalizedFooter("fmt-powered-by", user.AvatarUrl, InsultService.Provider);
+                emb.WithLocalizedFooter(TranslationKey.fmt_powered_by(InsultService.Provider), user.AvatarUrl);
             });
         }
 
         [GroupCommand, Priority(0)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [RemainingText, Description("desc-insult-target")] string target)
+                                           [RemainingText, Description(TranslationKey.desc_insult_target)] string target)
         {
             string insult = await this.Service.FetchInsultAsync(target);
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(this.ModuleColor);
                 emb.WithDescription(Formatter.Italic(insult));
-                emb.WithLocalizedFooter("fmt-powered-by", null, InsultService.Provider);
+                emb.WithLocalizedFooter(TranslationKey.fmt_powered_by(InsultService.Provider), null);
             });
         }
         #endregion

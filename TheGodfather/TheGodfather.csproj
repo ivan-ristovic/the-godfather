@@ -1,134 +1,134 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
-    <ApplicationIcon>icon.ico</ApplicationIcon>
-    <Platforms>AnyCPU;x64;x86</Platforms>
-    <LangVersion>latest</LangVersion>
-    <StartupObject />
-    <RepositoryUrl>https://github.com/ivan-ristovic/the-godfather</RepositoryUrl>
-    <PackageLicenseUrl>https://github.com/ivan-ristovic/the-godfather/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/ivan-ristovic/the-godfather</PackageProjectUrl>
-    <PackageIconUrl>https://raw.githubusercontent.com/ivan-ristovic/the-godfather/master/TheGodfather/icon.ico</PackageIconUrl>
-    <Version>5.0.0</Version>
-    <PackageVersion>5.0.0.0</PackageVersion>
-    <AssemblyVersion>5.0.0</AssemblyVersion>
-    <FileVersion>5.0.0</FileVersion>
-	<Copyright />
-  </PropertyGroup>
-  
-  <PropertyGroup Condition=" '$(Version)' == '' ">
-    <VersionPrefix Condition=" '$(VersionPrefix)' == '' ">3.0.0</VersionPrefix>
-    <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionPrefix).$(VersionSuffix)</Version>
-    <Version Condition=" '$(Version)' == '' ">$(VersionPrefix)</Version>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ApplicationIcon>icon.ico</ApplicationIcon>
+        <Platforms>AnyCPU;x64;x86</Platforms>
+        <LangVersion>latest</LangVersion>
+        <StartupObject/>
+        <RepositoryUrl>https://github.com/ivan-ristovic/the-godfather</RepositoryUrl>
+        <PackageLicenseUrl>https://github.com/ivan-ristovic/the-godfather/blob/master/LICENSE</PackageLicenseUrl>
+        <PackageProjectUrl>https://github.com/ivan-ristovic/the-godfather</PackageProjectUrl>
+        <PackageIconUrl>https://raw.githubusercontent.com/ivan-ristovic/the-godfather/master/TheGodfather/icon.ico</PackageIconUrl>
+        <Version>5.0.0</Version>
+        <PackageVersion>5.0.0.0</PackageVersion>
+        <AssemblyVersion>5.0.0</AssemblyVersion>
+        <FileVersion>5.0.0</FileVersion>
+        <Copyright/>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <LangVersion>latestmajor</LangVersion>
-    <NoWarn>CS0436</NoWarn>
-  </PropertyGroup>
+    <PropertyGroup Condition=" '$(Version)' == '' ">
+        <VersionPrefix Condition=" '$(VersionPrefix)' == '' ">3.0.0</VersionPrefix>
+        <Version Condition=" '$(VersionSuffix)' != '' ">$(VersionPrefix).$(VersionSuffix)</Version>
+        <Version Condition=" '$(Version)' == '' ">$(VersionPrefix)</Version>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
-    <LangVersion>latest</LangVersion>
-    <NoWarn>CS0436</NoWarn>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+        <LangVersion>latestmajor</LangVersion>
+        <NoWarn>CS0436</NoWarn>
+    </PropertyGroup>
 
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LangVersion>latest</LangVersion>
-    <NoWarn>CS0436</NoWarn>
-  </PropertyGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+        <LangVersion>latest</LangVersion>
+        <NoWarn>CS0436</NoWarn>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="gfdb.db" />
-    <None Remove="icon.ico" />
-    <None Update="Translations\en-GB.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Translations\en-US.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+    <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+        <LangVersion>latest</LangVersion>
+        <NoWarn>CS0436</NoWarn>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="DSharpPlus" Version="4.1.0" />
-    <PackageReference Include="DSharpPlus.CommandsNext" Version="4.1.0" />
-    <PackageReference Include="DSharpPlus.Interactivity" Version="4.1.0" />
-    <PackageReference Include="DSharpPlus.Lavalink" Version="4.1.0" />
-    <PackageReference Include="DSharpPlus.VoiceNext" Version="4.1.0" />
-    <PackageReference Include="GiphyDotNet" Version="2.0.0" />
-    <PackageReference Include="Google.Apis.YouTube.v3" Version="1.55.0.2449" />
-    <PackageReference Include="Humanizer.Core" Version="2.13.14" />
-    <PackageReference Include="Imgur.API" Version="4.0.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.1">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.1" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1" />
-    <PackageReference Include="NETStandard.Library" Version="2.0.3" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="Npgsql" Version="6.0.2" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.2" />
-    <PackageReference Include="RedditSharp" Version="2.0.0" />
-    <PackageReference Include="Serilog" Version="2.10.0" />
-    <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
-    <PackageReference Include="Serilog.Formatting.Compact" Version="1.1.0" />
-    <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
-    <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta0013" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4" />
-    <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta11" />
-    <PackageReference Include="SteamWebAPI2" Version="4.3.2" />
-    <PackageReference Include="System.Drawing.Common" Version="6.0.0" />
-    <PackageReference Include="System.IO" Version="4.3.0" />
-    <PackageReference Include="System.ServiceModel.Syndication" Version="6.0.0" />
-    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-    <PackageReference Include="TexasHoldemGameEngine" Version="2.0.0" />
-    <PackageReference Include="TimeZoneConverter" Version="3.5.0" />
-    <PackageReference Include="YoutubeExplode" Version="6.0.7" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Remove="gfdb.db"/>
+        <None Remove="icon.ico"/>
+        <None Update="Translations\en-GB.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Translations\en-US.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Compile Update="Properties\Resources.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-  </ItemGroup>
+    <ItemGroup>
+        <PackageReference Include="DSharpPlus" Version="4.1.0"/>
+        <PackageReference Include="DSharpPlus.CommandsNext" Version="4.1.0"/>
+        <PackageReference Include="DSharpPlus.Interactivity" Version="4.1.0"/>
+        <PackageReference Include="DSharpPlus.Lavalink" Version="4.1.0"/>
+        <PackageReference Include="DSharpPlus.VoiceNext" Version="4.1.0"/>
+        <PackageReference Include="GiphyDotNet" Version="2.0.0"/>
+        <PackageReference Include="Google.Apis.YouTube.v3" Version="1.55.0.2449"/>
+        <PackageReference Include="Humanizer.Core" Version="2.13.14"/>
+        <PackageReference Include="Imgur.API" Version="4.0.1"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Scripting" Version="4.0.1"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.1"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.1">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="6.0.1"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.1"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1"/>
+        <PackageReference Include="NETStandard.Library" Version="2.0.3"/>
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.1"/>
+        <PackageReference Include="Npgsql" Version="6.0.2"/>
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.2"/>
+        <PackageReference Include="RedditSharp" Version="2.0.0"/>
+        <PackageReference Include="Serilog" Version="2.10.0"/>
+        <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0"/>
+        <PackageReference Include="Serilog.Formatting.Compact" Version="1.1.0"/>
+        <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1"/>
+        <PackageReference Include="Serilog.Sinks.File" Version="5.0.0"/>
+        <PackageReference Include="SixLabors.Fonts" Version="1.0.0-beta0013"/>
+        <PackageReference Include="SixLabors.ImageSharp" Version="1.0.4"/>
+        <PackageReference Include="SixLabors.ImageSharp.Drawing" Version="1.0.0-beta11"/>
+        <PackageReference Include="SteamWebAPI2" Version="4.3.2"/>
+        <PackageReference Include="System.Drawing.Common" Version="6.0.0"/>
+        <PackageReference Include="System.IO" Version="4.3.0"/>
+        <PackageReference Include="System.ServiceModel.Syndication" Version="6.0.0"/>
+        <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1"/>
+        <PackageReference Include="TexasHoldemGameEngine" Version="2.0.0"/>
+        <PackageReference Include="TimeZoneConverter" Version="3.5.0"/>
+        <PackageReference Include="YoutubeExplode" Version="6.0.7"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <EmbeddedResource Update="Properties\Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
-  </ItemGroup>
+    <ItemGroup>
+        <Compile Update="Properties\Resources.Designer.cs">
+            <DesignTime>True</DesignTime>
+            <AutoGen>True</AutoGen>
+            <DependentUpon>Resources.resx</DependentUpon>
+        </Compile>
+    </ItemGroup>
 
-  <ItemGroup>
-    <None Update="Resources\**\*.*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Translations\**\*.*">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+    <ItemGroup>
+        <EmbeddedResource Update="Properties\Resources.resx">
+            <Generator>PublicResXFileCodeGenerator</Generator>
+            <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+        </EmbeddedResource>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-  </ItemGroup>
+    <ItemGroup>
+        <None Update="Resources\**\*.*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="Translations\**\*.*">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\TheGodfather.Generators\TheGodfather.Generators.csproj" OutputItemType="Analyzer" />
-  </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Migrations\"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <AdditionalFiles Include="Translations\en-GB.json" />
-  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\TheGodfather.Generators\TheGodfather.Generators.csproj" OutputItemType="Analyzer"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="Translations\en-GB.json"/>
+    </ItemGroup>
 
 </Project>

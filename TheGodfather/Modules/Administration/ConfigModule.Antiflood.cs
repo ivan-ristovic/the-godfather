@@ -11,6 +11,7 @@ using TheGodfather.Extensions;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Modules.Administration.Extensions;
 using TheGodfather.Modules.Administration.Services;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Modules.Administration
 {
@@ -23,17 +24,17 @@ namespace TheGodfather.Modules.Administration
             #region config antiflood
             [GroupCommand, Priority(5)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("desc-enable")] bool enable,
-                                               [Description("desc-sens")] short sens,
-                                               [Description("desc-punish-action")] Punishment.Action action = Punishment.Action.Kick,
-                                               [Description("desc-cooldown")] TimeSpan? cooldown = null)
+                                               [Description(TranslationKey.desc_enable)] bool enable,
+                                               [Description(TranslationKey.desc_sens)] short sens,
+                                               [Description(TranslationKey.desc_punish_action)] Punishment.Action action = Punishment.Action.Kick,
+                                               [Description(TranslationKey.desc_cooldown)] TimeSpan? cooldown = null)
             {
                 if (sens is < AntifloodSettings.MinSensitivity or > AntifloodSettings.MaxSensitivity)
-                    throw new CommandFailedException(ctx, "cmd-err-range-sens", AntifloodSettings.MinSensitivity, AntifloodSettings.MaxSensitivity);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_range_sens(AntifloodSettings.MinSensitivity, AntifloodSettings.MaxSensitivity));
 
                 cooldown ??= TimeSpan.FromSeconds(10);
                 if (cooldown.Value.TotalSeconds is < AntifloodSettings.MinCooldown or > AntifloodSettings.MaxCooldown)
-                    throw new CommandFailedException(ctx, "cmd-err-range-cd", AntifloodSettings.MinCooldown, AntifloodSettings.MaxCooldown);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_range_cd(AntifloodSettings.MinCooldown, AntifloodSettings.MaxCooldown));
 
                 var settings = new AntifloodSettings {
                     Action = action,
@@ -45,48 +46,48 @@ namespace TheGodfather.Modules.Administration
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, gcfg => gcfg.AntifloodSettings = settings);
 
                 await ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                     emb.WithColor(this.ModuleColor);
                     if (enable) {
-                        emb.WithLocalizedDescription("evt-af-enable");
-                        emb.AddLocalizedField("str-sensitivity", settings.Sensitivity, inline: true);
-                        emb.AddLocalizedField("str-cooldown", settings.Cooldown, inline: true);
-                        emb.AddLocalizedField("str-punish-action", settings.Action.Humanize(), inline: true);
+                        emb.WithLocalizedDescription(TranslationKey.evt_af_enable);
+                        emb.AddLocalizedField(TranslationKey.str_sensitivity, settings.Sensitivity, inline: true);
+                        emb.AddLocalizedField(TranslationKey.str_cooldown, settings.Cooldown, inline: true);
+                        emb.AddLocalizedField(TranslationKey.str_punish_action, settings.Action.Humanize(), inline: true);
                     } else {
-                        emb.WithLocalizedDescription("evt-af-disable");
+                        emb.WithLocalizedDescription(TranslationKey.evt_af_disable);
                     }
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, enable ? "evt-af-enable" : "evt-af-disable");
+                await ctx.InfoAsync(this.ModuleColor, enable ? TranslationKey.evt_af_enable : TranslationKey.evt_af_disable);
             }
 
             [GroupCommand, Priority(4)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("desc-enable")] bool enable,
-                                         [Description("desc-punish-action")] Punishment.Action action,
-                                         [Description("desc-sens")] short sens = 5,
-                                         [Description("desc-cooldown")] TimeSpan? cooldown = null)
+                                         [Description(TranslationKey.desc_enable)] bool enable,
+                                         [Description(TranslationKey.desc_punish_action)] Punishment.Action action,
+                                         [Description(TranslationKey.desc_sens)] short sens = 5,
+                                         [Description(TranslationKey.desc_cooldown)] TimeSpan? cooldown = null)
                 => this.ExecuteGroupAsync(ctx, enable, sens, action, cooldown);
 
             [GroupCommand, Priority(3)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("desc-enable")] bool enable,
-                                         [Description("desc-punish-action")] Punishment.Action action,
-                                         [Description("desc-cooldown")] TimeSpan? cooldown = null,
-                                         [Description("desc-sens")] short sens = 5)
+                                         [Description(TranslationKey.desc_enable)] bool enable,
+                                         [Description(TranslationKey.desc_punish_action)] Punishment.Action action,
+                                         [Description(TranslationKey.desc_cooldown)] TimeSpan? cooldown = null,
+                                         [Description(TranslationKey.desc_sens)] short sens = 5)
                 => this.ExecuteGroupAsync(ctx, enable, sens, action, cooldown);
 
             [GroupCommand, Priority(2)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("desc-enable")] bool enable,
-                                         [Description("desc-cooldown")] TimeSpan? cooldown,
-                                         [Description("desc-punish-action")] Punishment.Action action = Punishment.Action.Kick,
-                                         [Description("desc-sens")] short sens = 5)
+                                         [Description(TranslationKey.desc_enable)] bool enable,
+                                         [Description(TranslationKey.desc_cooldown)] TimeSpan? cooldown,
+                                         [Description(TranslationKey.desc_punish_action)] Punishment.Action action = Punishment.Action.Kick,
+                                         [Description(TranslationKey.desc_sens)] short sens = 5)
                 => this.ExecuteGroupAsync(ctx, enable, sens, action, cooldown);
 
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("desc-enable")] bool enable)
+                                         [Description(TranslationKey.desc_enable)] bool enable)
                 => this.ExecuteGroupAsync(ctx, enable, 5, Punishment.Action.Kick, null);
 
             [GroupCommand, Priority(0)]
@@ -94,7 +95,7 @@ namespace TheGodfather.Modules.Administration
             {
                 return ctx.WithGuildConfigAsync(
                     gcfg => ctx.RespondWithLocalizedEmbedAsync(emb => {
-                        emb.WithDescription(gcfg.AntifloodSettings.ToEmbedFieldString(ctx.Guild.Id, this.Localization));
+                        emb.WithDescription(gcfg.AntifloodSettings.ToEmbedFieldString());
                         emb.WithColor(this.ModuleColor);
                     })
                 );
@@ -105,10 +106,10 @@ namespace TheGodfather.Modules.Administration
             [Command("action")]
             [Aliases("setaction", "setact", "act", "a")]
             public async Task SetActionAsync(CommandContext ctx,
-                                            [Description("desc-punish-action")] Punishment.Action? action = null)
+                                            [Description(TranslationKey.desc_punish_action)] Punishment.Action? action = null)
             {
                 if (action is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-af-action", gcfg.AntifloodAction.Humanize()));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_af_action(gcfg.AntifloodAction.Humanize())));
                     return;
                 }
 
@@ -117,12 +118,12 @@ namespace TheGodfather.Modules.Administration
                 });
 
                 await ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                     emb.WithColor(this.ModuleColor);
-                    emb.WithLocalizedDescription("evt-af-action", action.Value.Humanize());
+                    emb.WithLocalizedDescription(TranslationKey.evt_af_action(action.Value.Humanize()));
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, "evt-af-action", action.Value.Humanize());
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_af_action(action.Value.Humanize()));
             }
             #endregion
 
@@ -130,27 +131,27 @@ namespace TheGodfather.Modules.Administration
             [Command("sensitivity")]
             [Aliases("setsensitivity", "setsens", "sens", "s")]
             public async Task SetSensitivityAsync(CommandContext ctx,
-                                                 [Description("desc-sens")] short? sens = null)
+                                                 [Description(TranslationKey.desc_sens)] short? sens = null)
             {
                 if (sens is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-af-sens", gcfg.AntifloodSensitivity));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_af_sens(gcfg.AntifloodSensitivity)));
                     return;
                 }
 
                 if (sens is < AntifloodSettings.MinSensitivity or > AntifloodSettings.MaxSensitivity)
-                    throw new CommandFailedException(ctx, "cmd-err-range-sens", AntifloodSettings.MinSensitivity, AntifloodSettings.MaxSensitivity);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_range_sens(AntifloodSettings.MinSensitivity, AntifloodSettings.MaxSensitivity));
 
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.AntifloodSensitivity = sens.Value;
                 });
 
                 await ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                     emb.WithColor(this.ModuleColor);
-                    emb.WithLocalizedDescription("evt-af-sens", sens.Value);
+                    emb.WithLocalizedDescription(TranslationKey.evt_af_sens(sens.Value));
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, "evt-af-sens", sens.Value);
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_af_sens(sens.Value));
             }
             #endregion
 
@@ -158,27 +159,27 @@ namespace TheGodfather.Modules.Administration
             [Command("cooldown")]
             [Aliases("setcooldown", "setcool", "cd", "c")]
             public async Task SetCooldownAsync(CommandContext ctx,
-                                              [Description("desc-cooldown")] TimeSpan? cooldown = null)
+                                              [Description(TranslationKey.desc_cooldown)] TimeSpan? cooldown = null)
             {
                 if (cooldown is null) {
-                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, "evt-af-cd", gcfg.AntifloodCooldown));
+                    await ctx.WithGuildConfigAsync(gcfg => ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_af_cd(gcfg.AntifloodCooldown)));
                     return;
                 }
 
                 if (cooldown.Value.TotalSeconds is < AntifloodSettings.MinCooldown or > AntifloodSettings.MaxCooldown)
-                    throw new CommandFailedException(ctx, "cmd-err-range-cd", AntifloodSettings.MinCooldown, AntifloodSettings.MaxCooldown);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_range_cd(AntifloodSettings.MinCooldown, AntifloodSettings.MaxCooldown));
 
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.AntifloodCooldown = (short)cooldown.Value.TotalSeconds;
                 });
 
                 await ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                     emb.WithColor(this.ModuleColor);
-                    emb.WithLocalizedDescription("evt-af-cd", cooldown.Value.TotalSeconds);
+                    emb.WithLocalizedDescription(TranslationKey.evt_af_cd(cooldown.Value.TotalSeconds));
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, "evt-af-cd", cooldown.Value);
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_af_cd(cooldown.Value));
             }
             #endregion
 
@@ -188,10 +189,10 @@ namespace TheGodfather.Modules.Administration
             public async Task ResetAsync(CommandContext ctx)
             {
                 await ctx.WithGuildConfigAsync(gcfg => {
-                    return !gcfg.AntifloodEnabled ? throw new CommandFailedException(ctx, "cmd-err-reset-af-off") : Task.CompletedTask;
+                    return !gcfg.AntifloodEnabled ? throw new CommandFailedException(ctx, TranslationKey.cmd_err_reset_af_off) : Task.CompletedTask;
                 });
 
-                if (!await ctx.WaitForBoolReplyAsync("q-setup-reset"))
+                if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_reset))
                     return;
 
                 var settings = new AntifloodSettings();

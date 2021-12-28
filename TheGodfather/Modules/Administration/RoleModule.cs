@@ -20,7 +20,7 @@ namespace TheGodfather.Modules.Administration
         #region role
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-role")] DiscordRole role)
+                                     [Description(TranslationKey.desc_role)] DiscordRole role)
             => this.InfoAsync(ctx, role);
 
         [GroupCommand, Priority(0)]
@@ -33,17 +33,17 @@ namespace TheGodfather.Modules.Administration
         [Aliases("new", "add", "a", "+", "+=", "<<", "<", "<-", "<=")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task CreateAsync(CommandContext ctx,
-                                     [Description("desc-name")] string name,
-                                     [Description("desc-color")] DiscordColor? color = null,
-                                     [Description("desc-hoisted")] bool hoisted = false,
-                                     [Description("desc-mentionable")] bool mentionable = false,
-                                     [RemainingText, Description("desc-rsn")] string? reason = null)
+                                     [Description(TranslationKey.desc_name)] string name,
+                                     [Description(TranslationKey.desc_color)] DiscordColor? color = null,
+                                     [Description(TranslationKey.desc_hoisted)] bool hoisted = false,
+                                     [Description(TranslationKey.desc_mentionable)] bool mentionable = false,
+                                     [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             if (string.IsNullOrWhiteSpace(name))
-                throw new CommandFailedException(ctx, "cmd-err-missing-name");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_missing_name);
 
             if (ctx.Guild.Roles.Select(kvp => kvp.Value).Any(r => string.Compare(r.Name, name, true) == 0)) {
-                if (!await ctx.WaitForBoolReplyAsync("q-role-exists"))
+                if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_role_exists))
                     return;
             }
 
@@ -53,8 +53,8 @@ namespace TheGodfather.Modules.Administration
 
         [Command("create"), Priority(0)]
         public Task CreateAsync(CommandContext ctx,
-                               [Description("desc-color")] DiscordColor color,
-                               [RemainingText, Description("desc-name")] string name)
+                               [Description(TranslationKey.desc_color)] DiscordColor color,
+                               [RemainingText, Description(TranslationKey.desc_name)] string name)
             => this.CreateAsync(ctx, name, color, false, false);
         #endregion
 
@@ -63,8 +63,8 @@ namespace TheGodfather.Modules.Administration
         [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("desc-role")] DiscordRole role,
-                                     [RemainingText, Description("desc-rsn")] string? reason = null)
+                                     [Description(TranslationKey.desc_role)] DiscordRole role,
+                                     [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             await role.DeleteAsync(ctx.BuildInvocationDetailsString(reason));
             await ctx.InfoAsync(this.ModuleColor);
@@ -76,19 +76,19 @@ namespace TheGodfather.Modules.Administration
         [Aliases("i")]
         [RequirePermissions(Permissions.ManageRoles)]
         public Task InfoAsync(CommandContext ctx,
-                             [Description("desc-role")] DiscordRole role)
+                             [Description(TranslationKey.desc_role)] DiscordRole role)
         {
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithTitle(role.Name);
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedField("str-pos", role.Position, inline: true);
-                emb.AddLocalizedField("str-color", role.Color, inline: true);
-                emb.AddLocalizedField("str-id", role.Id, inline: true);
-                emb.AddLocalizedField("str-mention", role.IsMentionable, inline: true);
-                emb.AddLocalizedField("str-hoist", role.IsHoisted, inline: true);
-                emb.AddLocalizedField("str-managed", role.IsManaged, inline: true);
-                emb.AddLocalizedTimestampField("str-created-at", role.CreationTimestamp, inline: true);
-                emb.AddLocalizedField("str-perms", role.Permissions.ToPermissionString(), inline: true);
+                emb.AddLocalizedField(TranslationKey.str_pos, role.Position, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_color, role.Color, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_id, role.Id, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_mention, role.IsMentionable, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_hoist, role.IsHoisted, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_managed, role.IsManaged, inline: true);
+                emb.AddLocalizedTimestampField(TranslationKey.str_created_at, role.CreationTimestamp, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_perms, role.Permissions.ToPermissionString(), inline: true);
             });
         }
         #endregion
@@ -99,7 +99,7 @@ namespace TheGodfather.Modules.Administration
         public Task ListAsync(CommandContext ctx)
         {
             return ctx.PaginateAsync(
-                "str-roles",
+                TranslationKey.str_roles,
                 ctx.Guild.Roles.Select(kvp => kvp.Value).OrderByDescending(r => r.Position),
                 r => $"{Formatter.InlineCode(r.Id.ToString())} | {r.Mention} [{GetFlags(r)}]",
                 this.ModuleColor,
@@ -126,7 +126,7 @@ namespace TheGodfather.Modules.Administration
         [Aliases("mentionall", "@", "ma")]
         [RequireUserPermissions(Permissions.Administrator), RequireBotPermissions(Permissions.ManageRoles)]
         public async Task MentionAllFromRoleAsync(CommandContext ctx,
-                                                 [Description("desc-role")] DiscordRole role)
+                                                 [Description(TranslationKey.desc_role)] DiscordRole role)
         {
             if (role.IsMentionable) {
                 await ctx.RespondAsync(role.Mention);
@@ -143,9 +143,9 @@ namespace TheGodfather.Modules.Administration
         [Aliases("clr", "c", "sc", "setc")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetColorAsync(CommandContext ctx,
-                                       [Description("desc-role")] DiscordRole role,
-                                       [Description("desc-color")] DiscordColor color,
-                                       [RemainingText, Description("desc-rsn")] string? reason = null)
+                                       [Description(TranslationKey.desc_role)] DiscordRole role,
+                                       [Description(TranslationKey.desc_color)] DiscordColor color,
+                                       [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             await role.ModifyAsync(color: color, reason: ctx.BuildInvocationDetailsString(reason));
             await ctx.InfoAsync(this.ModuleColor);
@@ -153,9 +153,9 @@ namespace TheGodfather.Modules.Administration
 
         [Command("setcolor"), Priority(0)]
         public Task SetColorAsync(CommandContext ctx,
-                                 [Description("desc-color")] DiscordColor color,
-                                 [Description("desc-role")] DiscordRole role,
-                                 [RemainingText, Description("desc-rsn")] string? reason = null)
+                                 [Description(TranslationKey.desc_color)] DiscordColor color,
+                                 [Description(TranslationKey.desc_role)] DiscordRole role,
+                                 [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             => this.SetColorAsync(ctx, role, color, reason);
         #endregion
 
@@ -164,12 +164,12 @@ namespace TheGodfather.Modules.Administration
         [Aliases("name", "rename", "n", "mv")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task RenameAsync(CommandContext ctx,
-                                     [Description("desc-name")] string newname,
-                                     [Description("desc-role")] DiscordRole role,
-                                     [RemainingText, Description("desc-rsn")] string? reason = null)
+                                     [Description(TranslationKey.desc_name_new)] string newname,
+                                     [Description(TranslationKey.desc_role)] DiscordRole role,
+                                     [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             if (string.IsNullOrWhiteSpace(newname))
-                throw new CommandFailedException(ctx, "cmd-err-missing-name");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_missing_name);
 
             await role.ModifyAsync(name: newname, reason: ctx.BuildInvocationDetailsString(reason));
             await ctx.InfoAsync(this.ModuleColor);
@@ -177,8 +177,8 @@ namespace TheGodfather.Modules.Administration
 
         [Command("setname"), Priority(0)]
         public Task RenameAsync(CommandContext ctx,
-                               [Description("desc-role")] DiscordRole role,
-                               [RemainingText, Description("desc-name")] string newname)
+                               [Description(TranslationKey.desc_role)] DiscordRole role,
+                               [RemainingText, Description(TranslationKey.desc_name_new)] string newname)
             => this.RenameAsync(ctx, role, newname);
         #endregion
 
@@ -187,9 +187,9 @@ namespace TheGodfather.Modules.Administration
         [Aliases("mentionable", "m", "setm")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetMentionableAsync(CommandContext ctx,
-                                             [Description("desc-role")] DiscordRole role,
-                                             [Description("desc-mentionable")] bool mentionable = true,
-                                             [RemainingText, Description("desc-rsn")] string? reason = null)
+                                             [Description(TranslationKey.desc_role)] DiscordRole role,
+                                             [Description(TranslationKey.desc_mentionable)] bool mentionable = true,
+                                             [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             await role.ModifyAsync(mentionable: mentionable, reason: ctx.BuildInvocationDetailsString(reason));
             await ctx.InfoAsync(this.ModuleColor);
@@ -197,9 +197,9 @@ namespace TheGodfather.Modules.Administration
 
         [Command("setmentionable"), Priority(0)]
         public Task SetMentionableAsync(CommandContext ctx,
-                                       [Description("desc-mentionable")] bool mentionable,
-                                       [Description("desc-role")] DiscordRole role,
-                                       [RemainingText, Description("desc-rsn")] string? reason = null)
+                                       [Description(TranslationKey.desc_mentionable)] bool mentionable,
+                                       [Description(TranslationKey.desc_role)] DiscordRole role,
+                                       [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             => this.SetMentionableAsync(ctx, role, mentionable, reason);
         #endregion
 
@@ -208,9 +208,9 @@ namespace TheGodfather.Modules.Administration
         [Aliases("setvisible", "separate", "h", "seth", "hoist", "sethoist")]
         [RequirePermissions(Permissions.ManageRoles)]
         public async Task SetVisibleAsync(CommandContext ctx,
-                                         [Description("desc-role")] DiscordRole role,
-                                         [Description("desc-hoisted")] bool hoisted = true,
-                                         [RemainingText, Description("desc-rsn")] string? reason = null)
+                                         [Description(TranslationKey.desc_role)] DiscordRole role,
+                                         [Description(TranslationKey.desc_hoisted)] bool hoisted = true,
+                                         [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
         {
             await role.ModifyAsync(hoist: hoisted, reason: ctx.BuildInvocationDetailsString(reason));
             await ctx.InfoAsync(this.ModuleColor);
@@ -218,9 +218,9 @@ namespace TheGodfather.Modules.Administration
 
         [Command("setvisibility"), Priority(0)]
         public Task SetVisibleAsync(CommandContext ctx,
-                                   [Description("desc-hoisted")] bool hoisted,
-                                   [Description("desc-role")] DiscordRole role,
-                                   [RemainingText, Description("desc-rsn")] string? reason = null)
+                                   [Description(TranslationKey.desc_hoisted)] bool hoisted,
+                                   [Description(TranslationKey.desc_role)] DiscordRole role,
+                                   [RemainingText, Description(TranslationKey.desc_rsn)] string? reason = null)
             => this.SetVisibleAsync(ctx, role, hoisted, reason);
         #endregion
     }

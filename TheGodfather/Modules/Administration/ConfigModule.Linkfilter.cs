@@ -20,13 +20,13 @@ namespace TheGodfather.Modules.Administration
             #region config linkfilter
             [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("desc-enable")] bool enable)
+                                               [Description(TranslationKey.desc_enable)] bool enable)
             {
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.LinkfilterEnabled = enable;
                 });
                 await ctx.InfoAsync(this.ModuleColor);
-                await this.LogConfigChangeAsync(ctx, "str-lf", enable);
+                await this.LogConfigChangeAsync(ctx, TranslationKey.str_lf, enable);
             }
 
             [GroupCommand, Priority(0)]
@@ -34,16 +34,16 @@ namespace TheGodfather.Modules.Administration
             {
                 LinkfilterSettings settings = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).LinkfilterSettings;
                 if (!settings.Enabled)
-                    throw new CommandFailedException(ctx, "cmd-err-lf-off");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_lf_off);
 
                 return ctx.RespondWithLocalizedEmbedAsync(emb => {
-                    emb.WithLocalizedTitle("str-lf");
+                    emb.WithLocalizedTitle(TranslationKey.str_lf);
                     emb.WithColor(this.ModuleColor);
-                    emb.AddLocalizedField("str-lf-invite", settings.BlockDiscordInvites ? "str-on" : "str-off", inline: true);
-                    emb.AddLocalizedField("str-lf-ddos", settings.BlockBooterWebsites ? "str-on" : "str-off", inline: true);
-                    emb.AddLocalizedField("str-lf-gore", settings.BlockDisturbingWebsites ? "str-on" : "str-off", inline: true);
-                    emb.AddLocalizedField("str-lf-ip", settings.BlockIpLoggingWebsites ? "str-on" : "str-off", inline: true);
-                    emb.AddLocalizedField("str-lf-urlshort", settings.BlockDisturbingWebsites ? "str-on" : "str-off", inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_lf_invite, settings.BlockDiscordInvites ? TranslationKey.str_on : TranslationKey.str_off, inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_lf_ddos, settings.BlockBooterWebsites ? TranslationKey.str_on : TranslationKey.str_off, inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_lf_gore, settings.BlockDisturbingWebsites ? TranslationKey.str_on : TranslationKey.str_off, inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_lf_ip, settings.BlockIpLoggingWebsites ? TranslationKey.str_on : TranslationKey.str_off, inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_lf_urlshort, settings.BlockDisturbingWebsites ? TranslationKey.str_on : TranslationKey.str_off, inline: true);
                 });
             }
             #endregion
@@ -52,20 +52,20 @@ namespace TheGodfather.Modules.Administration
             [Command("booters"), Priority(1)]
             [Aliases("ddos", "boot", "dos")]
             public async Task BootersAsync(CommandContext ctx,
-                                          [Description("desc-enable")] bool enable)
+                                          [Description(TranslationKey.desc_enable)] bool enable)
             {
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.LinkfilterBootersEnabled = enable;
                 });
                 await ctx.InfoAsync(this.ModuleColor);
-                await this.LogConfigChangeAsync(ctx, "str-lf-ddos", enable);
+                await this.LogConfigChangeAsync(ctx, TranslationKey.str_lf_ddos, enable);
             }
 
             [Command("booters"), Priority(0)]
             public Task BootersAsync(CommandContext ctx)
             {
                 CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-                return ctx.InfoAsync(this.ModuleColor, "fmt-lf-ddos", gcfg.LinkfilterSettings.BlockBooterWebsites);
+                return ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_lf_ddos(gcfg.LinkfilterSettings.BlockBooterWebsites));
             }
             #endregion
 
@@ -73,20 +73,20 @@ namespace TheGodfather.Modules.Administration
             [Command("invites"), Priority(1)]
             [Aliases("invite", "inv", "i")]
             public async Task InvitesAsync(CommandContext ctx,
-                                          [Description("desc-enable")] bool enable)
+                                          [Description(TranslationKey.desc_enable)] bool enable)
             {
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.LinkfilterDiscordInvitesEnabled = enable;
                 });
                 await ctx.InfoAsync(this.ModuleColor);
-                await this.LogConfigChangeAsync(ctx, "str-lf-invite", enable);
+                await this.LogConfigChangeAsync(ctx, TranslationKey.str_lf_invite, enable);
             }
 
             [Command("invites"), Priority(0)]
             public Task InvitesAsync(CommandContext ctx)
             {
                 CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-                return ctx.InfoAsync(this.ModuleColor, "fmt-lf-invite", gcfg.LinkfilterSettings.BlockDiscordInvites);
+                return ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_lf_invite(gcfg.LinkfilterSettings.BlockDiscordInvites));
             }
             #endregion
 
@@ -94,20 +94,20 @@ namespace TheGodfather.Modules.Administration
             [Command("shocksites"), Priority(1)]
             [Aliases("disturbingsites", "shock", "disturbing", "gore")]
             public async Task DisturbingSitesAsync(CommandContext ctx,
-                                                  [Description("desc-enable")] bool enable)
+                                                  [Description(TranslationKey.desc_enable)] bool enable)
             {
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.LinkfilterDisturbingWebsitesEnabled = enable;
                 });
                 await ctx.InfoAsync(this.ModuleColor);
-                await this.LogConfigChangeAsync(ctx, "str-lf-gore", enable);
+                await this.LogConfigChangeAsync(ctx, TranslationKey.str_lf_gore, enable);
             }
 
             [Command("shocksites"), Priority(0)]
             public Task DisturbingSitesAsync(CommandContext ctx)
             {
                 CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-                return ctx.InfoAsync(this.ModuleColor, "fmt-lf-gore", gcfg.LinkfilterSettings.BlockDisturbingWebsites);
+                return ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_lf_gore(gcfg.LinkfilterSettings.BlockDisturbingWebsites));
             }
             #endregion
 
@@ -115,20 +115,20 @@ namespace TheGodfather.Modules.Administration
             [Command("iploggers"), Priority(1)]
             [Aliases("ip", "loggers")]
             public async Task IpLoggersAsync(CommandContext ctx,
-                                            [Description("desc-enable")] bool enable)
+                                            [Description(TranslationKey.desc_enable)] bool enable)
             {
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.LinkfilterIpLoggersEnabled = enable;
                 });
                 await ctx.InfoAsync(this.ModuleColor);
-                await this.LogConfigChangeAsync(ctx, "str-lf-ip", enable);
+                await this.LogConfigChangeAsync(ctx, TranslationKey.str_lf_ip, enable);
             }
 
             [Command("iploggers"), Priority(0)]
             public Task IpLoggersAsync(CommandContext ctx)
             {
                 CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-                return ctx.InfoAsync(this.ModuleColor, "fmt-lf-ip", gcfg.LinkfilterSettings.BlockIpLoggingWebsites);
+                return ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_lf_ip(gcfg.LinkfilterSettings.BlockIpLoggingWebsites));
             }
             #endregion
 
@@ -136,31 +136,31 @@ namespace TheGodfather.Modules.Administration
             [Command("shorteners"), Priority(1)]
             [Aliases("urlshort", "shortenurl", "urlshorteners")]
             public async Task ShortenersAsync(CommandContext ctx,
-                                             [Description("desc-enable")] bool enable)
+                                             [Description(TranslationKey.desc_enable)] bool enable)
             {
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.LinkfilterUrlShortenersEnabled = enable;
                 });
                 await ctx.InfoAsync(this.ModuleColor);
-                await this.LogConfigChangeAsync(ctx, "str-lf-urlshort", enable);
+                await this.LogConfigChangeAsync(ctx, TranslationKey.str_lf_urlshort, enable);
             }
 
             [Command("shorteners"), Priority(0)]
             public Task ShortenersAsync(CommandContext ctx)
             {
                 CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-                return ctx.InfoAsync(this.ModuleColor, "fmt-lf-urlshort", gcfg.LinkfilterSettings.BlockUrlShorteners);
+                return ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_lf_urlshort(gcfg.LinkfilterSettings.BlockUrlShorteners));
             }
             #endregion
 
 
             #region internals
-            private Task LogConfigChangeAsync(CommandContext ctx, string key, bool value)
+            private Task LogConfigChangeAsync(CommandContext ctx, TranslationKey key, bool value)
             {
                 return ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                     emb.WithColor(this.ModuleColor);
-                    emb.AddLocalizedField(key, value ? "str-on" : "str-off");
+                    emb.AddLocalizedField(key, value ? TranslationKey.str_on : TranslationKey.str_off);
                 });
             }
             #endregion

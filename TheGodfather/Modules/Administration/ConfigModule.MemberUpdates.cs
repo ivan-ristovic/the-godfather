@@ -21,23 +21,23 @@ namespace TheGodfather.Modules.Administration
             #region config welcome
             [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("desc-welcome")] bool enable,
-                                               [Description("desc-welcome-chn")] DiscordChannel? chn = null)
+                                               [Description(TranslationKey.desc_welcome)] bool enable,
+                                               [Description(TranslationKey.desc_welcome_chn)] DiscordChannel? chn = null)
             {
                 if (enable) {
                     if (chn is null)
-                        throw new CommandFailedException(ctx, "cmd-err-chn-none");
+                        throw new CommandFailedException(ctx, TranslationKey.cmd_err_chn_none);
                     await this.WelcomeChannelAsync(ctx, chn);
                 } else {
                     await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.WelcomeChannelId = default);
 
                     await ctx.GuildLogAsync(emb => {
-                        emb.WithLocalizedTitle("evt-cfg-upd");
+                        emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                         emb.WithColor(this.ModuleColor);
-                        emb.AddLocalizedField("str-memupd-w", "str-off", inline: true);
+                        emb.AddLocalizedField(TranslationKey.str_memupd_w, TranslationKey.str_off, inline: true);
                     });
 
-                    await ctx.InfoAsync(this.ModuleColor, "str-cfg-welcome-off");
+                    await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_cfg_welcome_off);
                 }
             }
 
@@ -47,9 +47,9 @@ namespace TheGodfather.Modules.Administration
                 GuildConfig gcfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
                 DiscordChannel? wchn = gcfg.WelcomeChannelId != default ? ctx.Guild.GetChannel(gcfg.WelcomeChannelId) : null;
                 if (wchn is null) {
-                    await ctx.InfoAsync(this.ModuleColor, "str-cfg-welcome-get-off");
+                    await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_cfg_welcome_get_off);
                 } else {
-                    await ctx.InfoAsync(this.ModuleColor, "str-cfg-welcome-get-on", wchn.Mention);
+                    await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_cfg_welcome_get_on(wchn.Mention));
                 }
             }
             #endregion
@@ -58,22 +58,22 @@ namespace TheGodfather.Modules.Administration
             [Command("channel")]
             [Aliases("chn", "ch", "c")]
             public async Task WelcomeChannelAsync(CommandContext ctx,
-                                                 [Description("desc-welcome-chn")] DiscordChannel? wchn = null)
+                                                 [Description(TranslationKey.desc_welcome_chn)] DiscordChannel? wchn = null)
             {
                 wchn ??= ctx.Channel;
 
                 if (wchn.Type != ChannelType.Text)
-                    throw new CommandFailedException(ctx, "cmd-err-chn-type-text");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_chn_type_text);
 
                 await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.WelcomeChannelId = wchn.Id);
 
                 await ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                     emb.WithColor(this.ModuleColor);
-                    emb.AddLocalizedField("str-memupd-wc", wchn.Mention, inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_memupd_wc, wchn.Mention, inline: true);
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, "fmt-memupd-wc", wchn.Mention);
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_memupd_wc(wchn.Mention));
             }
             #endregion
 
@@ -81,21 +81,21 @@ namespace TheGodfather.Modules.Administration
             [Command("message")]
             [Aliases("msg", "m")]
             public async Task WelcomeMessageAsync(CommandContext ctx,
-                                                 [RemainingText, Description("desc-welcome-msg")] string message)
+                                                 [RemainingText, Description(TranslationKey.desc_welcome_msg)] string message)
             {
-                if (string.IsNullOrWhiteSpace(message) || message.Length < 3 || message.Length > 120)
-                    throw new CommandFailedException(ctx, "cmd-err-memupd-msg", GuildConfig.MemberUpdateMessageLimit);
+                if (string.IsNullOrWhiteSpace(message) || message.Length < 3 || message.Length > GuildConfig.MemberUpdateMessageLimit)
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_memupd_msg(GuildConfig.MemberUpdateMessageLimit));
 
                 await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.WelcomeMessage = message);
 
                 message = Formatter.BlockCode(Formatter.Strip(message));
                 await ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                     emb.WithColor(this.ModuleColor);
-                    emb.AddLocalizedField("str-memupd-wm", message, inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_memupd_wm, message, inline: true);
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, "fmt-memupd-wm", message);
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_memupd_wm(message));
             }
             #endregion
         }
@@ -109,23 +109,23 @@ namespace TheGodfather.Modules.Administration
             #region config leave
             [GroupCommand, Priority(1)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("desc-leave")] bool enable,
-                                               [Description("desc-leave-chn")] DiscordChannel? chn = null)
+                                               [Description(TranslationKey.desc_leave)] bool enable,
+                                               [Description(TranslationKey.desc_leave_chn)] DiscordChannel? chn = null)
             {
                 if (enable) {
                     if (chn is null)
-                        throw new CommandFailedException(ctx, "cmd-err-chn-none");
+                        throw new CommandFailedException(ctx, TranslationKey.cmd_err_chn_none);
                     await this.LeaveChanneAsync(ctx, chn);
                 } else {
                     await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.LeaveChannelId = default);
 
                     await ctx.GuildLogAsync(emb => {
-                        emb.WithLocalizedTitle("evt-cfg-upd");
+                        emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                         emb.WithColor(this.ModuleColor);
-                        emb.AddLocalizedField("str-memupd-l", "str-off", inline: true);
+                        emb.AddLocalizedField(TranslationKey.str_memupd_l, TranslationKey.str_off, inline: true);
                     });
 
-                    await ctx.InfoAsync(this.ModuleColor, "str-cfg-leave-off");
+                    await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_cfg_leave_off);
                 }
             }
 
@@ -135,9 +135,9 @@ namespace TheGodfather.Modules.Administration
                 GuildConfig gcfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
                 DiscordChannel? lchn = gcfg.LeaveChannelId != default ? ctx.Guild.GetChannel(gcfg.LeaveChannelId) : null;
                 if (lchn is null) {
-                    await ctx.InfoAsync(this.ModuleColor, "str-cfg-leave-get-off");
+                    await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_cfg_leave_get_off);
                 } else {
-                    await ctx.InfoAsync(this.ModuleColor, "str-cfg-leave-get-on", lchn.Mention);
+                    await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_cfg_leave_get_on(lchn.Mention));
                 }
             }
             #endregion
@@ -146,22 +146,22 @@ namespace TheGodfather.Modules.Administration
             [Command("channel")]
             [Aliases("chn", "ch", "c")]
             public async Task LeaveChanneAsync(CommandContext ctx,
-                                                 [Description("desc-leave-chn")] DiscordChannel? lchn = null)
+                                                 [Description(TranslationKey.desc_leave_chn)] DiscordChannel? lchn = null)
             {
                 lchn ??= ctx.Channel;
 
                 if (lchn.Type != ChannelType.Text)
-                    throw new CommandFailedException(ctx, "cmd-err-chn-type-text");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_chn_type_text);
 
                 await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.WelcomeChannelId = lchn.Id);
 
                 await ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                     emb.WithColor(this.ModuleColor);
-                    emb.AddLocalizedField("str-memupd-lc", lchn.Mention, inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_memupd_lc, lchn.Mention, inline: true);
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, "fmt-memupd-lc", lchn.Mention);
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_memupd_lc(lchn.Mention));
             }
             #endregion
 
@@ -169,21 +169,21 @@ namespace TheGodfather.Modules.Administration
             [Command("message")]
             [Aliases("msg", "m")]
             public async Task WelcomeMessageAsync(CommandContext ctx,
-                                                 [RemainingText, Description("desc-leave-msg")] string message)
+                                                 [RemainingText, Description(TranslationKey.desc_leave_msg)] string message)
             {
                 if (string.IsNullOrWhiteSpace(message) || message.Length < 3 || message.Length > GuildConfig.MemberUpdateMessageLimit)
-                    throw new CommandFailedException(ctx, "cmd-err-memupd-msg", GuildConfig.MemberUpdateMessageLimit);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_memupd_msg(GuildConfig.MemberUpdateMessageLimit));
 
                 await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.WelcomeMessage = message);
 
                 message = Formatter.BlockCode(Formatter.Strip(message));
                 await ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                     emb.WithColor(this.ModuleColor);
-                    emb.AddLocalizedField("str-memupd-lm", message, inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_memupd_lm, message, inline: true);
                 });
 
-                await ctx.InfoAsync(this.ModuleColor, "fmt-memupd-lm", message);
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_memupd_lm(message));
             }
             #endregion
         }

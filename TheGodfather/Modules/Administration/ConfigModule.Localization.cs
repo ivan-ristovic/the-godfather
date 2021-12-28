@@ -18,28 +18,28 @@ namespace TheGodfather.Modules.Administration
             #region config localization
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("desc-locale")] string locale)
+                                         [Description(TranslationKey.desc_locale)] string locale)
                 => this.SetLocaleAsync(ctx, locale);
 
             [GroupCommand, Priority(0)]
             public Task ExecuteGroupAsync(CommandContext ctx)
-                => ctx.InfoAsync(this.ModuleColor, "fmt-locale", this.Service.GetGuildLocale(ctx.Guild.Id));
+                => ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_locale(this.Service.GetGuildLocale(ctx.Guild.Id)));
             #endregion
 
             #region config localization set
             [Command("set")]
             [Aliases("change")]
             public async Task SetLocaleAsync(CommandContext ctx,
-                                            [Description("desc-locale")] string locale)
+                                            [Description(TranslationKey.desc_locale)] string locale)
             {
                 if (!await this.Service.SetGuildLocaleAsync(ctx.Guild.Id, locale))
-                    throw new CommandFailedException(ctx, "cmd-err-locale");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_locale);
 
                 await ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle("evt-locale-change", locale);
+                    emb.WithLocalizedTitle(TranslationKey.evt_locale_change(locale));
                     emb.WithColor(this.ModuleColor);
                 });
-                await ctx.InfoAsync(this.ModuleColor, "evt-locale-change", locale);
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_locale_change(locale));
             }
             #endregion
 
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Administration
             public Task ListLocalesAsync(CommandContext ctx)
             {
                 IReadOnlyList<string> locales = this.Service.AvailableLocales;
-                return ctx.PaginateAsync("str-locales-all", locales, s => s, this.ModuleColor);
+                return ctx.PaginateAsync(TranslationKey.str_locales_all, locales, s => s, this.ModuleColor);
             }
             #endregion
         }

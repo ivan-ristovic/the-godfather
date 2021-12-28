@@ -45,21 +45,24 @@ namespace TheGodfather.Attributes
         }
 
         public static string ToLocalizedDescriptionKey(this ModuleType type)
+            => type.ToLocalizedDescription(null).Key;
+
+        public static TranslationKey ToLocalizedDescription(this ModuleType type, string? cmdList)
         {
             return type switch {
-                ModuleType.Administration => "m-admin",
-                ModuleType.Chickens => "m-chicken",
-                ModuleType.Currency => "m-currency",
-                ModuleType.Games => "m-games",
-                ModuleType.Misc => "m-misc",
-                ModuleType.Music => "m-music",
-                ModuleType.Owner => "m-owner",
-                ModuleType.Polls => "m-polls",
-                ModuleType.Reactions => "m-reactions",
-                ModuleType.Reminders => "m-reminders",
-                ModuleType.Uncategorized => "m-uncat",
-                ModuleType.Searches => "m-search",
-                _ => "h-desc-none",
+                ModuleType.Administration => TranslationKey.m_admin(cmdList),
+                ModuleType.Chickens => TranslationKey.m_chicken(cmdList),
+                ModuleType.Currency => TranslationKey.m_currency(cmdList),
+                ModuleType.Games => TranslationKey.m_games(cmdList),
+                ModuleType.Misc => TranslationKey.m_misc(cmdList),
+                ModuleType.Music => TranslationKey.m_music(cmdList),
+                ModuleType.Owner => TranslationKey.m_owner(cmdList),
+                ModuleType.Polls => TranslationKey.m_polls(cmdList),
+                ModuleType.Reactions => TranslationKey.m_reactions(cmdList),
+                ModuleType.Reminders => TranslationKey.m_reminders(cmdList),
+                ModuleType.Uncategorized => TranslationKey.m_uncat(cmdList),
+                ModuleType.Searches => TranslationKey.m_search(cmdList),
+                _ => TranslationKey.h_desc_none,
             };
         }
     }

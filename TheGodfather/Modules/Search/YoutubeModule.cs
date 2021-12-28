@@ -23,7 +23,7 @@ namespace TheGodfather.Modules.Search
         #region youtube
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [RemainingText, Description("desc-query")] string query)
+                                     [RemainingText, Description(TranslationKey.desc_query)] string query)
             => this.SearchAndSendResultsAsync(ctx, 5, query);
         #endregion
 
@@ -31,8 +31,8 @@ namespace TheGodfather.Modules.Search
         [Command("search")]
         [Aliases("s")]
         public Task AdvancedSearchAsync(CommandContext ctx,
-                                       [Description("desc-res-amount")] int amount,
-                                       [RemainingText, Description("desc-query")] string query)
+                                       [Description(TranslationKey.desc_res_amount)] int amount,
+                                       [RemainingText, Description(TranslationKey.desc_query)] string query)
             => this.SearchAndSendResultsAsync(ctx, amount, query);
         #endregion
 
@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Search
         [Description("Advanced youtube search for videos only.")]
         [Aliases("searchvideos", "sv", "searchv", "video")]
         public Task SearchVideoAsync(CommandContext ctx,
-                                    [RemainingText, Description("desc-query")] string query)
+                                    [RemainingText, Description(TranslationKey.desc_query)] string query)
             => this.SearchAndSendResultsAsync(ctx, 5, query, "video");
         #endregion
 
@@ -49,7 +49,7 @@ namespace TheGodfather.Modules.Search
         [Command("searchchannel")]
         [Aliases("searchchannels", "sc", "searchc", "channel")]
         public Task SearchChannelAsync(CommandContext ctx,
-                                      [RemainingText, Description("desc-query")] string query)
+                                      [RemainingText, Description(TranslationKey.desc_query)] string query)
             => this.SearchAndSendResultsAsync(ctx, 5, query, "channel");
         #endregion
 
@@ -57,7 +57,7 @@ namespace TheGodfather.Modules.Search
         [Command("searchplaylist")]
         [Aliases("searchplaylists", "sp", "searchp", "playlist")]
         public Task SearchPlaylistAsync(CommandContext ctx,
-                                       [RemainingText, Description("desc-query")] string query)
+                                       [RemainingText, Description(TranslationKey.desc_query)] string query)
             => this.SearchAndSendResultsAsync(ctx, 5, query, "playlist");
         #endregion
 
@@ -66,37 +66,37 @@ namespace TheGodfather.Modules.Search
         [Aliases("sub", "follow")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public Task SubscribeAsync(CommandContext ctx,
-                                  [Description("desc-sub-chn")] DiscordChannel chn,
-                                  [Description("desc-sub-yt")] Uri url,
-                                  [RemainingText, Description("desc-name-f")] string? name = null)
+                                  [Description(TranslationKey.desc_sub_chn)] DiscordChannel chn,
+                                  [Description(TranslationKey.desc_sub_yt)] Uri url,
+                                  [RemainingText, Description(TranslationKey.desc_name_f)] string? name = null)
             => this.SubscribeAsync(ctx, chn, url.AbsoluteUri, name);
         
         [Command("subscribe"), Priority(4)]
         public Task SubscribeAsync(CommandContext ctx,
-                                  [Description("desc-sub-yt")] Uri url,
-                                  [Description("desc-sub-chn")] DiscordChannel chn,
-                                  [RemainingText, Description("desc-name-f")] string? name = null)
+                                  [Description(TranslationKey.desc_sub_yt)] Uri url,
+                                  [Description(TranslationKey.desc_sub_chn)] DiscordChannel chn,
+                                  [RemainingText, Description(TranslationKey.desc_name_f)] string? name = null)
             => this.SubscribeAsync(ctx, chn ?? ctx.Channel, url.AbsoluteUri, name);
 
         [Command("subscribe"), Priority(3)]
         public Task SubscribeAsync(CommandContext ctx,
-                                  [Description("desc-sub-yt-username")] string username,
-                                  [Description("desc-sub-chn")] DiscordChannel? chn = null,
-                                  [RemainingText, Description("desc-name-f")] string? name = null)
+                                  [Description(TranslationKey.desc_sub_yt_username)] string username,
+                                  [Description(TranslationKey.desc_sub_chn)] DiscordChannel? chn = null,
+                                  [RemainingText, Description(TranslationKey.desc_name_f)] string? name = null)
             => this.SubscribeAsync(ctx, chn ?? ctx.Channel, username, name);
 
         [Command("subscribe"), Priority(2)]
         public async Task SubscribeAsync(CommandContext ctx,
-                                        [Description("desc-sub-chn")] DiscordChannel chn,
-                                        [Description("desc-sub-yt-username")] string username,
-                                        [RemainingText, Description("desc-name-f")] string? name = null)
+                                        [Description(TranslationKey.desc_sub_chn)] DiscordChannel chn,
+                                        [Description(TranslationKey.desc_sub_yt_username)] string username,
+                                        [RemainingText, Description(TranslationKey.desc_name_f)] string? name = null)
         {
             if (chn.Type != ChannelType.Text)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-chn-type-text");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
 
             string? feed = await this.Service.GetRssUrlForChannel(username);
             if (feed is null)
-                throw new CommandFailedException(ctx, "cmd-err-sub-yt");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_yt);
 
             string fname = string.IsNullOrWhiteSpace(name) ? username : name;
             await ctx.Services.GetRequiredService<RssFeedsService>().SubscribeAsync(ctx.Guild.Id, chn.Id, feed, fname);
@@ -105,15 +105,15 @@ namespace TheGodfather.Modules.Search
 
         [Command("subscribe"), Priority(1)]
         public Task SubscribeAsync(CommandContext ctx,
-                                  [Description("desc-sub-yt-username")] string username,
-                                  [RemainingText, Description("desc-name-f")] string? name = null)
+                                  [Description(TranslationKey.desc_sub_yt_username)] string username,
+                                  [RemainingText, Description(TranslationKey.desc_name_f)] string? name = null)
             => this.SubscribeAsync(ctx, ctx.Channel, username, name);
 
 
         [Command("subscribe"), Priority(0)]
         public Task SubscribeAsync(CommandContext ctx,
-                                  [Description("desc-sub-yt-username")] Uri url,
-                                  [RemainingText, Description("desc-name-f")] string? name = null)
+                                  [Description(TranslationKey.desc_sub_yt_username)] Uri url,
+                                  [RemainingText, Description(TranslationKey.desc_name_f)] string? name = null)
             => this.SubscribeAsync(ctx, ctx.Channel, url.AbsoluteUri, name);
         #endregion
 
@@ -122,23 +122,23 @@ namespace TheGodfather.Modules.Search
         [Aliases("unfollow", "unsub")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task UnsubscribeAsync(CommandContext ctx,
-                                          [Description("desc-sub-name-url")] string subscription)
+                                          [Description(TranslationKey.desc_sub_name_url)] string subscription)
         {
             string? url = await this.Service.GetRssUrlForChannel(subscription);
             if (url is null)
-                throw new CommandFailedException(ctx, "cmd-err-sub-yt");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_yt);
 
             RssFeedsService rss = ctx.Services.GetRequiredService<RssFeedsService>();
             RssSubscription? sub = await rss.Subscriptions.GetByNameAsync((ctx.Guild.Id, ctx.Channel.Id), subscription);
             if (sub is null) {
                 RssFeed? feed = await rss.GetByUrlAsync(url);
                 if (feed is null)
-                    throw new CommandFailedException(ctx, "cmd-err-sub-not");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_fail(subscription));
                 sub = await rss.Subscriptions.GetAsync((ctx.Guild.Id, ctx.Channel.Id), feed.Id);
             }
 
             if (sub is null)
-                throw new CommandFailedException(ctx, "cmd-err-sub-not");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_fail(subscription));
             await rss.Subscriptions.RemoveAsync(sub);
             await ctx.InfoAsync(this.ModuleColor);
         }
@@ -149,11 +149,11 @@ namespace TheGodfather.Modules.Search
         private async Task SearchAndSendResultsAsync(CommandContext ctx, int amount, string query, string? type = null)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-query");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_query);
 
             IReadOnlyList<SearchResult>? res = await this.Service.SearchAsync(query, amount, type);
             if (res is null) {
-                await ctx.FailAsync("cmd-err-res-none");
+                await ctx.FailAsync(TranslationKey.cmd_err_res_none);
                 return;
             }
 
@@ -165,8 +165,8 @@ namespace TheGodfather.Modules.Search
                 if (r.Snippet.Thumbnails is { })
                     emb.WithThumbnail(r.Snippet.Thumbnails.Default__.Url);
 
-                emb.AddLocalizedField("str-chn", r.Snippet.ChannelTitle, inline: true);
-                emb.AddLocalizedField("str-published", r.Snippet.PublishedAt, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_chn, r.Snippet.ChannelTitle, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_published, r.Snippet.PublishedAt, inline: true);
 
                 string? url = this.Service.GetUrlForResourceId(r.Id);
                 if (url is { })

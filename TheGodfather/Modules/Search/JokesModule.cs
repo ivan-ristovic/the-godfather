@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Search
         {
             string? joke = await JokesService.GetRandomJokeAsync();
             if (joke is null)
-                await ctx.FailAsync("cmd-err-res-none");
+                await ctx.FailAsync(TranslationKey.cmd_err_res_none);
             else
                 await ctx.Channel.EmbedAsync(joke, Emojis.Joy, this.ModuleColor);
         }
@@ -31,13 +31,13 @@ namespace TheGodfather.Modules.Search
         [Command("search")]
         [Aliases("s")]
         public async Task SearchAsync(CommandContext ctx,
-                                     [RemainingText, Description("desc-query")] string query)
+                                     [RemainingText, Description(TranslationKey.desc_query)] string query)
         {
             IReadOnlyList<string>? jokes = await JokesService.SearchForJokesAsync(query);
             if (jokes is null || !jokes.Any())
-                await ctx.FailAsync("cmd-err-res-none");
+                await ctx.FailAsync(TranslationKey.cmd_err_res_none);
             else
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Joy, "fmt-results", jokes.Take(5).JoinWith());
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Joy, TranslationKey.fmt_results(jokes.Take(5).JoinWith()));
         }
         #endregion
 
@@ -48,7 +48,7 @@ namespace TheGodfather.Modules.Search
         {
             string? joke = await JokesService.GetRandomYoMommaJokeAsync();
             if (joke is null)
-                await ctx.FailAsync("cmd-err-res-none");
+                await ctx.FailAsync(TranslationKey.cmd_err_res_none);
             else
                 await ctx.Channel.EmbedAsync(joke, Emojis.Joy, this.ModuleColor);
         }

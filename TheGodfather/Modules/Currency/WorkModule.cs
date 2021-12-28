@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Currency
         {
             string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
             string workStr = await this.Service.WorkAsync(ctx.Guild.Id, ctx.User.Id, currency);
-            await this.RespondWithWorkString(ctx, workStr, "str-work-footer");
+            await this.RespondWithWorkString(ctx, workStr, TranslationKey.str_work_footer);
         }
         #endregion
 
@@ -33,7 +33,7 @@ namespace TheGodfather.Modules.Currency
         {
             string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
             string workStr = await this.Service.StreetsAsync(ctx.Guild.Id, ctx.User.Id, currency);
-            await this.RespondWithWorkString(ctx, workStr, "str-work-streets-footer");
+            await this.RespondWithWorkString(ctx, workStr, TranslationKey.str_work_streets_footer);
         }
         #endregion
 
@@ -44,13 +44,13 @@ namespace TheGodfather.Modules.Currency
         {
             string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
             string workStr = await this.Service.CrimeAsync(ctx.Guild.Id, ctx.User.Id, currency);
-            await this.RespondWithWorkString(ctx, workStr, "str-work-crime-footer");
+            await this.RespondWithWorkString(ctx, workStr, TranslationKey.str_work_crime_footer);
         }
         #endregion
 
 
         #region internals
-        public Task RespondWithWorkString(CommandContext ctx, string str, string footer)
+        public Task RespondWithWorkString(CommandContext ctx, string str, TranslationKey footer)
         {
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(this.ModuleColor);

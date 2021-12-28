@@ -41,22 +41,22 @@ namespace TheGodfather.Modules.Administration
         [Command("setup"), UsesInteractivity]
         [Aliases("wizard")]
         public async Task SetupAsync(CommandContext ctx,
-                                    [Description("desc-setup-chn")] DiscordChannel? channel = null)
+                                    [Description(TranslationKey.desc_setup_chn)] DiscordChannel? channel = null)
         {
             channel ??= ctx.Channel;
 
             var gcfg = new GuildConfig();
-            await channel.LocalizedEmbedAsync(this.Localization, "str-setup");
+            await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.str_setup);
             await Task.Delay(TimeSpan.FromSeconds(10));
 
             await this.SetupPrefixAsync(gcfg, ctx, channel);
             await this.SetupLoggingAsync(gcfg, ctx, channel);
             await this.SetupBackupAsync(gcfg, ctx, channel);
 
-            gcfg.ReactionResponse = await ctx.WaitForBoolReplyAsync("q-setup-verbose", channel, false);
-            gcfg.SuggestionsEnabled = await ctx.WaitForBoolReplyAsync("q-setup-suggestions", channel, false);
-            gcfg.ActionHistoryEnabled = await ctx.WaitForBoolReplyAsync("q-setup-ah", channel, false);
-            gcfg.SilentLevelUpEnabled = await ctx.WaitForBoolReplyAsync("q-setup-lvlup", channel, false);
+            gcfg.ReactionResponse = await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_verbose, channel, false);
+            gcfg.SuggestionsEnabled = await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_suggestions, channel, false);
+            gcfg.ActionHistoryEnabled = await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_ah, channel, false);
+            gcfg.SilentLevelUpEnabled = await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_lvlup, channel, false);
 
             await this.SetupMemberUpdateMessagesAsync(gcfg, ctx, channel);
             await this.SetupMuteRoleAsync(gcfg, ctx, channel);
@@ -70,11 +70,11 @@ namespace TheGodfather.Modules.Administration
 
             await channel.SendMessageAsync(embed: gcfg.ToDiscordEmbed(ctx.Guild, this.Localization));
 
-            if (await ctx.WaitForBoolReplyAsync("q-setup-review", channel: channel)) {
+            if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_review, channel: channel)) {
                 await this.ApplySettingsAsync(ctx, gcfg);
-                await channel.EmbedAsync(this.Localization.GetString(ctx.Guild.Id, "str-done"), Emojis.CheckMarkSuccess);
+                await channel.EmbedAsync(this.Localization.GetString(ctx.Guild.Id, TranslationKey.str_done), Emojis.CheckMarkSuccess);
             } else {
-                await channel.InformFailureAsync(this.Localization.GetString(ctx.Guild.Id, "str-aborting"));
+                await channel.InformFailureAsync(this.Localization.GetString(ctx.Guild.Id, TranslationKey.str_aborting));
             }
         }
         #endregion
@@ -83,26 +83,26 @@ namespace TheGodfather.Modules.Administration
         [Command("levelup"), Priority(1)]
         [Aliases("lvlup", "lvl")]
         public async Task LevelUpAsync(CommandContext ctx,
-                                      [Description("desc-lvlup-s")] bool enable)
+                                      [Description(TranslationKey.desc_lvlup_s)] bool enable)
         {
             await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => {
                 cfg.SilentLevelUpEnabled = !enable;
             });
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle("evt-cfg-upd");
+                emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedField("str-lvlup-s", enable ? "str-on" : "str-off", inline: true);
+                emb.AddLocalizedField(TranslationKey.str_lvlup_s, enable ? TranslationKey.str_on : TranslationKey.str_off, inline: true);
             });
 
-            await ctx.InfoAsync(this.ModuleColor, enable ? "str-cfg-lvlup-on" : "str-cfg-lvlup-off");
+            await ctx.InfoAsync(this.ModuleColor, enable ? TranslationKey.str_cfg_lvlup_on : TranslationKey.str_cfg_lvlup_off);
         }
 
         [Command("levelup"), Priority(0)]
         public async Task LevelUpAsync(CommandContext ctx)
         {
             GuildConfig gcfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
-            await ctx.InfoAsync(this.ModuleColor, gcfg.SilentLevelUpEnabled ? "str-cfg-lvlup-get-on" : "str-cfg-lvlup-get-off");
+            await ctx.InfoAsync(this.ModuleColor, gcfg.SilentLevelUpEnabled ? TranslationKey.str_cfg_lvlup_get_on : TranslationKey.str_cfg_lvlup_get_off);
         }
         #endregion
 
@@ -110,26 +110,26 @@ namespace TheGodfather.Modules.Administration
         [Command("silent"), Priority(1)]
         [Aliases("reactionresponse", "silentresponse", "s", "rr")]
         public async Task SilentResponseAsync(CommandContext ctx,
-                                             [Description("desc-replies-s")] bool enable)
+                                             [Description(TranslationKey.desc_replies_s)] bool enable)
         {
             await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => {
                 cfg.ReactionResponse = enable;
             });
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle("evt-cfg-upd");
+                emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedField("str-replies-s", enable ? "str-on" : "str-off", inline: true);
+                emb.AddLocalizedField(TranslationKey.str_replies_s, enable ? TranslationKey.str_on : TranslationKey.str_off, inline: true);
             });
 
-            await ctx.InfoAsync(this.ModuleColor, enable ? "str-cfg-silent-on" : "str-cfg-silent-off");
+            await ctx.InfoAsync(this.ModuleColor, enable ? TranslationKey.str_cfg_silent_on : TranslationKey.str_cfg_silent_off);
         }
 
         [Command("silent"), Priority(0)]
         public Task SilentResponseAsync(CommandContext ctx)
         {
             CachedGuildConfig gcfg = this.Service.GetCachedConfig(ctx.Guild.Id);
-            return ctx.InfoAsync(this.ModuleColor, gcfg.ReactionResponse ? "str-cfg-silent-get-on" : "str-cfg-silent-get-off");
+            return ctx.InfoAsync(this.ModuleColor, gcfg.ReactionResponse ? TranslationKey.str_cfg_silent_get_on : TranslationKey.str_cfg_silent_get_off);
         }
         #endregion
 
@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Administration
         [Command("verbose"), Priority(1)]
         [Aliases("fullresponse", "verboseresponse", "v", "vr")]
         public Task VerboseResponseAsync(CommandContext ctx,
-                                        [Description("desc-replies-v")] bool enable)
+                                        [Description(TranslationKey.desc_replies_v)] bool enable)
             => this.SilentResponseAsync(ctx, !enable);
 
         [Command("verbose"), Priority(0)]
@@ -149,17 +149,17 @@ namespace TheGodfather.Modules.Administration
         [Command("currency"), Priority(1)]
         [Aliases("setcurrency", "curr", "$", "$$", "$$$")]
         public async Task CurrencyAsync(CommandContext ctx,
-                                       [Description("desc-currency")] string currency)
+                                       [Description(TranslationKey.desc_currency)] string currency)
         {
             if (string.IsNullOrWhiteSpace(currency) || currency.Length > GuildConfig.CurrencyLimit)
-                throw new CommandFailedException(ctx, "cmd-err-currency");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_currency(GuildConfig.CurrencyLimit));
 
             await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.Currency = currency);
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle("evt-cfg-upd");
+                emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedField("str-currency", currency, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_currency, currency, inline: true);
             });
 
             await this.CurrencyAsync(ctx);
@@ -169,7 +169,7 @@ namespace TheGodfather.Modules.Administration
         public Task CurrencyAsync(CommandContext ctx)
         {
             CachedGuildConfig gcfg = this.Service.GetCachedConfig(ctx.Guild.Id);
-            return ctx.InfoAsync(this.ModuleColor, Emojis.MoneyBag, "str-currency-get", gcfg.Currency);
+            return ctx.InfoAsync(this.ModuleColor, Emojis.MoneyBag, TranslationKey.str_currency_get(gcfg.Currency));
         }
         #endregion
 
@@ -177,24 +177,24 @@ namespace TheGodfather.Modules.Administration
         [Command("suggestions"), Priority(1)]
         [Aliases("suggestion", "cmdsug", "sugg", "sug", "help")]
         public async Task SuggestionsAsync(CommandContext ctx,
-                                          [Description("desc-suggestions")] bool enable)
+                                          [Description(TranslationKey.desc_suggestions)] bool enable)
         {
             await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.SuggestionsEnabled = enable);
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle("evt-cfg-upd");
+                emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedField("str-suggestions", enable ? "str-on" : "str-off", inline: true);
+                emb.AddLocalizedField(TranslationKey.str_suggestions, enable ? TranslationKey.str_on : TranslationKey.str_off, inline: true);
             });
 
-            await ctx.InfoAsync(this.ModuleColor, enable ? "str-cfg-suggest-on" : "str-cfg-suggest-off");
+            await ctx.InfoAsync(this.ModuleColor, enable ? TranslationKey.str_cfg_suggest_on : TranslationKey.str_cfg_suggest_off);
         }
 
         [Command("suggestions"), Priority(0)]
         public Task SuggestionsAsync(CommandContext ctx)
         {
             CachedGuildConfig gcfg = this.Service.GetCachedConfig(ctx.Guild.Id);
-            return ctx.InfoAsync(this.ModuleColor, gcfg.SuggestionsEnabled ? "str-cfg-suggest-get-on" : "str-cfg-suggest-get-off");
+            return ctx.InfoAsync(this.ModuleColor, gcfg.SuggestionsEnabled ? TranslationKey.str_cfg_suggest_get_on : TranslationKey.str_cfg_suggest_get_off);
         }
         #endregion
 
@@ -202,24 +202,24 @@ namespace TheGodfather.Modules.Administration
         [Command("actionhistory"), Priority(1)]
         [Aliases("history", "ah")]
         public async Task ActionHistoryAsync(CommandContext ctx,
-                                            [Description("desc-actionhistory")] bool enable)
+                                            [Description(TranslationKey.desc_actionhistory)] bool enable)
         {
             await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.ActionHistoryEnabled = enable);
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle("evt-cfg-upd");
+                emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                 emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedField("str-actionhistory", enable ? "str-on" : "str-off", inline: true);
+                emb.AddLocalizedField(TranslationKey.str_actionhistory, enable ? TranslationKey.str_on : TranslationKey.str_off, inline: true);
             });
 
-            await ctx.InfoAsync(this.ModuleColor, enable ? "str-cfg-ah-on" : "str-cfg-ah-off");
+            await ctx.InfoAsync(this.ModuleColor, enable ? TranslationKey.str_cfg_ah_on : TranslationKey.str_cfg_ah_off);
         }
 
         [Command("actionhistory"), Priority(0)]
         public async Task ActionHistoryAsync(CommandContext ctx)
         {
             GuildConfig gcfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
-            await ctx.InfoAsync(this.ModuleColor, gcfg.ActionHistoryEnabled ? "str-cfg-ah-get-on" : "str-cfg-ah-get-off");
+            await ctx.InfoAsync(this.ModuleColor, gcfg.ActionHistoryEnabled ? TranslationKey.str_cfg_ah_get_on : TranslationKey.str_cfg_ah_get_off);
         }
         #endregion
 
@@ -227,25 +227,25 @@ namespace TheGodfather.Modules.Administration
         [Command("muterole")]
         [Aliases("mr", "muterl", "mrl")]
         public async Task GetOrSetMuteRoleAsync(CommandContext ctx,
-                                               [Description("desc-muterole")] DiscordRole? muteRole = null)
+                                               [Description(TranslationKey.desc_muterole)] DiscordRole? muteRole = null)
         {
             if (muteRole is null) {
                 GuildConfig cfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
                 if (cfg.MuteRoleId == 0) {
-                    await ctx.InfoAsync(this.ModuleColor, "str-cfg-muterole-none");
+                    await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_cfg_muterole_none);
                     return;
                 }
 
                 muteRole = ctx.Guild.GetRole(cfg.MuteRoleId);
                 if (muteRole is null) {
-                    await ctx.FailAsync("err-muterole-404");
+                    await ctx.FailAsync(TranslationKey.err_muterole_404);
                     return;
                 }
             } else {
                 await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.MuteRoleId = muteRole.Id);
             }
 
-            await ctx.InfoAsync(this.ModuleColor, "fmt-muterole", muteRole.Name);
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_muterole(muteRole.Name));
         }
         #endregion
 
@@ -253,19 +253,19 @@ namespace TheGodfather.Modules.Administration
         [Command("tempmute")]
         [Aliases("tm", "tmute", "tmpmute", "tmpm")]
         public async Task GetOrSetMuteRoleCooldownAsync(CommandContext ctx,
-                                                       [Description("desc-cooldown")] TimeSpan? cooldown = null)
+                                                       [Description(TranslationKey.desc_cooldown)] TimeSpan? cooldown = null)
         {
             if (cooldown is null) {
                 GuildConfig cfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
                 cooldown = cfg.TempMuteCooldown;
             } else {
                 if (cooldown.Value.TotalSeconds is < GuildConfig.MinTempMuteCooldown or > GuildConfig.MaxTempMuteCooldown)
-                    throw new CommandFailedException(ctx, "cmd-err-range-cd", GuildConfig.MinTempMuteCooldown, GuildConfig.MaxTempMuteCooldown);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_range_cd(GuildConfig.MinTempMuteCooldown, GuildConfig.MaxTempMuteCooldown));
 
                 await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.TempMuteCooldownDb = cooldown);
             }
 
-            await ctx.InfoAsync(this.ModuleColor, "fmt-tm-cooldown", cooldown.Value.ToDurationString());
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_tm_cooldown(cooldown.Value.ToDurationString()));
         }
         #endregion
 
@@ -273,19 +273,19 @@ namespace TheGodfather.Modules.Administration
         [Command("tempban")]
         [Aliases("tb", "tban", "tmpban", "tmpb")]
         public async Task GetOrSetMuteRoleAsync(CommandContext ctx,
-                                               [Description("desc-cooldown")] TimeSpan? cooldown = null)
+                                               [Description(TranslationKey.desc_cooldown)] TimeSpan? cooldown = null)
         {
             if (cooldown is null) {
                 GuildConfig cfg = await this.Service.GetConfigAsync(ctx.Guild.Id);
                 cooldown = cfg.TempMuteCooldown;
             } else {
                 if (cooldown.Value.TotalSeconds is < GuildConfig.MinTempBanCooldown or > GuildConfig.MaxTempBanCooldown)
-                    throw new CommandFailedException(ctx, "cmd-err-range-cd", GuildConfig.MinTempBanCooldown, GuildConfig.MaxTempBanCooldown);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_range_cd(GuildConfig.MinTempBanCooldown, GuildConfig.MaxTempBanCooldown));
 
                 await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.TempBanCooldownDb = cooldown);
             }
 
-            await ctx.InfoAsync(this.ModuleColor, "fmt-tb-cooldown", cooldown.Value.ToDurationString());
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_tb_cooldown(cooldown.Value.ToDurationString()));
         }
         #endregion
 
@@ -294,17 +294,17 @@ namespace TheGodfather.Modules.Administration
         [Aliases("default", "def", "s", "rr")]
         public async Task ResetAsync(CommandContext ctx)
         {
-            if (!await ctx.WaitForBoolReplyAsync("q-setup-reset"))
+            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_reset))
                 return;
 
             await this.ApplySettingsAsync(ctx, new GuildConfig());
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle("evt-cfg-reset");
+                emb.WithLocalizedTitle(TranslationKey.evt_cfg_reset);
                 emb.WithColor(this.ModuleColor);
             });
 
-            await ctx.InfoAsync(this.ModuleColor, "str-cfg-reset");
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_cfg_reset);
         }
         #endregion
 
@@ -312,17 +312,17 @@ namespace TheGodfather.Modules.Administration
         #region internals
         private async Task SetupPrefixAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
-            if (await ctx.WaitForBoolReplyAsync("q-setup-prefix", channel: channel, reply: false)) {
-                await channel.LocalizedEmbedAsync(this.Localization, "q-setup-prefix-new", GuildConfig.PrefixLimit);
+            if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_prefix, channel: channel, reply: false)) {
+                await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_prefix_new(GuildConfig.PrefixLimit));
                 InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User, m => m.Content.Length <= GuildConfig.PrefixLimit);
-                gcfg.Prefix = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : mctx.Result.Content;
+                gcfg.Prefix = mctx.TimedOut ? throw new CommandFailedException(ctx, TranslationKey.str_timeout) : mctx.Result.Content;
             }
         }
 
         private async Task SetupLoggingAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
-            if (await ctx.WaitForBoolReplyAsync("q-setup-log", channel: channel, reply: false)) {
-                await channel.LocalizedEmbedAsync(this.Localization, "q-setup-log-chn");
+            if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_log, channel: channel, reply: false)) {
+                await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_log_chn);
                 DiscordChannel? logchn = await ctx.Client.GetInteractivity().WaitForChannelMentionAsync(channel, ctx.User);
                 gcfg.LogChannelId = logchn?.Id ?? default;
             }
@@ -330,10 +330,10 @@ namespace TheGodfather.Modules.Administration
 
         private async Task SetupBackupAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
-            if (await ctx.WaitForBoolReplyAsync("q-setup-bak", channel: channel, reply: false)) {
+            if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_bak, channel: channel, reply: false)) {
                 gcfg.BackupEnabled = true;
-                if (await ctx.WaitForBoolReplyAsync("q-setup-bak-ex", channel: channel, reply: false)) {
-                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-bak-ex-list");
+                if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_bak_ex, channel: channel, reply: false)) {
+                    await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_bak_ex_list);
                     InteractivityResult<DiscordMessage> res = await ctx.Client.GetInteractivity().WaitForMessageAsync(
                         msg => msg.Author == ctx.User && msg.Channel == channel && msg.MentionedChannels.Any()
                     );
@@ -355,8 +355,8 @@ namespace TheGodfather.Modules.Administration
             {
                 InteractivityExtension interactivity = ctx.Client.GetInteractivity();
 
-                if (await ctx.WaitForBoolReplyAsync(welcome ? "q-setup-memupd-wm" : "q-setup-memupd-lm", channel: channel, reply: false)) {
-                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-memupd-chn");
+                if (await ctx.WaitForBoolReplyAsync(welcome ? TranslationKey.q_setup_memupd_wm : TranslationKey.q_setup_memupd_lm, channel: channel, reply: false)) {
+                    await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_memupd_chn);
 
                     DiscordChannel? chn = await interactivity.WaitForChannelMentionAsync(channel, ctx.User);
                     if (chn is { } && chn.Type == ChannelType.Text) {
@@ -366,11 +366,11 @@ namespace TheGodfather.Modules.Administration
                             gcfg.LeaveChannelId = chn?.Id ?? default;
                     }
 
-                    if (await ctx.WaitForBoolReplyAsync("q-setup-memupd-msg", channel: channel, reply: false)) {
-                        await channel.LocalizedEmbedAsync(this.Localization, "q-setup-memupd-msg-new");
+                    if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_memupd_msg, channel: channel, reply: false)) {
+                        await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_memupd_msg_new);
                         InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User, m => m.Content.Length <= 128);
                         if (mctx.TimedOut) {
-                            throw new CommandFailedException(ctx, "str-timeout");
+                            throw new CommandFailedException(ctx, TranslationKey.str_timeout);
                         } else {
                             if (welcome)
                                 gcfg.WelcomeMessage = mctx.Result.Content;
@@ -386,16 +386,16 @@ namespace TheGodfather.Modules.Administration
         {
             DiscordRole? muteRole = null;
 
-            if (await ctx.WaitForBoolReplyAsync("q-setup-muterole", channel: channel, reply: false)) {
-                await channel.LocalizedEmbedAsync(this.Localization, "q-setup-muterole-new");
+            if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_muterole, channel: channel, reply: false)) {
+                await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_muterole_new);
                 InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User, m => m.MentionedRoles.Count == 1);
-                muteRole = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : mctx.Result.MentionedRoles.FirstOrDefault();
+                muteRole = mctx.TimedOut ? throw new CommandFailedException(ctx, TranslationKey.str_timeout) : mctx.Result.MentionedRoles.FirstOrDefault();
             }
 
             try {
                 muteRole ??= await ctx.Services.GetRequiredService<AntispamService>().GetOrCreateMuteRoleAsync(ctx.Guild);
             } catch (UnauthorizedException) {
-                await channel.InformFailureAsync("cmd-err-role-403");
+                await channel.InformFailureAsync(this.Localization.GetString(ctx.Guild.Id, TranslationKey.cmd_err_role_403));
             }
 
             gcfg.MuteRoleId = muteRole?.Id ?? 0;
@@ -403,134 +403,134 @@ namespace TheGodfather.Modules.Administration
 
         private async Task SetupLinkfilterAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
-            if (await ctx.WaitForBoolReplyAsync("q-setup-lf", channel: channel, reply: false)) {
+            if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_lf, channel: channel, reply: false)) {
                 gcfg.LinkfilterSettings.Enabled = true;
-                gcfg.LinkfilterSettings.BlockDiscordInvites = await ctx.WaitForBoolReplyAsync("q-setup-lf-invites", channel: channel, reply: false);
-                gcfg.LinkfilterSettings.BlockBooterWebsites = await ctx.WaitForBoolReplyAsync("q-setup-lf-ddos", channel: channel, reply: false);
-                gcfg.LinkfilterSettings.BlockIpLoggingWebsites = await ctx.WaitForBoolReplyAsync("q-setup-lf-ip", channel: channel, reply: false);
-                gcfg.LinkfilterSettings.BlockDisturbingWebsites = await ctx.WaitForBoolReplyAsync("q-setup-lf-gore", channel: channel, reply: false);
-                gcfg.LinkfilterSettings.BlockUrlShorteners = await ctx.WaitForBoolReplyAsync("q-setup-lf-urlshort", channel: channel, reply: false);
+                gcfg.LinkfilterSettings.BlockDiscordInvites = await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_lf_invites, channel: channel, reply: false);
+                gcfg.LinkfilterSettings.BlockBooterWebsites = await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_lf_ddos, channel: channel, reply: false);
+                gcfg.LinkfilterSettings.BlockIpLoggingWebsites = await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_lf_ip, channel: channel, reply: false);
+                gcfg.LinkfilterSettings.BlockDisturbingWebsites = await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_lf_gore, channel: channel, reply: false);
+                gcfg.LinkfilterSettings.BlockUrlShorteners = await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_lf_urlshort, channel: channel, reply: false);
             }
         }
 
         private async Task SetupRatelimitAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
-            if (await ctx.WaitForBoolReplyAsync("q-setup-rl", channel: channel, reply: false)) {
+            if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_rl, channel: channel, reply: false)) {
                 gcfg.RatelimitEnabled = true;
 
-                if (await ctx.WaitForBoolReplyAsync("q-setup-rl-action", channel: channel, reply: false, args: gcfg.RatelimitAction.Humanize())) {
-                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-action", args: Enum.GetNames<Punishment.Action>().JoinWith(", "));
+                if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_rl_action(gcfg.RatelimitAction.Humanize()), channel: channel, reply: false)) {
+                    await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_new_action(Enum.GetNames<Punishment.Action>().JoinWith(", ")));
                     Punishment.Action? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
                     if (action is { })
                         gcfg.RatelimitAction = action.Value;
                 }
 
-                if (await ctx.WaitForBoolReplyAsync("q-setup-rl-sens", channel: channel, reply: false, args: gcfg.RatelimitSensitivity)) {
-                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-sens", RatelimitSettings.MinSensitivity, RatelimitSettings.MaxSensitivity);
+                if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_rl_sens(gcfg.RatelimitSensitivity), channel: channel, reply: false)) {
+                    await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_new_sens(RatelimitSettings.MinSensitivity, RatelimitSettings.MaxSensitivity));
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
                         m => short.TryParse(m.Content, out short sens) && sens >= RatelimitSettings.MinSensitivity && sens <= RatelimitSettings.MaxSensitivity
                     );
-                    gcfg.RatelimitSensitivity = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : short.Parse(mctx.Result.Content);
+                    gcfg.RatelimitSensitivity = mctx.TimedOut ? throw new CommandFailedException(ctx, TranslationKey.str_timeout) : short.Parse(mctx.Result.Content);
                 }
             }
         }
 
         private async Task SetupAntispamAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
-            if (await ctx.WaitForBoolReplyAsync("q-setup-as", channel: channel, reply: false)) {
+            if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_as, channel: channel, reply: false)) {
                 gcfg.AntispamEnabled = true;
 
-                if (await ctx.WaitForBoolReplyAsync("q-setup-as-action", channel: channel, reply: false, args: gcfg.AntispamAction.Humanize())) {
-                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-action", Enum.GetNames<Punishment.Action>().JoinWith(", "));
+                if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_as_action(gcfg.AntispamAction.Humanize()), channel: channel, reply: false)) {
+                    await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_new_action(Enum.GetNames<Punishment.Action>().JoinWith(", ")));
                     Punishment.Action? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
                     if (action is { })
                         gcfg.AntispamAction = action.Value;
                 }
 
-                if (await ctx.WaitForBoolReplyAsync("q-setup-as-sens", channel: channel, reply: false, args: gcfg.AntispamSensitivity)) {
-                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-sens", AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity);
+                if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_as_sens(gcfg.AntispamSensitivity), channel: channel, reply: false)) {
+                    await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_new_sens(AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity));
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
                         m => short.TryParse(m.Content, out short sens) && sens >= AntispamSettings.MinSensitivity && sens <= AntispamSettings.MaxSensitivity
                     );
-                    gcfg.AntispamSensitivity = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : short.Parse(mctx.Result.Content);
+                    gcfg.AntispamSensitivity = mctx.TimedOut ? throw new CommandFailedException(ctx, TranslationKey.str_timeout) : short.Parse(mctx.Result.Content);
                 }
             }
         }
 
         private async Task SetupAntiMentionAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
-            if (await ctx.WaitForBoolReplyAsync("q-setup-am", channel: channel, reply: false)) {
+            if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_am, channel: channel, reply: false)) {
                 gcfg.AntispamEnabled = true;
 
-                if (await ctx.WaitForBoolReplyAsync("q-setup-am-action", channel: channel, reply: false, args: gcfg.AntiMentionAction.Humanize())) {
-                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-action", Enum.GetNames<Punishment.Action>().JoinWith(", "));
+                if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_am_action(gcfg.AntiMentionAction.Humanize()), channel: channel, reply: false)) {
+                    await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_new_action(Enum.GetNames<Punishment.Action>().JoinWith(", ")));
                     Punishment.Action? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
                     if (action is { })
                         gcfg.AntiMentionAction = action.Value;
                 }
 
-                if (await ctx.WaitForBoolReplyAsync("q-setup-am-sens", channel: channel, reply: false, args: gcfg.AntiMentionSensitivity)) {
-                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-sens", AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity);
+                if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_am_sens(gcfg.AntiMentionSensitivity), channel: channel, reply: false)) {
+                    await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_new_sens(AntispamSettings.MinSensitivity, AntispamSettings.MaxSensitivity));
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
                         m => short.TryParse(m.Content, out short sens) && sens >= AntispamSettings.MinSensitivity && sens <= AntispamSettings.MaxSensitivity
                     );
-                    gcfg.AntiMentionSensitivity = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : short.Parse(mctx.Result.Content);
+                    gcfg.AntiMentionSensitivity = mctx.TimedOut ? throw new CommandFailedException(ctx, TranslationKey.str_timeout) : short.Parse(mctx.Result.Content);
                 }
             }
         }
 
         private async Task SetupAntifloodAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
-            if (await ctx.WaitForBoolReplyAsync("q-setup-af", channel: channel, reply: false)) {
+            if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_af, channel: channel, reply: false)) {
                 gcfg.AntifloodEnabled = true;
 
-                if (await ctx.WaitForBoolReplyAsync("q-setup-af-action", channel: channel, reply: false, args: gcfg.AntifloodAction.Humanize())) {
-                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-action", Enum.GetNames<Punishment.Action>().JoinWith(", "));
+                if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_af_action(gcfg.AntifloodAction.Humanize()), channel: channel, reply: false)) {
+                    await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_new_action(Enum.GetNames<Punishment.Action>().JoinWith(", ")));
                     Punishment.Action? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
                     if (action is { })
                         gcfg.AntifloodAction = action.Value;
                 }
 
-                if (await ctx.WaitForBoolReplyAsync("q-setup-af-sens", channel: channel, reply: false, args: gcfg.AntifloodSensitivity)) {
-                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-sens", AntifloodSettings.MinSensitivity, AntifloodSettings.MaxSensitivity);
+                if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_af_sens(gcfg.AntifloodSensitivity), channel: channel, reply: false)) {
+                    await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_new_sens(AntifloodSettings.MinSensitivity, AntifloodSettings.MaxSensitivity));
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
                         m => short.TryParse(m.Content, out short sens) && sens >= AntifloodSettings.MinSensitivity && sens <= AntifloodSettings.MaxSensitivity
                     );
-                    gcfg.AntifloodSensitivity = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : short.Parse(mctx.Result.Content);
+                    gcfg.AntifloodSensitivity = mctx.TimedOut ? throw new CommandFailedException(ctx, TranslationKey.str_timeout) : short.Parse(mctx.Result.Content);
                 }
 
-                if (await ctx.WaitForBoolReplyAsync("q-setup-af-cd", channel: channel, reply: false, args: gcfg.AntifloodCooldown)) {
-                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-cd", AntifloodSettings.MinCooldown, AntifloodSettings.MaxCooldown);
+                if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_af_cd(gcfg.AntifloodCooldown), channel: channel, reply: false)) {
+                    await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_new_cd(AntifloodSettings.MinCooldown, AntifloodSettings.MaxCooldown));
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
                         m => short.TryParse(m.Content, out short cd) && cd >= AntifloodSettings.MinCooldown && cd <= AntifloodSettings.MaxCooldown
                     );
-                    gcfg.AntifloodCooldown = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : short.Parse(mctx.Result.Content);
+                    gcfg.AntifloodCooldown = mctx.TimedOut ? throw new CommandFailedException(ctx, TranslationKey.str_timeout) : short.Parse(mctx.Result.Content);
                 }
             }
         }
 
         private async Task SetupAntiInstantLeaveAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
-            if (await ctx.WaitForBoolReplyAsync("q-setup-il", channel: channel, reply: false)) {
+            if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_il, channel: channel, reply: false)) {
                 gcfg.AntiInstantLeaveEnabled = true;
 
-                if (await ctx.WaitForBoolReplyAsync("q-setup-il-cd", channel: channel, reply: false, args: gcfg.AntifloodCooldown)) {
-                    await channel.LocalizedEmbedAsync(this.Localization, "q-setup-new-cd", AntiInstantLeaveSettings.MinCooldown, AntiInstantLeaveSettings.MaxCooldown);
+                if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_il_cd(gcfg.AntifloodCooldown), channel: channel, reply: false)) {
+                    await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_new_cd(AntiInstantLeaveSettings.MinCooldown, AntiInstantLeaveSettings.MaxCooldown));
                     InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User,
                         m => short.TryParse(m.Content, out short cd)
                           && cd >= AntiInstantLeaveSettings.MinCooldown && cd <= AntiInstantLeaveSettings.MaxCooldown
                     );
-                    gcfg.AntiInstantLeaveCooldown = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : short.Parse(mctx.Result.Content);
+                    gcfg.AntiInstantLeaveCooldown = mctx.TimedOut ? throw new CommandFailedException(ctx, TranslationKey.str_timeout) : short.Parse(mctx.Result.Content);
                 }
             }
         }
 
         private async Task SetupCurrencyAsync(GuildConfig gcfg, CommandContext ctx, DiscordChannel channel)
         {
-            if (await ctx.WaitForBoolReplyAsync("q-setup-currency", channel: channel, reply: false)) {
-                await channel.LocalizedEmbedAsync(this.Localization, "q-setup-currency-new", GuildConfig.CurrencyLimit);
+            if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_currency, channel: channel, reply: false)) {
+                await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_currency_new(GuildConfig.CurrencyLimit));
                 InteractivityResult<DiscordMessage> mctx = await channel.GetNextMessageAsync(ctx.User, m => m.Content.Length <= GuildConfig.CurrencyLimit);
-                gcfg.Currency = mctx.TimedOut ? throw new CommandFailedException(ctx, "str-timeout") : mctx.Result.Content;
+                gcfg.Currency = mctx.TimedOut ? throw new CommandFailedException(ctx, TranslationKey.str_timeout) : mctx.Result.Content;
             }
         }
 

@@ -30,13 +30,13 @@ namespace TheGodfather.Modules.Search.Extensions
                 emb.WithThumbnail(thumbnailUri);
             emb.WithUrl(msg.Url);
 
-            emb.AddLocalizedField("str-type", msg.PostType, inline: true, unknown: false);
-            emb.AddLocalizedField("str-author", msg.Author, inline: true);
-            emb.AddLocalizedField("str-comments", msg.CommentCount, inline: true);
-            emb.AddLocalizedField("str-upvotes", msg.UpvoteCount, inline: true);
-            emb.AddLocalizedField("str-upvote-ratio", msg.UpvoteRatio, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_type, msg.PostType, inline: true, unknown: false);
+            emb.AddLocalizedField(TranslationKey.str_author, msg.Author, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_comments, msg.CommentCount, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_upvotes, msg.UpvoteCount, inline: true);
+            emb.AddLocalizedField(TranslationKey.str_upvote_ratio, msg.UpvoteRatio, inline: true);
             if (msg.AwardCount > 0)
-                emb.AddLocalizedField("str-awards", msg.AwardCount, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_awards, msg.AwardCount, inline: true);
 
             return emb;
         }

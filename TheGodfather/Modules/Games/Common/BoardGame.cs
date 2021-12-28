@@ -90,12 +90,12 @@ namespace TheGodfather.Modules.Games.Common
                     try {
                         await mctx.Result.DeleteAsync();
                     } catch {
-                        await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, "cmd-err-game-perms"));
+                        await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, TranslationKey.cmd_err_game_perms));
                         this.deleteErrored = true;
                     }
                 }
             } else {
-                await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, "cmd-err-game-move", $"({row},{col})"));
+                await this.Channel.InformFailureAsync(lcs.GetString(this.Channel.GuildId, TranslationKey.cmd_err_game_move($"({row},{col})")));
             }
         }
 

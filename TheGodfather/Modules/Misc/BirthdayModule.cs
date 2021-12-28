@@ -25,26 +25,26 @@ namespace TheGodfather.Modules.Misc
         #region birthday
         [GroupCommand, Priority(3)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-bd-user")] DiscordUser user)
+                                     [Description(TranslationKey.desc_bd_user)] DiscordUser user)
             => this.ListAsync(ctx, user);
 
         [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-bd-chn")] DiscordChannel? channel = null)
+                                     [Description(TranslationKey.desc_bd_chn)] DiscordChannel? channel = null)
             => this.ListAsync(ctx, channel);
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-bd-user")] DiscordUser user,
-                                     [Description("desc-bd-chn")] DiscordChannel channel,
-                                     [Description("desc-bd-date")] string? date = null)
+                                     [Description(TranslationKey.desc_bd_user)] DiscordUser user,
+                                     [Description(TranslationKey.desc_bd_chn)] DiscordChannel channel,
+                                     [Description(TranslationKey.desc_bd_date)] string? date = null)
             => this.AddAsync(ctx, user, date, channel);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-bd-user")] DiscordUser user,
-                                     [Description("desc-bd-date")] string? date,
-                                     [Description("desc-bd-chn")] DiscordChannel? channel = null)
+                                     [Description(TranslationKey.desc_bd_user)] DiscordUser user,
+                                     [Description(TranslationKey.desc_bd_date)] string? date,
+                                     [Description(TranslationKey.desc_bd_chn)] DiscordChannel? channel = null)
             => this.AddAsync(ctx, user, date, channel);
         #endregion
 
@@ -52,22 +52,22 @@ namespace TheGodfather.Modules.Misc
         [Command("add"), Priority(0)]
         [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("desc-bd-user")] DiscordUser user,
-                                  [Description("desc-bd-date")] string? date,
-                                  [Description("desc-bd-chn")] DiscordChannel? channel = null)
+                                  [Description(TranslationKey.desc_bd_user)] DiscordUser user,
+                                  [Description(TranslationKey.desc_bd_date)] string? date,
+                                  [Description(TranslationKey.desc_bd_chn)] DiscordChannel? channel = null)
         {
             channel ??= ctx.Channel;
             if (channel.Type != ChannelType.Text)
-                throw new CommandFailedException(ctx, "cmd-err-chn-type-text");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_chn_type_text);
 
             DateTimeStyles styles = DateTimeStyles.NoCurrentDateDefault | DateTimeStyles.AssumeLocal | DateTimeStyles.AllowInnerWhite;
 
             DateTime dt = DateTime.Now;
             if (date is { } && !DateTime.TryParse(date, this.Localization.GetGuildCulture(ctx.Guild.Id).DateTimeFormat, styles, out dt))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-date-format");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_date_format);
 
             if (channel.Type != ChannelType.Text)
-                throw new CommandFailedException(ctx, "cmd-err-chn-type-text");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_chn_type_text);
 
             await this.Service.AddAsync(new Birthday {
                 ChannelId = channel.Id,
@@ -76,14 +76,14 @@ namespace TheGodfather.Modules.Misc
                 UserId = user.Id
             });
 
-            await ctx.InfoAsync(this.ModuleColor, "fmt-bd-add", channel.Mention, user.Mention, this.Localization.GetLocalizedTimeString(ctx.Guild.Id, dt));
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_bd_add(channel.Mention, user.Mention, this.Localization.GetLocalizedTimeString(ctx.Guild.Id, dt)));
         }
 
         [Command("add"), Priority(1)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-bd-user")] DiscordUser user,
-                            [Description("desc-bd-chn")] DiscordChannel? channel = null,
-                            [Description("desc-bd-date")] string? date = null)
+                            [Description(TranslationKey.desc_bd_user)] DiscordUser user,
+                            [Description(TranslationKey.desc_bd_chn)] DiscordChannel? channel = null,
+                            [Description(TranslationKey.desc_bd_date)] string? date = null)
             => this.AddAsync(ctx, user, date, channel);
         #endregion
 
@@ -91,21 +91,21 @@ namespace TheGodfather.Modules.Misc
         [Command("delete"), Priority(1)]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("desc-bd-user")] DiscordUser user)
+                                     [Description(TranslationKey.desc_bd_user)] DiscordUser user)
         {
             IReadOnlyList<Birthday> bds = await this.Service.GetUserBirthdaysAsync(ctx.Guild.Id, user.Id);
             await this.Service.RemoveAsync(bds);
-            await ctx.InfoAsync(this.ModuleColor, "fmt-bd-rem-user", bds.Count, user.Mention);
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_bd_rem_user(bds.Count, user.Mention));
         }
 
         [Command("delete"), Priority(0)]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("desc-bd-chn")] DiscordChannel channel)
+                                     [Description(TranslationKey.desc_bd_chn)] DiscordChannel channel)
         {
             if (channel.Type != ChannelType.Text)
-                throw new CommandFailedException(ctx, "cmd-err-chn-type-text");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_chn_type_text);
 
-            if (!await ctx.WaitForBoolReplyAsync("q-bd-rem-all", args: channel.Mention))
+            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_bd_rem_all(channel.Mention)))
                 return;
 
             await this.Service.ClearAsync((ctx.Guild.Id, ctx.Channel.Id));
@@ -118,7 +118,7 @@ namespace TheGodfather.Modules.Misc
         [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
         public async Task RemoveAllAsync(CommandContext ctx)
         {
-            if (!await ctx.WaitForBoolReplyAsync("q-bd-clear"))
+            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_bd_clear))
                 return;
 
             IReadOnlyList<Birthday> bds = await this.Service.GetAllBirthdaysAsync(ctx.Guild.Id);
@@ -131,7 +131,7 @@ namespace TheGodfather.Modules.Misc
         [Command("list"), Priority(1)]
         [Aliases("print", "show", "view", "ls", "l", "p")]
         public async Task ListAsync(CommandContext ctx,
-                                   [Description("desc-bd-user")] DiscordUser user)
+                                   [Description(TranslationKey.desc_bd_user)] DiscordUser user)
         {
             IReadOnlyList<Birthday> bds = await this.Service.GetUserBirthdaysAsync(ctx.Guild.Id, user.Id);
             await this.InternalListAsync(ctx, bds);
@@ -139,11 +139,11 @@ namespace TheGodfather.Modules.Misc
 
         [Command("list"), Priority(0)]
         public async Task ListAsync(CommandContext ctx,
-                                   [Description("desc-bd-chn")] DiscordChannel? channel = null)
+                                   [Description(TranslationKey.desc_bd_chn)] DiscordChannel? channel = null)
         {
             channel ??= ctx.Channel;
             if (channel.Type != ChannelType.Text)
-                throw new CommandFailedException(ctx, "cmd-err-chn-type-text");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_chn_type_text);
 
             IReadOnlyList<Birthday> bds = await this.Service.GetAllAsync((ctx.Guild.Id, channel.Id));
             await this.InternalListAsync(ctx, bds);
@@ -165,7 +165,7 @@ namespace TheGodfather.Modules.Misc
         public async Task InternalListAsync(CommandContext ctx, IReadOnlyList<Birthday> bds)
         {
             if (!bds.Any())
-                throw new CommandFailedException(ctx, "cmd-err-bd-none");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_bd_none);
 
             var bdaysToRemove = new List<Birthday>();
             var lines = new List<string>();
@@ -189,7 +189,7 @@ namespace TheGodfather.Modules.Misc
                 await this.Service.RemoveAsync(bdaysToRemove);
             }
 
-            await ctx.PaginateAsync("str-bdays", lines, line => line, this.ModuleColor, 10);
+            await ctx.PaginateAsync(TranslationKey.str_bdays, lines, line => line, this.ModuleColor, 10);
         }
         #endregion
     }

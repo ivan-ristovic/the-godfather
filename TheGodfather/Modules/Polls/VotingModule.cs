@@ -17,21 +17,21 @@ namespace TheGodfather.Modules.Polls
         #region vote
         [GroupCommand]
         public async Task ExecuteGroupAsync(CommandContext ctx,
-                                           [Description("desc-poll-o")] int option)
+                                           [Description(TranslationKey.desc_poll_o)] int option)
         {
             Poll? poll = this.Service.GetEventInChannel<Poll>(ctx.Channel.Id);
             if (poll is null || !poll.IsRunning || poll is ReactionsPoll)
-                throw new CommandFailedException(ctx, "cmd-err-poll-none");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_poll_none);
 
             option--;
             if (!poll.IsValidVote(option))
-                throw new CommandFailedException(ctx, "cmd-err-poll-opt-inv", poll.Options.Count);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_poll_opt_inv(poll.Options.Count));
 
             if (poll.UserVoted(ctx.User.Id))
-                throw new CommandFailedException(ctx, "cmd-err-poll-vote");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_poll_vote);
 
             poll.VoteFor(ctx.User.Id, option);
-            await ctx.ImpInfoAsync(this.ModuleColor, "fmt-vote", ctx.User.Mention, poll.OptionWithId(option), poll.Question);
+            await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_vote(ctx.User.Mention, poll.OptionWithId(option), poll.Question));
         }
         #endregion
 
@@ -42,13 +42,13 @@ namespace TheGodfather.Modules.Polls
         {
             Poll? poll = this.Service.GetEventInChannel<Poll>(ctx.Channel.Id);
             if (poll is null || !poll.IsRunning || poll is ReactionsPoll)
-                throw new CommandFailedException(ctx, "cmd-err-poll-none");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_poll_none);
 
             if (!poll.UserVoted(ctx.User.Id))
-                throw new CommandFailedException(ctx, "cmd-err-poll-vote-cancel");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_poll_vote_cancel);
 
             if (!poll.CancelVote(ctx.User.Id))
-                throw new CommandFailedException(ctx, "cmd-err-poll-vote-cancel-fail");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_poll_vote_cancel_fail);
 
             return ctx.InfoAsync(this.ModuleColor);
         }

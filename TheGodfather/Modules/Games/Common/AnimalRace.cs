@@ -39,7 +39,7 @@ namespace TheGodfather.Modules.Games.Common
         public override async Task RunAsync(LocalizationService lcs)
         {
             this.Started = true;
-            DiscordMessage msg = await this.Channel.EmbedAsync(lcs.GetString(this.Channel.GuildId, "str-game-animalrace-starting"));
+            DiscordMessage msg = await this.Channel.EmbedAsync(lcs.GetString(this.Channel.GuildId, TranslationKey.str_game_ar_starting));
 
             var rng = new SecureRandom();
             while (this.participants.All(p => p.Progress < TrackSize)) {

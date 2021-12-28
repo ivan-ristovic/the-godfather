@@ -12,13 +12,17 @@
   "cryptocurrency": {
     "usage": [
       [],
-      [ "arg-crypto" ]
+      [
+        "arg-crypto"
+      ]
     ]
   },
   "cryptocurrency list": {
     "usage": [
       [],
-      [ "arg-ten" ]
+      [
+        "arg-ten"
+      ]
     ]
   },
   "dog": {
@@ -28,7 +32,9 @@
   },
   "gif": {
     "usage": [
-      [ "arg-query" ]
+      [
+        "arg-query"
+      ]
     ]
   },
   "gif random": {
@@ -39,63 +45,101 @@
   "gif trending": {
     "usage": [
       [],
-      [ "arg-ten" ]
+      [
+        "arg-ten"
+      ]
     ]
   },
   "goodreads": {
     "usage": [
       [],
-      [ "arg-query" ]
+      [
+        "arg-query"
+      ]
     ]
   },
   "goodreads book": {
     "usage": [
       [],
-      [ "arg-query" ]
+      [
+        "arg-query"
+      ]
     ]
   },
   "imdb": {
     "usage": [
-      [ "arg-imdb-title" ]
+      [
+        "arg-imdb-title"
+      ]
     ]
   },
   "imdb id": {
     "usage": [
-      [ "arg-imdb-id" ]
+      [
+        "arg-imdb-id"
+      ]
     ]
   },
   "imdb search": {
     "usage": [
-      [ "arg-imdb-title" ]
+      [
+        "arg-imdb-title"
+      ]
     ]
   },
   "imdb title": {
     "usage": [
-      [ "arg-imdb-title" ]
+      [
+        "arg-imdb-title"
+      ]
     ]
   },
   "imgur": {
     "usage": [
-      [ "arg-ten", "arg-sub" ],
-      [ "arg-sub" ]
+      [
+        "arg-ten",
+        "arg-sub"
+      ],
+      [
+        "arg-sub"
+      ]
     ]
   },
   "imgur latest": {
     "usage": [
-      [ "arg-ten", "arg-sub" ],
-      [ "arg-sub" ]
+      [
+        "arg-ten",
+        "arg-sub"
+      ],
+      [
+        "arg-sub"
+      ]
     ]
   },
   "imgur top": {
     "usage": [
-      [ "arg-ten", "arg-sub", "arg-timewindow" ],
-      [ "arg-ten", "arg-timewindow", "arg-sub" ],
-      [ "arg-timewindow", "arg-ten", "arg-sub" ]
+      [
+        "arg-ten",
+        "arg-sub",
+        "arg-timewindow"
+      ],
+      [
+        "arg-ten",
+        "arg-timewindow",
+        "arg-sub"
+      ],
+      [
+        "arg-timewindow",
+        "arg-ten",
+        "arg-sub"
+      ]
     ]
   },
   "ip": {
     "usage": [
-      [ "arg-ip" ]
+      [
+        "arg-ip"
+      ]
     ]
   },
   "joke": {
@@ -105,7 +149,9 @@
   },
   "joke search": {
     "usage": [
-      [ "arg-query" ]
+      [
+        "arg-query"
+      ]
     ]
   },
   "joke yourmom": {
@@ -126,76 +172,113 @@
   "reddit": {
     "usage": [
       [],
-      [ "arg-sub" ]
+      [
+        "arg-sub"
+      ]
     ]
   },
   "reddit controversial": {
     "usage": [
-      [ "arg-sub" ]
+      [
+        "arg-sub"
+      ]
     ]
   },
   "reddit gilded": {
     "usage": [
-      [ "arg-sub" ]
+      [
+        "arg-sub"
+      ]
     ]
   },
   "reddit hot": {
     "usage": [
-      [ "arg-sub" ]
+      [
+        "arg-sub"
+      ]
     ]
   },
   "reddit new": {
     "usage": [
-      [ "arg-sub" ]
+      [
+        "arg-sub"
+      ]
     ]
   },
   "reddit rising": {
     "usage": [
-      [ "arg-sub" ]
+      [
+        "arg-sub"
+      ]
     ]
   },
   "reddit subscribe": {
     "usage": [
-      [ "arg-sub" ],
-      [ "arg-sub", "arg-chn-text" ]
+      [
+        "arg-sub"
+      ],
+      [
+        "arg-sub",
+        "arg-chn-text"
+      ]
     ]
   },
   "reddit top": {
     "usage": [
-      [ "arg-sub" ]
+      [
+        "arg-sub"
+      ]
     ]
   },
   "reddit unsubscribe": {
     "usage": [
-      [ "arg-sub" ]
+      [
+        "arg-sub"
+      ]
     ]
   },
   "rss": {
     "usage": [
-      [ "arg-rss" ]
+      [
+        "arg-rss"
+      ]
     ]
   },
   "steam": {
     "usage": [
-      [ "arg-ulong" ],
-      [ "arg-name" ]
+      [
+        "arg-ulong"
+      ],
+      [
+        "arg-name"
+      ]
     ]
   },
   "steam game": {
     "usage": [
-      [ "arg-id" ],
-      [ "arg-name" ]
+      [
+        "arg-id"
+      ],
+      [
+        "arg-name"
+      ]
     ]
   },
   "steam profile": {
     "usage": [
-      [ "arg-ulong" ],
-      [ "arg-name" ]
+      [
+        "arg-ulong"
+      ],
+      [
+        "arg-name"
+      ]
     ]
   },
   "sticker": {
     "usage": [
-      [ "arg-query" ]
+      [
+        "arg-query"
+      ]
     ]
   },
   "sticker random": {
@@ -206,81 +289,129 @@
   "sticker trending": {
     "usage": [
       [],
-      [ "arg-ten" ]
+      [
+        "arg-ten"
+      ]
     ]
   },
   "subscribe": {
     "usage": [
-      [ "arg-rss" ],
-      [ "arg-rss", "arg-chn-text", "arg-sub-name" ],
-      [ "arg-chn-text" ]
+      [
+        "arg-rss"
+      ],
+      [
+        "arg-rss",
+        "arg-chn-text",
+        "arg-sub-name"
+      ],
+      [
+        "arg-chn-text"
+      ]
     ]
   },
   "subscribe list": {
     "usage": [
       [],
-      [ "arg-chn-text" ]
+      [
+        "arg-chn-text"
+      ]
     ]
   },
   "subscribe reddit": {
     "usage": [
-      [ "arg-sub" ],
-      [ "arg-sub", "arg-chn-text" ]
+      [
+        "arg-sub"
+      ],
+      [
+        "arg-sub",
+        "arg-chn-text"
+      ]
     ]
   },
   "subscribe youtube": {
     "usage": [
-      [ "arg-yt-chn-url" ],
-      [ "arg-yt-chn-url", "arg-sub-name" ],
-      [ "arg-yt-chn-id", "arg-chn-text" ]
+      [
+        "arg-yt-chn-url"
+      ],
+      [
+        "arg-yt-chn-url",
+        "arg-sub-name"
+      ],
+      [
+        "arg-yt-chn-id",
+        "arg-chn-text"
+      ]
     ]
   },
   "unsubscribe": {
     "usage": [
-      [ "arg-id" ],
-      [ "arg-sub-name" ]
+      [
+        "arg-id"
+      ],
+      [
+        "arg-sub-name"
+      ]
     ]
   },
   "unsubscribe all": {
     "usage": [
       [],
-      [ "arg-chn-text" ]
+      [
+        "arg-chn-text"
+      ]
     ]
   },
   "unsubscribe reddit": {
     "usage": [
-      [ "arg-sub" ]
+      [
+        "arg-sub"
+      ]
     ]
   },
   "unsubscribe youtube": {
     "usage": [
-      [ "arg-sub-name" ],
-      [ "arg-yt-chn-url" ]
+      [
+        "arg-sub-name"
+      ],
+      [
+        "arg-yt-chn-url"
+      ]
     ]
   },
   "urbandict": {
     "usage": [
-      [ "arg-query" ]
+      [
+        "arg-query"
+      ]
     ]
   },
   "weather": {
     "usage": [
-      [ "arg-city" ]
+      [
+        "arg-city"
+      ]
     ]
   },
   "weather forecast": {
     "usage": [
-      [ "arg-five", "arg-city" ]
+      [
+        "arg-five",
+        "arg-city"
+      ]
     ]
   },
   "wikipedia": {
     "usage": [
-      [ "arg-query" ]
+      [
+        "arg-query"
+      ]
     ]
   },
   "wikipedia search": {
     "usage": [
-      [ "arg-query" ]
+      [
+        "arg-query"
+      ]
     ]
   },
   "xkcd": {
@@ -290,7 +421,9 @@
   },
   "xkcd id": {
     "usage": [
-      [ "arg-five" ]
+      [
+        "arg-five"
+      ]
     ]
   },
   "xkcd latest": {
@@ -305,41 +438,65 @@
   },
   "youtube": {
     "usage": [
-      [ "arg-query" ]
+      [
+        "arg-query"
+      ]
     ]
   },
   "youtube search": {
     "usage": [
-      [ "arg-five", "arg-query" ]
+      [
+        "arg-five",
+        "arg-query"
+      ]
     ]
   },
   "youtube searchchannel": {
     "usage": [
-      [ "arg-query" ]
+      [
+        "arg-query"
+      ]
     ]
   },
   "youtube searchplaylist": {
     "usage": [
-      [ "arg-query" ]
+      [
+        "arg-query"
+      ]
     ]
   },
   "youtube searchvideo": {
     "usage": [
-      [ "arg-query" ]
+      [
+        "arg-query"
+      ]
     ]
   },
   "youtube subscribe": {
     "usage": [
-      [ "arg-yt-chn-url" ],
-      [ "arg-yt-chn-id" ],
-      [ "arg-yt-chn-url", "arg-sub-name" ]
+      [
+        "arg-yt-chn-url"
+      ],
+      [
+        "arg-yt-chn-id"
+      ],
+      [
+        "arg-yt-chn-url",
+        "arg-sub-name"
+      ]
     ]
   },
   "youtube unsubscribe": {
     "usage": [
-      [ "arg-yt-chn-url" ],
-      [ "arg-yt-chn-id" ],
-      [ "arg-sub-name" ]
+      [
+        "arg-yt-chn-url"
+      ],
+      [
+        "arg-yt-chn-id"
+      ],
+      [
+        "arg-sub-name"
+      ]
     ]
   }
 }

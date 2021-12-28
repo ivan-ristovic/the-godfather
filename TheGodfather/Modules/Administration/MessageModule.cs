@@ -30,14 +30,14 @@ namespace TheGodfather.Modules.Administration
         [Aliases("a", "files", "la")]
         [RequirePermissions(Permissions.ReadMessageHistory)]
         public async Task ListAttachmentsAsync(CommandContext ctx,
-                                              [Description("desc-msg")] DiscordMessage? msg = null)
+                                              [Description(TranslationKey.desc_msg)] DiscordMessage? msg = null)
         {
             msg ??= await ctx.Channel.GetLastMessageAsync();
             if (msg is null || msg.Attachments.Count > DiscordLimits.EmbedFieldLimit)
-                throw new CommandFailedException(ctx, "cmd-err-msg-404");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_msg_404);
 
             await ctx.RespondWithLocalizedEmbedAsync(emb => {
-                emb.WithLocalizedTitle("str-attachments");
+                emb.WithLocalizedTitle(TranslationKey.str_attachments);
                 emb.WithColor(this.ModuleColor);
                 foreach (DiscordAttachment attachment in msg.Attachments)
                     emb.AddField($"{Formatter.Strip(attachment.FileName)} ({attachment.FileSize.ToMetric()})", attachment.Url);
@@ -51,15 +51,15 @@ namespace TheGodfather.Modules.Administration
         [RequirePermissions(Permissions.ReadMessageHistory), RequireBotPermissions(Permissions.ManageMessages)]
         [Cooldown(1, 60, CooldownBucketType.User)]
         public async Task FlagMessageAsync(CommandContext ctx,
-                                          [Description("desc-msg")] DiscordMessage? msg = null,
-                                          [Description("desc-voting-timespan")] TimeSpan? timespan = null)
+                                          [Description(TranslationKey.desc_msg)] DiscordMessage? msg = null,
+                                          [Description(TranslationKey.desc_voting_timespan)] TimeSpan? timespan = null)
         {
             msg ??= await ctx.Channel.GetLastMessageAsync();
             if (msg is null)
-                throw new CommandFailedException(ctx, "cmd-err-msg-404");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_msg_404);
 
             if (timespan?.TotalSeconds is < 5 or > 300)
-                throw new InvalidCommandUsageException(ctx, "cmd-err-timespan", 5, 300);
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_timespan(5, 300));
 
             IEnumerable<PollEmoji> res = await msg.DoPollAsync(
                 new[] { Emojis.ArrowUp, Emojis.ArrowDown },
@@ -74,10 +74,10 @@ namespace TheGodfather.Modules.Administration
                 await msg.DeleteAsync("_gf: Flagged for deletion");
                 await ctx.RespondWithLocalizedEmbedAsync(emb => {
                     emb.WithColor(this.ModuleColor);
-                    emb.WithLocalizedDescription("fmt-flag", msg.Author.Mention, votesAgainst, sanitized);
+                    emb.WithLocalizedDescription(TranslationKey.fmt_flag(msg.Author.Mention, votesAgainst, sanitized));
                 });
             } else {
-                await ctx.FailAsync("cmd-err-flag");
+                await ctx.FailAsync(TranslationKey.cmd_err_flag);
             }
         }
         #endregion
@@ -86,20 +86,20 @@ namespace TheGodfather.Modules.Administration
         [Command("listpinned")]
         [Aliases("lp", "listpins", "listpin", "pinned")]
         public async Task ListPinnedMessagesAsync(CommandContext ctx,
-                                                 [Description("desc-chn-pins")] DiscordChannel? chn = null)
+                                                 [Description(TranslationKey.desc_chn_pins)] DiscordChannel? chn = null)
         {
             chn ??= ctx.Channel;
             if (!chn.PermissionsFor(ctx.Member).HasPermission(Permissions.AccessChannels))
-                throw new CommandFailedException(ctx, "cmd-chk-perms-usr", Permissions.AccessChannels);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_chk_perms_usr(Permissions.AccessChannels));
 
             IReadOnlyList<DiscordMessage> pinned = await ctx.Channel.GetPinnedMessagesAsync();
             if (!pinned.Any())
-                throw new CommandFailedException(ctx, "cmd-err-pinned-none");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_pinned_none);
 
             IEnumerable<Page> pages = pinned.Select(m => new Page(
                 $"{Formatter.Bold(m.Author.Username)} @ {this.Localization.GetLocalizedTimeString(ctx.Guild.Id, m.CreationTimestamp)}",
                 // TODO 
-                GetFirstEmbedOrDefaultAsBuilder(m).AddField("URL", Formatter.MaskedUrl(this.Localization.GetString(ctx.Guild.Id, "str-jumplink"), m.JumpLink))
+                GetFirstEmbedOrDefaultAsBuilder(m).AddField("URL", Formatter.MaskedUrl(this.Localization.GetString(ctx.Guild.Id, TranslationKey.str_jumplink), m.JumpLink))
             ));
 
             await ctx.Client.GetInteractivity().SendPaginatedMessageAsync(ctx.Channel, ctx.User, pages);
@@ -123,11 +123,11 @@ namespace TheGodfather.Modules.Administration
         [Aliases("p")]
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task PinMessageAsync(CommandContext ctx,
-                                         [Description("desc-msg")] DiscordMessage? msg = null)
+                                         [Description(TranslationKey.desc_msg)] DiscordMessage? msg = null)
         {
             msg ??= await ctx.Channel.GetLastMessageAsync();
             if (msg is null)
-                throw new CommandFailedException(ctx, "cmd-err-msg-404");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_msg_404);
             await msg.PinAsync();
         }
         #endregion
@@ -137,7 +137,7 @@ namespace TheGodfather.Modules.Administration
         [Aliases("up")]
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task UnpinMessageAsync(CommandContext ctx,
-                                           [Description("desc-msg")] DiscordMessage message)
+                                           [Description(TranslationKey.desc_msg)] DiscordMessage message)
         {
             await message.UnpinAsync();
             await ctx.InfoAsync(this.ModuleColor);
@@ -145,11 +145,11 @@ namespace TheGodfather.Modules.Administration
 
         [Command("unpin"), Priority(0)]
         public async Task UnpinMessageAsync(CommandContext ctx,
-                                           [Description("desc-index-1")] int index = 1)
+                                           [Description(TranslationKey.desc_index_1)] int index = 1)
         {
             IReadOnlyList<DiscordMessage> pinned = await ctx.Channel.GetPinnedMessagesAsync();
             if (index < 1 || index > pinned.Count)
-                throw new CommandFailedException(ctx, "cmd-err-index", 1, pinned.Count);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_index(1, pinned.Count));
 
             await pinned.ElementAt(index - 1).UnpinAsync();
             await ctx.InfoAsync(this.ModuleColor);
@@ -161,18 +161,18 @@ namespace TheGodfather.Modules.Administration
         [Aliases("upa")]
         [RequirePermissions(Permissions.ManageMessages)]
         public async Task UnpinAllMessagesAsync(CommandContext ctx,
-                                               [Description("desc-chn-pins-del")] DiscordChannel? chn = null)
+                                               [Description(TranslationKey.desc_chn_pins_del)] DiscordChannel? chn = null)
         {
             chn ??= ctx.Channel;
             if (!chn.PermissionsFor(ctx.Member).HasPermission(Permissions.AccessChannels))
-                throw new CommandFailedException(ctx, "cmd-chk-perms-usr", Permissions.AccessChannels);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_chk_perms_usr(Permissions.AccessChannels));
 
-            if (!await ctx.WaitForBoolReplyAsync("q-unpin-all", args: chn))
+            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_unpin_all(chn)))
                 return;
 
             IReadOnlyList<DiscordMessage> pinned = await ctx.Channel.GetPinnedMessagesAsync();
             if (!pinned.Any())
-                throw new CommandFailedException(ctx, "cmd-err-pinned-none");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_pinned_none);
 
             await Task.WhenAll(pinned.Select(m => m.UnpinAsync()));
             await ctx.InfoAsync(this.ModuleColor);

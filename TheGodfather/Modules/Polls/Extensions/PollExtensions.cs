@@ -12,7 +12,7 @@ namespace TheGodfather.Modules.Polls.Extensions
         {
             var emb = new LocalizedEmbedBuilder(lcs, poll.Channel.GuildId);
             emb.WithTitle(poll.Question);
-            emb.WithLocalizedDescription("str-vote-text");
+            emb.WithLocalizedDescription(TranslationKey.str_vote_text);
             emb.WithColor(DiscordColor.Orange);
 
             for (int i = 0; i < poll.Options.Count; i++) {
@@ -23,9 +23,9 @@ namespace TheGodfather.Modules.Polls.Extensions
             if (poll.EndTime is { }) {
                 string localizedTime = lcs.GetLocalizedTimeString(poll.Channel.GuildId, poll.EndTime);
                 if (poll.TimeUntilEnd.TotalSeconds > 1)
-                    emb.WithLocalizedFooter("fmt-poll-end", poll.Initiator.AvatarUrl, localizedTime, $"{poll.TimeUntilEnd:hh\\:mm\\:ss}");
+                    emb.WithLocalizedFooter(TranslationKey.fmt_poll_end(localizedTime, $"{poll.TimeUntilEnd:hh\\:mm\\:ss}"), poll.Initiator.AvatarUrl);
                 else
-                    emb.WithLocalizedFooter("fmt-poll-ended", poll.Initiator.AvatarUrl);
+                    emb.WithLocalizedFooter(TranslationKey.fmt_poll_ended, poll.Initiator.AvatarUrl);
             }
 
             return emb.Build();
@@ -34,16 +34,16 @@ namespace TheGodfather.Modules.Polls.Extensions
         public static DiscordEmbed ResultsToDiscordEmbed(this Poll poll, LocalizationService lcs)
         {
             var emb = new LocalizedEmbedBuilder(lcs, poll.Channel.GuildId);
-            emb.WithLocalizedTitle("fmt-poll-res", poll.Question);
+            emb.WithLocalizedTitle(TranslationKey.fmt_poll_res(poll.Question));
             emb.WithColor(DiscordColor.Orange);
 
             for (int i = 0; i < poll.Options.Count; i++)
                 emb.AddField(poll.Options[i], poll.Results.Count(kvp => kvp.Value == i).ToString(), inline: true);
 
-            emb.WithLocalizedFooter("fmt-poll-by", poll.Initiator.AvatarUrl, poll.Initiator.DisplayName);
+            emb.WithLocalizedFooter(TranslationKey.fmt_poll_by(poll.Initiator.DisplayName), poll.Initiator.AvatarUrl);
 
             if (poll.Results is null || !poll.Results.Any())
-                return emb.WithLocalizedDescription("str-poll-none").Build();
+                return emb.WithLocalizedDescription(TranslationKey.str_poll_none).Build();
 
             return emb.Build();
         }

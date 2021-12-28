@@ -2,20 +2,28 @@
   "cmd3": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "cmd3 sub subcommand": {
     "usage": [
       [],
-      [ "arg-usr" ]
+      [
+        "arg-usr"
+      ]
     ]
   },
   "cmd4": {
     "usage": [
       [],
-      [ "arg-usr" ],
-      [ "arg-int" ]
+      [
+        "arg-usr"
+      ],
+      [
+        "arg-int"
+      ]
     ]
   }
 }

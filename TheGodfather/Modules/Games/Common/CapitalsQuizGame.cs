@@ -59,7 +59,7 @@ namespace TheGodfather.Modules.Games.Common
             int timeouts = 0;
             for (int i = 0; i < this.NumberOfQuestions; i++) {
                 string question = questions.Dequeue();
-                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Question, DiscordColor.Teal, "fmt-game-quiz-qc", question);
+                await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Question, DiscordColor.Teal, TranslationKey.fmt_game_quiz_qc(question));
 
                 bool timeout = true;
                 var failed = new ConcurrentHashSet<ulong>();
@@ -88,9 +88,9 @@ namespace TheGodfather.Modules.Games.Common
                     } else {
                         timeouts = 0;
                     }
-                    await this.Channel.LocalizedEmbedAsync(lcs, Emojis.AlarmClock, DiscordColor.Teal, "fmt-game-quiz-timeout", _capitals[question]);
+                    await this.Channel.LocalizedEmbedAsync(lcs, Emojis.AlarmClock, DiscordColor.Teal, TranslationKey.fmt_game_quiz_timeout(_capitals[question]));
                 } else {
-                    await this.Channel.LocalizedEmbedAsync(lcs, Emojis.CheckMarkSuccess, DiscordColor.Teal, "fmt-game-quiz-correct", res.Result.Author.Mention);
+                    await this.Channel.LocalizedEmbedAsync(lcs, Emojis.CheckMarkSuccess, DiscordColor.Teal, TranslationKey.fmt_game_quiz_correct(res.Result.Author.Mention));
                     this.results.AddOrUpdate(res.Result.Author, u => 1, (u, v) => v + 1);
                 }
 

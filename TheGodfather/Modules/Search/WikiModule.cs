@@ -18,7 +18,7 @@ namespace TheGodfather.Modules.Search
         #region wikipedia
         [GroupCommand]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [RemainingText, Description("desc-query")] string query)
+                                     [RemainingText, Description(TranslationKey.desc_query)] string query)
             => this.SearchAsync(ctx, query);
         #endregion
 
@@ -26,14 +26,14 @@ namespace TheGodfather.Modules.Search
         [Command("search")]
         [Aliases("s", "find")]
         public async Task SearchAsync(CommandContext ctx,
-                                     [RemainingText, Description("desc-query")] string query)
+                                     [RemainingText, Description(TranslationKey.desc_query)] string query)
         {
             if (string.IsNullOrWhiteSpace(query))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-query");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_query);
 
             WikiSearchResponse? res = await WikiService.SearchAsync(query);
             if (res is null || !res.Any()) {
-                await ctx.FailAsync("cmd-err-res-none");
+                await ctx.FailAsync(TranslationKey.cmd_err_res_none);
                 return;
             }
 
@@ -41,7 +41,7 @@ namespace TheGodfather.Modules.Search
                 emb.WithTitle(r.Title);
                 emb.WithDescription(r.Snippet);
                 emb.WithUrl(r.Url);
-                emb.WithLocalizedFooter("fmt-powered-by", WikiService.WikipediaIconUrl, "Wikipedia API");
+                emb.WithLocalizedFooter(TranslationKey.fmt_powered_by("Wikipedia API"), WikiService.WikipediaIconUrl);
                 return emb;
             }, this.ModuleColor);
         }

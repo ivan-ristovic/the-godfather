@@ -33,21 +33,21 @@ namespace TheGodfather.Modules.Chickens
 
             [GroupCommand, Priority(0)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("desc-chicken-upgrade-ids")] params int[] ids)
+                                               [Description(TranslationKey.desc_chicken_upgrade_ids)] params int[] ids)
             {
                 if (ids is null || !ids.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-chicken-upg-ids-none");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_chicken_upg_ids_none);
 
                 if (ctx.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar _))
-                    throw new CommandFailedException(ctx, "cmd-err-chicken-war");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_chicken_war);
 
                 Chicken? chicken = await ctx.Services.GetRequiredService<ChickenService>().GetCompleteAsync(ctx.Guild.Id, ctx.User.Id);
                 if (chicken is null)
-                    throw new CommandFailedException(ctx, "cmd-err-chicken-none");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_chicken_none);
                 chicken.Owner = ctx.User;
 
                 if (chicken.Stats.Upgrades?.Any(u => ids.Contains(u.Id)) ?? false)
-                    throw new CommandFailedException(ctx, "cmd-err-chicken-upg-dup");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_chicken_upg_dup);
 
                 IReadOnlyList<ChickenUpgrade> upgrades = await this.Service.GetAsync();
                 var toBuy = upgrades.Where(u => ids.Contains(u.Id)).ToList();
@@ -55,11 +55,11 @@ namespace TheGodfather.Modules.Chickens
                 CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
                 long totalCost = toBuy.Sum(u => u.Cost);
                 string upgradeNames = toBuy.Select(u => u.Name).JoinWith(", ");
-                if (!await ctx.WaitForBoolReplyAsync("q-chicken-upg", args: new object[] { ctx.User.Mention, totalCost, gcfg.Currency, upgradeNames }))
+                if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_chicken_upg(ctx.User.Mention, totalCost, gcfg.Currency, upgradeNames)))
                     return;
 
                 if (!await ctx.Services.GetRequiredService<BankAccountService>().TryDecreaseBankAccountAsync(ctx.Guild.Id, ctx.User.Id, totalCost))
-                    throw new CommandFailedException(ctx, "cmd-err-funds", gcfg.Currency, totalCost);
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_funds(gcfg.Currency, totalCost));
 
                 await ctx.Services.GetRequiredService<ChickenBoughtUpgradeService>().AddAsync(
                     toBuy.Select(u => new ChickenBoughtUpgrade {
@@ -71,7 +71,7 @@ namespace TheGodfather.Modules.Chickens
 
                 int addedStr = toBuy.Where(u => u.UpgradesStat == ChickenStatUpgrade.Str).Sum(u => u.Modifier);
                 int addedVit = toBuy.Where(u => u.UpgradesStat == ChickenStatUpgrade.MaxVit).Sum(u => u.Modifier);
-                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Chicken, "fmt-chicken-upg", ctx.User.Mention, chicken.Name, toBuy.Count, addedStr, addedVit);
+                await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Chicken, TranslationKey.fmt_chicken_upg(ctx.User.Mention, chicken.Name, toBuy.Count, addedStr, addedVit));
             }
             #endregion
 
@@ -82,13 +82,14 @@ namespace TheGodfather.Modules.Chickens
             {
                 IReadOnlyList<ChickenUpgrade> upgrades = await this.Service.GetAsync();
                 if (!upgrades.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-res-none");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_res_none);
 
+                string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
                 await ctx.PaginateAsync(upgrades.OrderBy(u => u.Cost), (emb, u) => {
                     emb.WithTitle(u.Name);
-                    emb.AddLocalizedField("str-id", u.Id, inline: true);
-                    emb.AddLocalizedField("str-cost", $"{u.Cost:n0}", inline: true);
-                    emb.AddLocalizedField("str-cost", $"+{u.Modifier}{u.UpgradesStat.Humanize(LetterCasing.AllCaps)}", inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_id, u.Id, inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_cost, $"{u.Cost:n0} {currency}", inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_cost, $"+{u.Modifier}{u.UpgradesStat.Humanize(LetterCasing.AllCaps)}", inline: true);
                     return emb;
                 }, this.ModuleColor);
             }

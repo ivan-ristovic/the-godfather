@@ -24,8 +24,8 @@ namespace TheGodfather.Modules.Owner
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-activity")] ActivityType activity,
-                                     [RemainingText, Description("desc-status")] string status)
+                                     [Description(TranslationKey.desc_activity)] ActivityType activity,
+                                     [RemainingText, Description(TranslationKey.desc_status)] string status)
             => this.SetAsync(ctx, activity, status);
         #endregion
 
@@ -33,14 +33,14 @@ namespace TheGodfather.Modules.Owner
         [Command("add")]
         [Aliases("register", "reg", "new", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("desc-activity")] ActivityType activity,
-                                  [RemainingText, Description("desc-status")] string status)
+                                  [Description(TranslationKey.desc_activity)] ActivityType activity,
+                                  [RemainingText, Description(TranslationKey.desc_status)] string status)
         {
             if (string.IsNullOrWhiteSpace(status))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-status-none");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_status_none);
 
             if (status.Length > BotStatus.StatusLimit)
-                throw new CommandFailedException(ctx, "cmd-err-status-size", BotStatus.StatusLimit);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_status_size(BotStatus.StatusLimit));
 
             await this.Service.AddAsync(new BotStatus {
                 Activity = activity,
@@ -54,10 +54,10 @@ namespace TheGodfather.Modules.Owner
         [Command("delete")]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("desc-status-id")] params int[] ids)
+                                     [Description(TranslationKey.desc_status_id)] params int[] ids)
         {
             int removed = await this.Service.RemoveAsync(ids);
-            await ctx.InfoAsync(this.ModuleColor, "fmt-status-del", removed);
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_status_del(removed));
         }
         #endregion
 
@@ -68,7 +68,7 @@ namespace TheGodfather.Modules.Owner
         {
             IReadOnlyList<BotStatus> statuses = await this.Service.GetAsync();
             await ctx.PaginateAsync(
-                "Statuses:",
+                TranslationKey.str_statuses,
                 statuses,
                 s => $"{Formatter.InlineCode($"{s.Id:D2}")}: {s.Activity} - {s.Status}",
                 this.ModuleColor,
@@ -81,14 +81,14 @@ namespace TheGodfather.Modules.Owner
         [Command("set"), Priority(1)]
         [Aliases("s")]
         public async Task SetAsync(CommandContext ctx,
-                                  [Description("desc-activity")] ActivityType type,
-                                  [RemainingText, Description("desc-status")] string status)
+                                  [Description(TranslationKey.desc_activity)] ActivityType type,
+                                  [RemainingText, Description(TranslationKey.desc_status)] string status)
         {
             if (string.IsNullOrWhiteSpace(status))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-status-none");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_status_none);
 
             if (status.Length > BotStatus.StatusLimit)
-                throw new CommandFailedException(ctx, "cmd-err-status-size", BotStatus.StatusLimit);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_status_size(BotStatus.StatusLimit));
 
             var activity = new DiscordActivity(status, type);
 
@@ -99,11 +99,11 @@ namespace TheGodfather.Modules.Owner
 
         [Command("set"), Priority(0)]
         public async Task SetAsync(CommandContext ctx,
-                                  [Description("desc-status-id")] int id)
+                                  [Description(TranslationKey.desc_status_id)] int id)
         {
             BotStatus? status = await this.Service.GetAsync(id);
             if (status is null)
-                throw new CommandFailedException(ctx, "cmd-err-status-404");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_status_404);
 
             var activity = new DiscordActivity(status.Status, status.Activity);
 
@@ -117,10 +117,10 @@ namespace TheGodfather.Modules.Owner
         [Command("setrotation")]
         [Aliases("sr", "setr", "rotate")]
         public Task SetRotationAsync(CommandContext ctx,
-                                    [Description("desc-enable")] bool enable = true)
+                                    [Description(TranslationKey.desc_enable)] bool enable = true)
         {
             this.Service.StatusRotationEnabled = enable;
-            return ctx.InfoAsync(this.ModuleColor, "fmt-status-rot", this.Service.StatusRotationEnabled);
+            return ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_status_rot(this.Service.StatusRotationEnabled));
         }
         #endregion
     }

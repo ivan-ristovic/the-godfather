@@ -21,7 +21,7 @@ namespace TheGodfather.Modules.Search
         #region imdb
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [RemainingText, Description("desc-query")] string title)
+                                     [RemainingText, Description(TranslationKey.desc_query)] string title)
             => this.SearchByTitleAsync(ctx, title);
         #endregion
 
@@ -29,11 +29,11 @@ namespace TheGodfather.Modules.Search
         [Command("search")]
         [Aliases("s", "find")]
         public async Task SearchAsync(CommandContext ctx,
-                                     [RemainingText, Description("desc-query")] string query)
+                                     [RemainingText, Description(TranslationKey.desc_query)] string query)
         {
             IReadOnlyList<MovieInfo>? res = await this.Service.SearchAsync(query);
             if (res is null || !res.Any()) {
-                await ctx.FailAsync("cmd-err-res-none");
+                await ctx.FailAsync(TranslationKey.cmd_err_res_none);
                 return;
             }
 
@@ -45,14 +45,14 @@ namespace TheGodfather.Modules.Search
         [Command("title")]
         [Aliases("t", "name", "n")]
         public Task SearchByTitleAsync(CommandContext ctx,
-                                      [RemainingText, Description("desc-query")] string title)
+                                      [RemainingText, Description(TranslationKey.desc_query)] string title)
             => this.SearchAndSendResultAsync(ctx, OMDbQueryType.Title, title);
         #endregion
 
         #region imdb id
         [Command("id")]
         public Task SearchByIdAsync(CommandContext ctx,
-                                   [Description("desc-id")] string id)
+                                   [Description(TranslationKey.desc_id)] string id)
             => this.SearchAndSendResultAsync(ctx, OMDbQueryType.Id, id);
         #endregion
 
@@ -62,7 +62,7 @@ namespace TheGodfather.Modules.Search
         {
             MovieInfo? info = await this.Service.SearchSingleAsync(type, query);
             if (info is null) {
-                await ctx.FailAsync("cmd-err-res-none");
+                await ctx.FailAsync(TranslationKey.cmd_err_res_none);
                 return;
             }
 
@@ -76,21 +76,21 @@ namespace TheGodfather.Modules.Search
             emb.WithColor(DiscordColor.Yellow);
             emb.WithUrl(this.Service.GetUrl(info.IMDbId));
 
-            emb.AddLocalizedField("str-type", info.Type, inline: true, unknown: false);
-            emb.AddLocalizedField("str-year", info.Year, inline: true, unknown: false);
-            emb.AddLocalizedField("str-id", info.IMDbId, inline: true, unknown: false);
-            emb.AddLocalizedField("str-genre", info.Genre, inline: true, unknown: false);
-            emb.AddLocalizedField("str-rel-date", info.ReleaseDate, inline: true, unknown: false);
-            emb.AddLocalizedField("str-score", "fmt-rating-imdb", inline: true, contentArgs: new[] { info.IMDbRating, info.IMDbVotes });
-            emb.AddLocalizedField("str-rating", info.Rated, inline: true, unknown: false);
-            emb.AddLocalizedField("str-duration", info.Duration, inline: true, unknown: false);
-            emb.AddLocalizedField("str-writer", info.Writer, inline: true, unknown: false);
-            emb.AddLocalizedField("str-director", info.Director, inline: true, unknown: false);
-            emb.AddLocalizedField("str-actors", info.Actors, inline: true, unknown: false);
+            emb.AddLocalizedField(TranslationKey.str_type, info.Type, inline: true, unknown: false);
+            emb.AddLocalizedField(TranslationKey.str_year, info.Year, inline: true, unknown: false);
+            emb.AddLocalizedField(TranslationKey.str_id, info.IMDbId, inline: true, unknown: false);
+            emb.AddLocalizedField(TranslationKey.str_genre, info.Genre, inline: true, unknown: false);
+            emb.AddLocalizedField(TranslationKey.str_rel_date, info.ReleaseDate, inline: true, unknown: false);
+            emb.AddLocalizedField(TranslationKey.str_score, TranslationKey.fmt_rating_imdb(info.IMDbRating, info.IMDbVotes), inline: true);
+            emb.AddLocalizedField(TranslationKey.str_rating, info.Rated, inline: true, unknown: false);
+            emb.AddLocalizedField(TranslationKey.str_duration, info.Duration, inline: true, unknown: false);
+            emb.AddLocalizedField(TranslationKey.str_writer, info.Writer, inline: true, unknown: false);
+            emb.AddLocalizedField(TranslationKey.str_director, info.Director, inline: true, unknown: false);
+            emb.AddLocalizedField(TranslationKey.str_actors, info.Actors, inline: true, unknown: false);
             if (!string.IsNullOrWhiteSpace(info.Poster) && info.Poster != "N/A")
                 emb.WithThumbnail(info.Poster);
 
-            emb.WithLocalizedFooter("fmt-powered-by", null, "OMDb");
+            emb.WithLocalizedFooter(TranslationKey.fmt_powered_by("OMDb"), null);
             return emb;
         }
         #endregion

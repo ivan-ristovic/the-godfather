@@ -101,7 +101,7 @@ namespace TheGodfather.Modules.Games.Common
             }
 
             sb.AppendLine()
-              .Append(lcs.GetString(this.Channel.GuildId, "str-game-move"))
+              .Append(lcs.GetString(this.Channel.GuildId, TranslationKey.str_game_move))
               .AppendLine(this.move % 2 == 0 ? this.player1.Mention : this.player2.Mention);
 
             return this.msgHandle.ModifyOrResendAsync(this.Channel, new DiscordEmbedBuilder {

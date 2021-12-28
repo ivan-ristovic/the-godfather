@@ -25,12 +25,12 @@ namespace TheGodfather.Modules.Misc
         #region rank
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-member")] DiscordMember? member = null)
+                                     [Description(TranslationKey.desc_member)] DiscordMember? member = null)
             => this.ExecuteGroupAsync(ctx, member as DiscordUser);
 
         [GroupCommand, Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-user")] DiscordUser? user = null)
+                                     [Description(TranslationKey.desc_user)] DiscordUser? user = null)
         {
             user ??= ctx.User;
 
@@ -39,16 +39,16 @@ namespace TheGodfather.Modules.Misc
                 emb.WithColor(this.ModuleColor);
                 emb.WithTitle(user.ToDiscriminatorString());
                 emb.WithThumbnail(user.AvatarUrl);
-                emb.AddLocalizedField("str-xp", rs.GetUserXp(ctx.Guild.Id, user.Id), inline: true);
+                emb.AddLocalizedField(TranslationKey.str_xp, rs.GetUserXp(ctx.Guild.Id, user.Id), inline: true);
                 if (ctx.Guild is { }) {
                     short rank = rs.CalculateRankForUser(ctx.Guild.Id, user.Id);
                     XpRank? rankInfo = ctx.Guild is { } ? await this.Service.GetAsync(ctx.Guild.Id, rank) : null;
-                    emb.AddLocalizedField("str-rank", rank, inline: true);
-                    emb.AddLocalizedField("str-xp-next", UserRanksService.CalculateXpNeededForRank((short)(rank + 1)), inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_rank, rank, inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_xp_next, UserRanksService.CalculateXpNeededForRank((short)(rank + 1)), inline: true);
                     if (rankInfo is { })
-                        emb.AddLocalizedField("str-rank-name", Formatter.Italic(rankInfo.Name), inline: true);
+                        emb.AddLocalizedField(TranslationKey.str_rank_name, Formatter.Italic(rankInfo.Name), inline: true);
                     else
-                        emb.AddLocalizedField("str-rank", "str-rank-noname", inline: true);
+                        emb.AddLocalizedField(TranslationKey.str_rank, TranslationKey.str_rank_noname, inline: true);
                 }
             });
         }
@@ -59,17 +59,17 @@ namespace TheGodfather.Modules.Misc
         [Aliases("register", "rename", "mv", "newname", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("str-rank")] short rank,
-                                  [RemainingText, Description("str-rank-name")] string name)
+                                  [Description(TranslationKey.desc_rank)] short rank,
+                                  [RemainingText, Description(TranslationKey.desc_rank_name)] string name)
         {
             if (rank is < 0 or > 150)
-                throw new CommandFailedException(ctx, "cmd-err-rank", 0, 150);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_rank(0, 150));
 
             if (string.IsNullOrWhiteSpace(name))
-                throw new CommandFailedException(ctx, "cmd-err-name-404");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_name_404);
 
             if (name.Length > XpRank.NameLimit)
-                throw new CommandFailedException(ctx, "cmd-err-name", XpRank.NameLimit);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_name(XpRank.NameLimit));
 
             await this.Service.RemoveAsync(ctx.Guild.Id, rank);
             await this.Service.AddAsync(new XpRank {
@@ -87,7 +87,7 @@ namespace TheGodfather.Modules.Misc
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         [RequireUserPermissions(Permissions.ManageGuild)]
         public async Task DeleteAsync(CommandContext ctx,
-                                     [Description("str-rank")] short rank)
+                                     [Description(TranslationKey.desc_rank)] short rank)
         {
             await this.Service.RemoveAsync(ctx.Guild.Id, rank);
             await ctx.InfoAsync(this.ModuleColor);
@@ -101,10 +101,10 @@ namespace TheGodfather.Modules.Misc
         {
             IReadOnlyList<XpRank> ranks = await this.Service.GetAllAsync(ctx.Guild.Id);
             if (!ranks.Any())
-                throw new CommandFailedException(ctx, "cmd-err-rank-none");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_rank_none);
 
             await ctx.PaginateAsync(
-                "str-ranks",
+                TranslationKey.str_ranks,
                 ranks.OrderBy(r => r.Rank),
                 rank => $"{Formatter.InlineCode($"{rank.Rank:D2}")}" +
                         $" | XP: {Formatter.InlineCode($"{UserRanksService.CalculateXpNeededForRank(rank.Rank):D5}")}" +
@@ -132,9 +132,9 @@ namespace TheGodfather.Modules.Misc
         private async Task InternalTopAsync(CommandContext ctx, bool global)
         {
             var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild.Id);
-            emb.WithLocalizedTitle(global ? "str-rank-topg" : "str-rank-top");
+            emb.WithLocalizedTitle(global ? TranslationKey.str_rank_topg : TranslationKey.str_rank_top);
             emb.WithColor(this.ModuleColor);
-            string unknown = this.Localization.GetString(ctx.Guild.Id, "str-404");
+            string unknown = this.Localization.GetString(ctx.Guild.Id, TranslationKey.str_404);
 
             UserRanksService rs = ctx.Services.GetRequiredService<UserRanksService>();
             IReadOnlyList<XpCount> top = await rs.GetTopRankedUsersAsync(global ? null : ctx.Guild?.Id);

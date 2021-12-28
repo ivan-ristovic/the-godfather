@@ -6,6 +6,7 @@ using TheGodfather.Database;
 using TheGodfather.Modules.Administration.Common;
 using TheGodfather.Services;
 using TheGodfather.Services.Common;
+using TheGodfather.Translations;
 
 namespace TheGodfather.Modules.Administration.Services
 {
@@ -101,10 +102,10 @@ namespace TheGodfather.Modules.Administration.Services
             if (!this.ls.IsLogEnabledFor(e.Guild.Id, out LocalizedEmbedBuilder emb))
                 return;
 
-            emb.WithLocalizedTitle("evt-lf-triggered");
+            emb.WithLocalizedTitle(TranslationKey.evt_lf_triggered);
             emb.WithDescription(desc);
             if (match is { } && match.Matched is { })
-                emb.AddLocalizedField("str-matched", match.Matched);
+                emb.AddLocalizedField(TranslationKey.str_matched, match.Matched);
             emb.WithColor(DiscordColor.Red);
             emb.AddInvocationFields(e.Author, e.Channel);
             await this.ls.LogAsync(e.Guild, emb);

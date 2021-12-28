@@ -65,8 +65,9 @@ namespace TheGodfather.Modules.Music.Services
                 return;
 
             if (gd.CommandChannel is { }) {
-                await gd.CommandChannel.LocalizedEmbedAsync(this.lcs, Emojis.X, DiscordColor.Red, "err-music", 
-                    Formatter.Sanitize(e.Track.Title), Formatter.Sanitize(e.Track.Author), e.Error);
+                await gd.CommandChannel.LocalizedEmbedAsync(this.lcs, Emojis.X, DiscordColor.Red, 
+                    TranslationKey.err_music(Formatter.Sanitize(e.Track.Title), Formatter.Sanitize(e.Track.Author), e.Error)
+                );
             }
         }
     }

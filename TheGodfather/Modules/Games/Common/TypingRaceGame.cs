@@ -120,10 +120,10 @@ namespace TheGodfather.Modules.Games.Common
             var sb = new StringBuilder();
 
             foreach ((DiscordUser user, int result) in finalResults)
-                sb.AppendLine(lcs.GetString(this.Channel.GuildId, "fmt-game-tr-errors", user.Mention, result));
+                sb.AppendLine(lcs.GetString(this.Channel.GuildId, TranslationKey.fmt_game_tr_errors(user.Mention, result)));
 
             var emb = new LocalizedEmbedBuilder(lcs, this.Channel.GuildId);
-            emb.WithLocalizedTitle("fmt-game-tr-res");
+            emb.WithLocalizedTitle(TranslationKey.fmt_game_tr_res);
             emb.WithDescription(sb);
             emb.WithColor(DiscordColor.Teal);
             return emb.Build();

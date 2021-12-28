@@ -23,40 +23,40 @@ namespace TheGodfather.Modules.Administration
             #region config logging
             [GroupCommand, Priority(3)]
             public async Task ExecuteGroupAsync(CommandContext ctx,
-                                               [Description("desc-enable")] bool enable,
-                                               [Description("desc-log-chn")] DiscordChannel? channel)
+                                               [Description(TranslationKey.desc_enable)] bool enable,
+                                               [Description(TranslationKey.desc_log_chn)] DiscordChannel? channel)
             {
                 channel ??= ctx.Channel;
                 if (channel.Type != ChannelType.Text)
-                    throw new CommandFailedException(ctx, "cmd-err-chn-type-text");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_chn_type_text);
 
                 await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => {
                     cfg.LogChannelIdDb = enable ? (long)channel.Id : 0;
                 });
 
                 await ctx.GuildLogAsync(emb => {
-                    emb.WithLocalizedTitle("evt-cfg-upd");
+                    emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
                     emb.WithColor(this.ModuleColor);
                     if (enable)
-                        emb.WithLocalizedDescription("evt-log-on", channel.Mention);
+                        emb.WithLocalizedDescription(TranslationKey.evt_log_on(channel.Mention));
                     else
-                        emb.WithLocalizedDescription("evt-log-off");
+                        emb.WithLocalizedDescription(TranslationKey.evt_log_off);
                 });
 
                 if (enable)
-                    await ctx.InfoAsync(this.ModuleColor, "evt-log-on", channel.Mention);
+                    await ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_log_on(channel.Mention));
                 else
-                    await ctx.InfoAsync(this.ModuleColor, "evt-log-off");
+                    await ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_log_off);
             }
 
             [GroupCommand, Priority(2)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("desc-log-chn")] DiscordChannel channel)
+                                         [Description(TranslationKey.desc_log_chn)] DiscordChannel channel)
                 => this.ExecuteGroupAsync(ctx, true, channel);
 
             [GroupCommand, Priority(1)]
             public Task ExecuteGroupAsync(CommandContext ctx,
-                                         [Description("desc-enable")] bool enable)
+                                         [Description(TranslationKey.desc_enable)] bool enable)
                 => this.ExecuteGroupAsync(ctx, enable, ctx.Channel);
 
             [GroupCommand, Priority(0)]
@@ -66,16 +66,16 @@ namespace TheGodfather.Modules.Administration
                 string? exemptString = await exempts.FormatExemptionsAsync(ctx.Client);
                 await ctx.WithGuildConfigAsync(gcfg =>
                     ctx.RespondWithLocalizedEmbedAsync(emb => {
-                        emb.WithLocalizedTitle("str-logging");
+                        emb.WithLocalizedTitle(TranslationKey.str_logging);
                         if (gcfg.LoggingEnabled) {
                             DiscordChannel? logchn = ctx.Services.GetRequiredService<GuildConfigService>().GetLogChannelForGuild(ctx.Guild);
-                            emb.WithLocalizedDescription("evt-log-on", logchn?.Mention ?? gcfg.LogChannelId.ToString());
+                            emb.WithLocalizedDescription(TranslationKey.evt_log_on(logchn?.Mention ?? gcfg.LogChannelId.ToString()));
                         } else {
-                            emb.WithLocalizedDescription("evt-log-off");
+                            emb.WithLocalizedDescription(TranslationKey.evt_log_off);
                         }
                         emb.WithColor(this.ModuleColor);
                         if (exemptString is { })
-                            emb.AddLocalizedField("str-exempts", exemptString, inline: true);
+                            emb.AddLocalizedField(TranslationKey.str_exempts, exemptString, inline: true);
                     })
                 );
             }
@@ -85,10 +85,10 @@ namespace TheGodfather.Modules.Administration
             [Command("exempt"), Priority(2)]
             [Aliases("ex", "exc")]
             public async Task ExemptAsync(CommandContext ctx,
-                                         [Description("desc-exempt-user")] params DiscordMember[] members)
+                                         [Description(TranslationKey.desc_exempt_user)] params DiscordMember[] members)
             {
                 if (members is null || !members.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_exempt);
 
                 await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Member, members.SelectIds());
                 await ctx.InfoAsync(this.ModuleColor);
@@ -96,10 +96,10 @@ namespace TheGodfather.Modules.Administration
 
             [Command("exempt"), Priority(1)]
             public async Task ExemptAsync(CommandContext ctx,
-                                         [Description("desc-exempt-role")] params DiscordRole[] roles)
+                                         [Description(TranslationKey.desc_exempt_role)] params DiscordRole[] roles)
             {
                 if (roles is null || !roles.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_exempt);
 
                 await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Role, roles.SelectIds());
                 await ctx.InfoAsync(this.ModuleColor);
@@ -107,10 +107,10 @@ namespace TheGodfather.Modules.Administration
 
             [Command("exempt"), Priority(0)]
             public async Task ExemptAsync(CommandContext ctx,
-                                         [Description("desc-exempt-chn")] params DiscordChannel[] channels)
+                                         [Description(TranslationKey.desc_exempt_chn)] params DiscordChannel[] channels)
             {
                 if (channels is null || !channels.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_exempt);
 
                 await this.Service.ExemptAsync(ctx.Guild.Id, ExemptedEntityType.Channel, channels.SelectIds());
                 await ctx.InfoAsync(this.ModuleColor);
@@ -121,10 +121,10 @@ namespace TheGodfather.Modules.Administration
             [Command("unexempt"), Priority(2)]
             [Aliases("unex", "uex")]
             public async Task UnxemptAsync(CommandContext ctx,
-                                          [Description("desc-unexempt-user")] params DiscordMember[] members)
+                                          [Description(TranslationKey.desc_unexempt_user)] params DiscordMember[] members)
             {
                 if (members is null || !members.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_exempt);
 
                 await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Member, members.SelectIds());
                 await ctx.InfoAsync(this.ModuleColor);
@@ -132,10 +132,10 @@ namespace TheGodfather.Modules.Administration
 
             [Command("unexempt"), Priority(1)]
             public async Task UnxemptAsync(CommandContext ctx,
-                                          [Description("desc-unexempt-role")] params DiscordRole[] roles)
+                                          [Description(TranslationKey.desc_unexempt_role)] params DiscordRole[] roles)
             {
                 if (roles is null || !roles.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_exempt);
 
                 await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Role, roles.SelectIds());
                 await ctx.InfoAsync(this.ModuleColor);
@@ -143,10 +143,10 @@ namespace TheGodfather.Modules.Administration
 
             [Command("unexempt"), Priority(0)]
             public async Task UnxemptAsync(CommandContext ctx,
-                                          [Description("desc-unexempt-chn")] params DiscordChannel[] channels)
+                                          [Description(TranslationKey.desc_unexempt_chn)] params DiscordChannel[] channels)
             {
                 if (channels is null || !channels.Any())
-                    throw new CommandFailedException(ctx, "cmd-err-exempt");
+                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_exempt);
 
                 await this.Service.UnexemptAsync(ctx.Guild.Id, ExemptedEntityType.Channel, channels.SelectIds());
                 await ctx.InfoAsync(this.ModuleColor);

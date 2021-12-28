@@ -24,10 +24,10 @@ namespace TheGodfather.Modules.Misc
         [Command("choice")]
         [Aliases("select", "choose")]
         public Task ChooseAsync(CommandContext ctx,
-                               [RemainingText, Description("desc-choice-list")] string list)
+                               [RemainingText, Description(TranslationKey.desc_choice_list)] string list)
         {
             if (string.IsNullOrWhiteSpace(list))
-                throw new InvalidCommandUsageException(ctx, "cmd-err-choice");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_choice);
 
             string choice = this.Service.Choice(list);
             return ctx.RespondAsync(embed: new DiscordEmbedBuilder {
@@ -41,19 +41,19 @@ namespace TheGodfather.Modules.Misc
         [Command("raffle")]
         [Aliases("chooseuser")]
         public Task RaffleAsync(CommandContext ctx,
-                               [Description("desc-role")] DiscordRole? role = null)
+                               [Description(TranslationKey.desc_role)] DiscordRole? role = null)
         {
             IEnumerable<DiscordMember> members = ctx.Guild.Members.Values;
             if (role is { })
                 members = members.Where(m => m.Roles.Contains(role));
 
             if (!members.Any())
-                throw new InvalidCommandUsageException(ctx, "cmd-err-choice-none");
+                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_choice_none);
 
             DiscordMember raffled = new SecureRandom().ChooseRandomElement(members);
             return ctx.RespondWithLocalizedEmbedAsync(emb => {
                 emb.WithColor(this.ModuleColor);
-                emb.WithLocalizedDescription("fmt-raffle", raffled.Mention);
+                emb.WithLocalizedDescription(TranslationKey.fmt_raffle(raffled.Mention));
             });
         }
         #endregion

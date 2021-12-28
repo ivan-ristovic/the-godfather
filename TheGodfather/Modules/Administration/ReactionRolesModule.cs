@@ -26,44 +26,44 @@ namespace TheGodfather.Modules.Administration
         #region reactionroles
         [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-rr-msg")] DiscordMessage msg,
-                                     [Description("desc-emoji")] DiscordEmoji emoji,
-                                     [Description("desc-role-grant")] DiscordRole role)
+                                     [Description(TranslationKey.desc_rr_msg)] DiscordMessage msg,
+                                     [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
+                                     [Description(TranslationKey.desc_role_grant)] DiscordRole role)
             => this.AddAsync(ctx, emoji, role, msg);
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-rr-msg")] DiscordMessage msg,
-                                     [Description("desc-role-grant")] DiscordRole role,
-                                     [Description("desc-emoji")] DiscordEmoji emoji)
+                                     [Description(TranslationKey.desc_rr_msg)] DiscordMessage msg,
+                                     [Description(TranslationKey.desc_role_grant)] DiscordRole role,
+                                     [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji)
             => this.AddAsync(ctx, emoji, role, msg);
 
         [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-emoji")] DiscordEmoji emoji,
-                                     [Description("desc-rr-msg")] DiscordMessage msg,
-                                     [Description("desc-role-grant")] DiscordRole role)
+                                     [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
+                                     [Description(TranslationKey.desc_rr_msg)] DiscordMessage msg,
+                                     [Description(TranslationKey.desc_role_grant)] DiscordRole role)
             => this.AddAsync(ctx, emoji, role, msg);
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-role-grant")] DiscordRole role,
-                                     [Description("desc-rr-msg")] DiscordMessage msg,
-                                     [Description("desc-emoji")] DiscordEmoji emoji)
+                                     [Description(TranslationKey.desc_role_grant)] DiscordRole role,
+                                     [Description(TranslationKey.desc_rr_msg)] DiscordMessage msg,
+                                     [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji)
             => this.AddAsync(ctx, emoji, role, msg);
 
         [GroupCommand, Priority(2)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-emoji")] DiscordEmoji emoji,
-                                     [Description("desc-role-grant")] DiscordRole role,
-                                     [Description("desc-rr-msg")] DiscordMessage? msg = null)
+                                     [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
+                                     [Description(TranslationKey.desc_role_grant)] DiscordRole role,
+                                     [Description(TranslationKey.desc_rr_msg)] DiscordMessage? msg = null)
             => this.AddAsync(ctx, emoji, role, msg);
 
         [GroupCommand, Priority(1)]
         public Task ExecuteGroupAsync(CommandContext ctx,
-                                     [Description("desc-role-grant")] DiscordRole role,
-                                     [Description("desc-emoji")] DiscordEmoji emoji,
-                                     [Description("desc-rr-msg")] DiscordMessage? msg = null)
+                                     [Description(TranslationKey.desc_role_grant)] DiscordRole role,
+                                     [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
+                                     [Description(TranslationKey.desc_rr_msg)] DiscordMessage? msg = null)
             => this.AddAsync(ctx, emoji, role, msg);
 
         [GroupCommand, Priority(0)]
@@ -75,51 +75,51 @@ namespace TheGodfather.Modules.Administration
         [Command("add"), Priority(5)]
         [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-rr-msg")] DiscordMessage msg,
-                            [Description("desc-role-grant")] DiscordRole role,
-                            [Description("desc-emoji")] DiscordEmoji emoji)
+                            [Description(TranslationKey.desc_rr_msg)] DiscordMessage msg,
+                            [Description(TranslationKey.desc_role_grant)] DiscordRole role,
+                            [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji)
             => this.AddAsync(ctx, emoji, role, msg);
 
         [Command("add"), Priority(4)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-rr-msg")] DiscordMessage msg,
-                            [Description("desc-emoji")] DiscordEmoji emoji,
-                            [Description("desc-role-grant")] DiscordRole role)
+                            [Description(TranslationKey.desc_rr_msg)] DiscordMessage msg,
+                            [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
+                            [Description(TranslationKey.desc_role_grant)] DiscordRole role)
             => this.AddAsync(ctx, emoji, role, msg);
 
         [Command("add"), Priority(3)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-role-grant")] DiscordRole role,
-                            [Description("desc-rr-msg")] DiscordMessage msg,
-                            [Description("desc-emoji")] DiscordEmoji emoji)
+                            [Description(TranslationKey.desc_role_grant)] DiscordRole role,
+                            [Description(TranslationKey.desc_rr_msg)] DiscordMessage msg,
+                            [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji)
             => this.AddAsync(ctx, emoji, role, msg);
 
         [Command("add"), Priority(2)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-emoji")] DiscordEmoji emoji,
-                            [Description("desc-rr-msg")] DiscordMessage msg,
-                            [Description("desc-role-grant")] DiscordRole role)
+                            [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
+                            [Description(TranslationKey.desc_rr_msg)] DiscordMessage msg,
+                            [Description(TranslationKey.desc_role_grant)] DiscordRole role)
             => this.AddAsync(ctx, emoji, role, msg);
 
         [Command("add"), Priority(1)]
         public Task AddAsync(CommandContext ctx,
-                            [Description("desc-role-grant")] DiscordRole role,
-                            [Description("desc-emoji")] DiscordEmoji emoji,
-                            [Description("desc-rr-msg")] DiscordMessage? msg = null)
+                            [Description(TranslationKey.desc_role_grant)] DiscordRole role,
+                            [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
+                            [Description(TranslationKey.desc_rr_msg)] DiscordMessage? msg = null)
             => this.AddAsync(ctx, emoji, role, msg);
 
         [Command("add"), Priority(0)]
         public async Task AddAsync(CommandContext ctx,
-                                  [Description("desc-emoji")] DiscordEmoji emoji,
-                                  [Description("desc-role-grant")] DiscordRole role,
-                                  [Description("desc-rr-msg")] DiscordMessage? msg = null)
+                                  [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
+                                  [Description(TranslationKey.desc_role_grant)] DiscordRole role,
+                                  [Description(TranslationKey.desc_rr_msg)] DiscordMessage? msg = null)
         {
             if (emoji is DiscordGuildEmoji gemoji && gemoji.Guild.Id != ctx.Guild.Id)
-                throw new CommandFailedException(ctx, "cmd-err-rr-emoji-404");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_rr_emoji_404);
 
             ReactionRole? rr = await this.Service.GetAsync(ctx.Guild.Id, emoji.GetDiscordName(), msg?.ChannelId ?? 0, msg?.Id ?? 0);
             if (rr is { })
-                throw new CommandFailedException(ctx, "cmd-err-rr");
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_rr);
 
             if (msg is null)
                 await this.Service.RemoveByEmojiAsync(ctx.Guild.Id, new[] { emoji.GetDiscordName() });
@@ -133,17 +133,17 @@ namespace TheGodfather.Modules.Administration
             });
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, "evt-rr-change");
-                emb.AddLocalizedField("str-rr-role", role.Mention, inline: true);
-                emb.AddLocalizedField("str-rr-emoji", emoji, inline: true);
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, TranslationKey.evt_rr_change);
+                emb.AddLocalizedField(TranslationKey.str_rr_role, role.Mention, inline: true);
+                emb.AddLocalizedField(TranslationKey.str_rr_emoji, emoji, inline: true);
                 if (msg is { })
-                    emb.AddLocalizedField("str-rr-msg", Formatter.MaskedUrl(msg.Id.ToString(), msg.JumpLink), inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_rr_msg, Formatter.MaskedUrl(msg.Id.ToString(), msg.JumpLink), inline: true);
             });
 
             if (msg is { })
-                await ctx.InfoAsync(this.ModuleColor, "fmt-rr-add-m", role.Mention, emoji, Formatter.MaskedUrl(msg.Id.ToString(), msg.JumpLink));
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_add_m(role.Mention, emoji, Formatter.MaskedUrl(msg.Id.ToString(), msg.JumpLink)));
             else
-                await ctx.InfoAsync(this.ModuleColor, "fmt-rr-add", role.Mention, emoji);
+                await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_add(role.Mention, emoji));
         }
         #endregion
 
@@ -151,7 +151,7 @@ namespace TheGodfather.Modules.Administration
         [Command("delete"), Priority(3)]
         [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
         public async Task RemoveAsync(CommandContext ctx,
-                                     [Description("desc-roles-del")] params DiscordRole[] roles)
+                                     [Description(TranslationKey.desc_roles_del)] params DiscordRole[] roles)
         {
             if (!roles.Any()) {
                 await this.RemoveAllAsync(ctx);
@@ -162,15 +162,15 @@ namespace TheGodfather.Modules.Administration
             int removed = await this.Service.RemoveAsync(lrs.Where(lr => roles.SelectIds().Contains(lr.RoleId)));
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-rr-change");
-                emb.AddLocalizedField("str-roles-rem", removed);
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_rr_change);
+                emb.AddLocalizedField(TranslationKey.str_roles_rem, removed);
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-rr-rem", removed);
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_rem(removed));
         }
 
         [Command("delete"), Priority(2)]
         public async Task RemoveAsync(CommandContext ctx,
-                                     [Description("desc-emojis")] params DiscordEmoji[] emojis)
+                                     [Description(TranslationKey.desc_emojis)] params DiscordEmoji[] emojis)
         {
             if (emojis is null || !emojis.Any()) {
                 await this.RemoveAllAsync(ctx);
@@ -180,15 +180,15 @@ namespace TheGodfather.Modules.Administration
             int removed = await this.Service.RemoveByEmojiAsync(ctx.Guild.Id, emojis.Select(e => e.GetDiscordName()));
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-rr-change");
-                emb.AddLocalizedField("str-roles-rem", removed);
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_rr_change);
+                emb.AddLocalizedField(TranslationKey.str_roles_rem, removed);
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-rr-rem", removed);
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_rem(removed));
         }
 
         [Command("delete"), Priority(1)]
         public async Task RemoveAsync(CommandContext ctx,
-                                     [Description("desc-msg")] params DiscordMessage[] msgs)
+                                     [Description(TranslationKey.desc_msg)] params DiscordMessage[] msgs)
         {
             if (msgs is null || !msgs.Any()) {
                 await this.RemoveAllAsync(ctx);
@@ -198,15 +198,15 @@ namespace TheGodfather.Modules.Administration
             int removed = await this.Service.RemoveByMessageAsync(ctx.Guild.Id, msgs.Select(m => (m.ChannelId, m.Id)));
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-rr-change");
-                emb.AddLocalizedField("str-roles-rem", removed);
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_rr_change);
+                emb.AddLocalizedField(TranslationKey.str_roles_rem, removed);
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-rr-rem", removed);
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_rem(removed));
         }
 
         [Command("delete"), Priority(0)]
         public async Task RemoveAsync(CommandContext ctx,
-                                     [Description("desc-chn")] params DiscordChannel[] channels)
+                                     [Description(TranslationKey.desc_chn)] params DiscordChannel[] channels)
         {
             if (channels is null || !channels.Any()) {
                 await this.RemoveAllAsync(ctx);
@@ -216,10 +216,10 @@ namespace TheGodfather.Modules.Administration
             int removed = await this.Service.RemoveByChannelAsync(ctx.Guild.Id, channels.SelectIds());
 
             await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-rr-change");
-                emb.AddLocalizedField("str-roles-rem", removed);
+                emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_rr_change);
+                emb.AddLocalizedField(TranslationKey.str_roles_rem, removed);
             });
-            await ctx.InfoAsync(this.ModuleColor, "fmt-rr-rem", removed);
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_rem(removed));
         }
         #endregion
 
@@ -228,12 +228,12 @@ namespace TheGodfather.Modules.Administration
         [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
         public async Task RemoveAllAsync(CommandContext ctx)
         {
-            if (!await ctx.WaitForBoolReplyAsync("q-rr-rem-all"))
+            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_rr_rem_all))
                 return;
 
             await this.Service.ClearAsync(ctx.Guild.Id);
-            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle("evt-rr-clear").WithColor(this.ModuleColor));
-            await ctx.InfoAsync(this.ModuleColor, "evt-rr-clear");
+            await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle(TranslationKey.evt_rr_clear).WithColor(this.ModuleColor));
+            await ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_rr_clear);
         }
         #endregion
 
@@ -244,7 +244,7 @@ namespace TheGodfather.Modules.Administration
         {
             IReadOnlyList<ReactionRole> rrs = await this.Service.GetAllAsync(ctx.Guild.Id);
             if (!rrs.Any()) {
-                await ctx.ImpInfoAsync(this.ModuleColor, "cmd-err-rr-none");
+                await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.cmd_err_rr_none);
                 return;
             }
 
@@ -260,8 +260,8 @@ namespace TheGodfather.Modules.Administration
                 await this.Service.RemoveByEmojiAsync(ctx.Guild.Id, toRemove);
                 await ctx.GuildLogAsync(
                     emb => {
-                        emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, "evt-rr-automanaged");
-                        emb.AddLocalizedField("str-roles-rem", toRemove.JoinWith(" "));
+                        emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_rr_automanaged);
+                        emb.AddLocalizedField(TranslationKey.str_roles_rem, toRemove.JoinWith(" "));
                     },
                     addInvocationFields: false
                 );
@@ -272,11 +272,11 @@ namespace TheGodfather.Modules.Administration
                 .OrderBy(kvp => kvp.Role.Position)
                 .ToList();
             if (!toPrint.Any()) {
-                await ctx.ImpInfoAsync(this.ModuleColor, "cmd-err-rr-none");
+                await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.cmd_err_rr_none);
                 return;
             }
 
-            await ctx.PaginateAsync("str-rr", toPrint, FormatReactionRole, this.ModuleColor);
+            await ctx.PaginateAsync(TranslationKey.str_rr, toPrint, FormatReactionRole, this.ModuleColor);
 
 
             string FormatReactionRole((ReactionRole ReactionRole, DiscordRole Role) kvp)
