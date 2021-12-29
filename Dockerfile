@@ -25,6 +25,6 @@ RUN set -xe; \
     chmod +x /usr/local/sbin/docker-entrypoint.sh; \
     chown gf /usr/local/sbin/docker-entrypoint.sh
 
-VOLUME [ "app/config" ]
+VOLUME [ "/app/data" ]
 ENTRYPOINT [ "/usr/local/sbin/docker-entrypoint.sh" ]
 CMD dotnet TheGodfather.dll

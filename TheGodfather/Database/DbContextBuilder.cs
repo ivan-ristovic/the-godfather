@@ -36,7 +36,7 @@ public class DbContextBuilder
                 SslMode = SslMode.Prefer,
                 TrustServerCertificate = true
             }.ConnectionString,
-            DbProvider.Sqlite => $"Data Source={cfg.DatabaseName}.db;",
+            DbProvider.Sqlite => $"Data Source=data/{cfg.DatabaseName}.db;",
             DbProvider.SqlServer => $@"Data Source=(localdb)\ProjectsV13;Initial Catalog={cfg.DatabaseName};" +
                                     "Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;" +
                                     "ApplicationIntent=ReadWrite;MultiSubnetFailover=False",

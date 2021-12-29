@@ -14,7 +14,7 @@ public sealed class BotConfigService : ITheGodfatherService
 
 
     [SuppressMessage("ReSharper", "LocalizableElement")]
-    public async Task<BotConfig> LoadConfigAsync(string path = "Resources/config.json")
+    public async Task<BotConfig> LoadConfigAsync(string path = "data/config.json")
     {
         string json;
         var utf8 = new UTF8Encoding(false);
@@ -22,7 +22,7 @@ public sealed class BotConfigService : ITheGodfatherService
         if (!fi.Exists) {
             Console.WriteLine("Loading configuration failed!");
 
-            Directory.CreateDirectory("Resources");
+            Directory.CreateDirectory("data");
 
             json = JsonConvert.SerializeObject(new BotConfig(), Formatting.Indented);
             await using (FileStream fs = fi.Create())

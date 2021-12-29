@@ -40,7 +40,7 @@ public sealed class BotConfig
     public LogEventLevel LogLevel { get; set; } = LogEventLevel.Information;
 
     [JsonProperty("log-path")]
-    public string LogPath { get; set; } = "gf.log";
+    public string LogPath { get; set; } = "data/logs/gf.log";
 
     [JsonProperty("log-file-rolling")]
     public RollingInterval RollingInterval { get; set; } = RollingInterval.Day;

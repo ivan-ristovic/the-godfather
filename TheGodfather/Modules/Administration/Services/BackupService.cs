@@ -132,8 +132,8 @@ public sealed class BackupService : ITheGodfatherService, IDisposable
 
     public async Task<bool> WithBackupZipAsync(ulong gid, Func<Stream, Task> action)
     {
-        string dirPath = Path.Combine("backup", gid.ToString());
-        string zipPath = Path.Combine("backup", $"{gid}.zip");
+        string dirPath = Path.Combine("data/backup", gid.ToString());
+        string zipPath = Path.Combine("data/backup", $"{gid}.zip");
 
         bool succ = false;
         try {
