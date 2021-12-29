@@ -1,0 +1,11 @@
+*
+
+!TheGodfather/**
+!TheGodfather.Generators/**
+!docker-entrypoint.sh
+
+TheGodfather/**/bin
+TheGodfather/**/obj
+TheGodfather.Generators/**/bin
+TheGodfather.Generators/**/obj
+

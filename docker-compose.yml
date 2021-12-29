@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+  godfather:
+    image: ivanristovic/godfather:latest
+    depends_on:
+      - postgres
+      - lavalink
+    volumes:
+      - ./data:/app/data
+
+  postgres:
+    restart: always
+    image: postgres:13-alpine
+    volumes:
+      - ${DB_ROOT}:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME}
+    ports:
+      - '5432:5432'
+    
+  lavalink:
+    restart: always
+    image: fredboat/lavalink:master-v3.4
+    volumes:
+      - ./data/lavalink/application.yml:/opt/Lavalink/application.yml
+    ports:
+      - '23333:23333'
+
