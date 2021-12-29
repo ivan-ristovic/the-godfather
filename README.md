@@ -1,11 +1,15 @@
 ﻿# the-godfather
 
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/9d6e1baa1ea94567a93575dc003b9b3c)](https://app.codacy.com/gh/ivan-ristovic/the-godfather?utm_source=github.com&utm_medium=referral&utm_content=ivan-ristovic/the-godfather&utm_campaign=Badge_Grade)
-[![Build Status](https://ci.appveyor.com/api/projects/status/axn087nlq6ha783x?svg=true)](https://ci.appveyor.com/project/ivan-ristovic/the-godfather)
-[![Issues](https://img.shields.io/github/issues/ivan-ristovic/the-godfather.svg)](https://github.com/ivan-ristovic/the-godfather/issues)
-[![Discord Server](https://discord.com/api/guilds/794671727291531274/embed.png)](https://discord.gg/z7KZGQQxRz)
-[![Stable release](https://img.shields.io/github/release/ivan-ristovic/the-godfather.svg?label=stable)](https://github.com/ivan-ristovic/the-godfather/releases)
-[![Latest release](https://img.shields.io/github/tag-pre/ivan-ristovic/the-godfather.svg?label=latest)](https://github.com/ivan-ristovic/the-godfather/releases)
+[![Codacy Badge](https://img.shields.io/codacy/grade/9d6e1baa1ea94567a93575dc003b9b3c?style=for-the-badge)](https://app.codacy.com/gh/ivan-ristovic/the-godfather?utm_source=github.com&utm_medium=referral&utm_content=ivan-ristovic/the-godfather&utm_campaign=Badge_Grade)
+[![Build Status](https://img.shields.io/appveyor/build/ivan-ristovic/the-godfather?style=for-the-badge)](https://ci.appveyor.com/project/ivan-ristovic/the-godfather)
+[![Issues](https://img.shields.io/github/issues/ivan-ristovic/the-godfather?style=for-the-badge)](https://github.com/ivan-ristovic/the-godfather/issues)
+[![PRs](https://img.shields.io/github/issues-pr/ivan-ristovic/the-godfather?style=for-the-badge)](https://github.com/ivan-ristovic/the-godfather/pulls)
+[![Discord Server](https://img.shields.io/discord/794671727291531274?style=for-the-badge)](https://discord.gg/z7KZGQQxRz)
+[![LICENCE](https://img.shields.io/github/license/ivan-ristovic/the-godfather?style=for-the-badge)](https://github.com/ivan-ristovic/the-godfather/LICENCE.md)
+[![Stable release](https://img.shields.io/github/release/ivan-ristovic/the-godfather.svg?label=stable&style=for-the-badge)](https://github.com/ivan-ristovic/the-godfather/releases)
+[![Latest release](https://img.shields.io/github/tag-pre/ivan-ristovic/the-godfather.svg?label=latest&style=for-the-badge)](https://github.com/ivan-ristovic/the-godfather/releases)
+[![Docker URL](https://img.shields.io/docker/pulls/ivanristovic/godfather?style=for-the-badge)](https://hub.docker.com/r/ivanristovic/godfather)
+[![Docker Image Size](https://img.shields.io/docker/image-size/ivanristovic/godfather?style=for-the-badge)](https://hub.docker.com/r/ivanristovic/godfather)
 
 Just another general-purpose Discord bot developed with the goal to remove all other bots from the guild and create one that will do everything as efficiently as possible while keeping simplicity in mind when it comes to usage. Written in C# using [DSharpPlus](https://github.com/DSharpPlus/DSharpPlus).
 
