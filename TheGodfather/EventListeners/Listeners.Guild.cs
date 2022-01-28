@@ -219,10 +219,14 @@ internal static partial class Listeners
         emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_position, e.RoleBefore.Position, e.RoleAfter.Position);
 
         DiscordAuditLogRoleUpdateEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogRoleUpdateEntry>(AuditLogActionType.RoleUpdate);
-        emb.AddFieldsFromAuditLogEntry(entry, (emb, ent) => {
-            // TODO use permissions_new once it is implemented in D#+
-            emb.AddLocalizedField(TranslationKey.str_perms, ent.PermissionChange?.After, false, false);
-        });
+        emb.AddFieldsFromAuditLogEntry(
+            entry, 
+            (emb, ent) => {
+                // TODO use permissions_new once it is implemented in D#+
+                emb.AddLocalizedField(TranslationKey.str_perms, ent.PermissionChange?.After, false, false);
+            },
+            e.RoleBefore.Position == e.RoleAfter.Position
+         );
 
         await logService.LogAsync(e.Guild, emb);
     }

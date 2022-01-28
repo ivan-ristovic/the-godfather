@@ -198,7 +198,8 @@ internal static partial class Listeners
                 );
                 emb.AddLocalizedField(TranslationKey.evt_chn_topic_change, TranslationKey.fmt_from_to_block(before, after), false);
             }
-            emb.AddInsufficientAuditLogPermissionsField();
+            if (fst.ChannelBefore.Position != lst.ChannelAfter.Position)
+                emb.AddInsufficientAuditLogPermissionsField();
         }
 
         await logService.LogAsync(e.Guild, emb);
