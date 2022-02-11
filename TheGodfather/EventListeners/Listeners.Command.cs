@@ -102,7 +102,7 @@ internal static partial class Listeners
             case NotFoundException nfe:
                 emb.WithLocalizedDescription(TranslationKey.cmd_err_404(nfe.JsonMessage));
                 break;
-            case FormatException nfe:
+            case FormatException:
                 emb.WithLocalizedDescription(TranslationKey.cmd_err_loc);
                 break;
             case LocalizedException lex:

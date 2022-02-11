@@ -106,7 +106,7 @@ public static class Emojis
     public static DiscordEmoji Information => DiscordEmoji.FromUnicode("\u2139");
     public static DiscordEmoji Loudspeaker => DiscordEmoji.FromUnicode("\U0001f4e2");
     public static DiscordEmoji Medal => DiscordEmoji.FromUnicode("\U0001f3c5");
-    public static DiscordEmoji NewMoon => DiscordEmoji.FromUnicode("U0001f311");
+    public static DiscordEmoji NewMoon => DiscordEmoji.FromUnicode("\U0001f311");
     public static DiscordEmoji NoEntry => DiscordEmoji.FromUnicode("\u26d4");
     public static DiscordEmoji Question => DiscordEmoji.FromUnicode("\u2753");
     public static DiscordEmoji Star => DiscordEmoji.FromUnicode("\U00002b50");
