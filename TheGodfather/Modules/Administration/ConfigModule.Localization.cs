@@ -18,7 +18,7 @@ public sealed partial class ConfigModule
 
         [GroupCommand][Priority(0)]
         public Task ExecuteGroupAsync(CommandContext ctx)
-            => ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_locale(this.Service.GetGuildLocale(ctx.Guild.Id)));
+            => ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_locale(this.Service.GetGuildLocale(ctx.Guild.Id)));
         #endregion
 
         #region config localization set
