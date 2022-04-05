@@ -18,7 +18,7 @@ public sealed class LinkfilterService : ProtectionServiceBase
 
     public async Task<bool> HandleNewMessageAsync(MessageCreateEventArgs e, LinkfilterSettings settings)
     {
-        if (e.Channel.PermissionsFor(e.Author as DiscordMember).HasPermission(Permissions.Administrator))
+        if (e.Author is not DiscordMember member || e.Channel.PermissionsFor(member).HasPermission(Permissions.Administrator))
             return false;
 
         if (settings.BlockDiscordInvites && await this.ScanForDiscordInvitesAsync(e))
