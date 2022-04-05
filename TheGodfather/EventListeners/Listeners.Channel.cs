@@ -70,7 +70,7 @@ internal static partial class Listeners
     }
 
     [AsyncEventListener(DiscordEventType.ChannelDeleted)]
-    public static Task ChannelDeleteBackupEventHandlerAsync(TheGodfatherBot bot, ChannelCreateEventArgs e)
+    public static Task ChannelDeleteBackupEventHandlerAsync(TheGodfatherBot bot, ChannelDeleteEventArgs e)
     {
         if (e.Channel.GuildId is null)
             return Task.CompletedTask;
