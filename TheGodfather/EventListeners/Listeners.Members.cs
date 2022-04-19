@@ -312,6 +312,9 @@ internal static partial class Listeners
     [AsyncEventListener(DiscordEventType.PresenceUpdated)]
     public static async Task MemberPresenceUpdateEventHandlerAsync(TheGodfatherBot bot, PresenceUpdateEventArgs e)
     {
+        // FIXME This handler is now broken thanks to Discord making giving partial update objects. I give up.
+        return;
+        
         if (e.User is null || e.User.IsBot)
             return;
 
