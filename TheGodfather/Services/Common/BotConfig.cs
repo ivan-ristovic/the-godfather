@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.IO;
+using Newtonsoft.Json;
 using Serilog.Events;
 
 namespace TheGodfather.Services.Common;
@@ -40,7 +41,7 @@ public sealed class BotConfig
     public LogEventLevel LogLevel { get; set; } = LogEventLevel.Information;
 
     [JsonProperty("log-path")]
-    public string LogPath { get; set; } = "data/logs/gf.log";
+    public string LogPath { get; set; } = Path.Combine("data", "logs", "gf.log");
 
     [JsonProperty("log-file-rolling")]
     public RollingInterval RollingInterval { get; set; } = RollingInterval.Day;
@@ -56,6 +57,9 @@ public sealed class BotConfig
 
     [JsonProperty("log-template")]
     public string? CustomLogTemplate { get; set; }
+
+    [JsonProperty("backup-path")]
+    public string BackupPath { get; set; } = Path.Combine("data", "backup");
 
     [JsonProperty("key-omdb")]
     public string? OMDbKey { get; set; }

@@ -13,13 +13,15 @@ public sealed class BackupService : ITheGodfatherService, IDisposable
     private readonly DbContextBuilder dbb;
     private readonly GuildConfigService gcs;
     private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, TextWriter?>> streams;
+    private readonly string backupPath;
 
 
-    public BackupService(DbContextBuilder dbb, GuildConfigService gcs)
+    public BackupService(BotConfigService cfg, DbContextBuilder dbb, GuildConfigService gcs)
     {
         this.dbb = dbb;
         this.gcs = gcs;
         this.streams = new ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, TextWriter?>>();
+        this.backupPath = cfg.CurrentConfiguration.BackupPath;
         this.LoadData();
     }
 
@@ -126,14 +128,14 @@ public sealed class BackupService : ITheGodfatherService, IDisposable
         try {
             await swNew.WriteLineAsync(contents);
         } catch (IOException e) {
-            Log.Error(e, "Failed to write to backup stream for channel {ChannelId} in guild {", cid);
+            Log.Error(e, "Failed to write to backup stream for channel {ChannelId} in guild {GuildId}", cid, gid);
         }
     }
 
     public async Task<bool> WithBackupZipAsync(ulong gid, Func<Stream, Task> action)
     {
-        string dirPath = Path.Combine("data/backup", gid.ToString());
-        string zipPath = Path.Combine("data/backup", $"{gid}.zip");
+        string dirPath = Path.Combine(this.backupPath, gid.ToString());
+        string zipPath = Path.Combine(this.backupPath, $"{gid}.zip");
 
         bool succ = false;
         try {
@@ -158,7 +160,7 @@ public sealed class BackupService : ITheGodfatherService, IDisposable
 
     private TextWriter CreateTextWriter(ulong gid, ulong cid)
     {
-        string dirPath = Path.Combine("backup", gid.ToString());
+        string dirPath = Path.Combine(this.backupPath, gid.ToString());
         if (!Directory.Exists(dirPath))
             Directory.CreateDirectory(dirPath);
         return TextWriter.Synchronized(new StreamWriter(Path.Combine(dirPath, $"{cid}.txt"), true, Encoding.UTF8) { AutoFlush = true });
