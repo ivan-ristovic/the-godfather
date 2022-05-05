@@ -44,7 +44,7 @@ internal static partial class Listeners
     [AsyncEventListener(DiscordEventType.MessageReactionAdded)]
     public static async Task MessageReactionAddedEventHandlerAsync(TheGodfatherBot bot, MessageReactionAddEventArgs e)
     {
-        if (e.Guild is null || e.Channel is null || e.Message is null)
+        if (e.Guild is null || e.Channel is null || e.Message is null || e.User.IsBot)
             return;
 
         StarboardService ss = bot.Services.GetRequiredService<StarboardService>();
