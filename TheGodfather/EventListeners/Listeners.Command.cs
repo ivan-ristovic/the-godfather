@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System.Data.Common;
+using System.Reflection;
 using System.Text;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
@@ -8,7 +9,6 @@ using DSharpPlus.EventArgs;
 using DSharpPlus.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Npgsql;
 using TheGodfather.EventListeners.Attributes;
 using TheGodfather.EventListeners.Common;
 using TheGodfather.Modules.Administration.Services;
@@ -143,7 +143,7 @@ internal static partial class Listeners
                 break;
             case TaskCanceledException tcex:
                 return Task.CompletedTask;
-            case NpgsqlException _:
+            case DbException _:
             case DbUpdateException _:
                 emb.WithLocalizedDescription(TranslationKey.err_db);
                 break;

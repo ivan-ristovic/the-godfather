@@ -129,17 +129,22 @@ public sealed class OwnerModule : TheGodfatherModule
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_dbq_sql_none);
 
         var res = new List<IReadOnlyDictionary<string, string>>();
-        await using (TheGodfatherDbContext db = ctx.Services.GetRequiredService<DbContextBuilder>().CreateContext())
-        await using (RelationalDataReader dr = await db.Database.ExecuteSqlQueryAsync(query, db)) {
-            DbDataReader reader = dr.DbDataReader;
-            while (await reader.ReadAsync()) {
-                var dict = new Dictionary<string, string>();
+        try {
+            await using (TheGodfatherDbContext db = ctx.Services.GetRequiredService<DbContextBuilder>().CreateContext())
+            await using (RelationalDataReader dr = await db.Database.ExecuteSqlQueryAsync(query, db)) {
+                DbDataReader reader = dr.DbDataReader;
+                while (await reader.ReadAsync()) {
+                    var dict = new Dictionary<string, string>();
 
-                for (int i = 0; i < reader.FieldCount; i++)
-                    dict[reader.GetName(i)] = reader[i] is DBNull ? "NULL" : reader[i].ToString() ?? "NULL";
+                    for (int i = 0; i < reader.FieldCount; i++)
+                        dict[reader.GetName(i)] = reader[i] is DBNull ? "NULL" : reader[i].ToString() ?? "NULL";
 
-                res.Add(new ReadOnlyDictionary<string, string>(dict));
+                    res.Add(new ReadOnlyDictionary<string, string>(dict));
+                }
             }
+        } catch (Exception e) {
+            await ctx.FailAsync(TranslationKey.err_db_msg(e.Message));
+            return;
         }
 
         if (!res.Any() || !res.First().Any()) {

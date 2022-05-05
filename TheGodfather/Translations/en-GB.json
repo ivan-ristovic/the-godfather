@@ -656,6 +656,7 @@
   "err-audit-log-no-perms": "Failed to read audit log information. Please check my permissions.",
   "err-concurrent": "A concurrency error occured - please report this!",
   "err-db": "Database operation failed, possibly due to large number of requests. Please report this.",
+  "err-db-msg": "Database operation failed: {0}",
   "err-dm-fail": "Seems like you have DMs disabled? This command requires open DM (atleast for me) so I can send you messages in private.",
   "err-f": "I do not have permissions to handle filtered messages in {0} - please check my permissions",
   "err-fname-match": "Matched forbidden name, but I failed to rename - please check my permissions",
