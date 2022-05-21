@@ -171,7 +171,8 @@ internal static partial class Listeners
         if (LoggingService.IsChannelExempted(bot, e.Guild, e.Channel, out GuildConfigService gcs))
             return;
 
-        if (e.Message.Author == bot.Client.CurrentUser && bot.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id))
+        bool eventRunning = bot.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(e.Channel.Id);
+        if (e.Message.Author == bot.Client.CurrentUser && eventRunning)
             return;
 
         emb.WithLocalizedTitle(DiscordEventType.MessageDeleted, TranslationKey.evt_msg_del);
@@ -180,6 +181,9 @@ internal static partial class Listeners
 
         DiscordAuditLogMessageEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogMessageEntry>(AuditLogActionType.MessageDelete);
         if (entry is { }) {
+            if (eventRunning && entry.UserResponsible.IsCurrent)
+                return;
+        
             DiscordMember? member = await e.Guild.GetMemberAsync(entry.UserResponsible.Id);
             if (member is { } && gcs.IsMemberExempted(e.Guild.Id, member.Id, member.Roles.SelectIds()))
                 return;
