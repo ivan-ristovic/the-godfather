@@ -27,12 +27,8 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
         if (string.IsNullOrWhiteSpace(question))
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_8b);
 
-        return this.Service.EightBall(ctx.Channel, question, out TranslationKey answer)
-            ? ctx.ImpInfoAsync(this.ModuleColor, Emojis.EightBall, answer)
-            : ctx.RespondAsync(new DiscordEmbedBuilder {
-                Description = $"{Emojis.EightBall} {answer}",
-                Color = this.ModuleColor
-            });
+        TranslationKey answer = this.Service.EightBall(ctx.Channel, question);
+        return ctx.ImpInfoAsync(this.ModuleColor, Emojis.EightBall, answer);
     }
     #endregion
 
