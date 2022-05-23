@@ -350,7 +350,7 @@ public sealed partial class ConfigModule : TheGodfatherServiceModule<GuildConfig
                 await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_memupd_chn);
 
                 DiscordChannel? chn = await interactivity.WaitForChannelMentionAsync(channel, ctx.User);
-                if (chn is { } && chn.Type == ChannelType.Text) {
+                if (chn is { } && chn.IsTextOrNewsChannel()) {
                     if (welcome)
                         gcfg.WelcomeChannelId = chn?.Id ?? default;
                     else

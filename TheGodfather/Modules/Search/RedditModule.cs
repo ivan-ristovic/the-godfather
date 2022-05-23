@@ -79,7 +79,7 @@ public sealed class RedditModule : TheGodfatherServiceModule<RedditService>
         [Description(TranslationKey.desc_chn)] DiscordChannel chn,
         [Description(TranslationKey.desc_sub)] string sub)
     {
-        if (chn.Type != ChannelType.Text)
+        if (chn.IsTextOrNewsChannel())
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
 
         if (string.IsNullOrWhiteSpace(sub))

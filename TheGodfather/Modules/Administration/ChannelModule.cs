@@ -142,7 +142,7 @@ public sealed class ChannelModule : TheGodfatherModule
     {
         DiscordChannel cloned = await channel.CloneAsync(ctx.BuildInvocationDetailsString());
 
-        await CheckPotentialChannelNameAsync(ctx, name, false, channel.Type == ChannelType.Text);
+        await CheckPotentialChannelNameAsync(ctx, name, false, channel.IsTextOrNewsChannel());
         if (!string.IsNullOrWhiteSpace(name))
             await cloned.ModifyAsync(m => m.Name = name);
 
@@ -761,7 +761,7 @@ public sealed class ChannelModule : TheGodfatherModule
 
         await ctx.InfoAsync(
             EmbColor, 
-            TranslationKey.fmt_chn_mod_pos(channel.Type == ChannelType.Text ? channel.Mention : Formatter.Bold(channel.Name), position)
+            TranslationKey.fmt_chn_mod_pos(channel.IsTextOrNewsChannel() ? channel.Mention : Formatter.Bold(channel.Name), position)
         );
     }
 

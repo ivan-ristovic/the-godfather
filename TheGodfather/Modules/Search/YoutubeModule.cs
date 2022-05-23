@@ -84,7 +84,7 @@ public sealed class YoutubeModule : TheGodfatherServiceModule<YtService>
         [Description(TranslationKey.desc_sub_yt_username)] string username,
         [RemainingText][Description(TranslationKey.desc_name_f)] string? name = null)
     {
-        if (chn.Type != ChannelType.Text)
+        if (chn.IsTextOrNewsChannel())
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
 
         string? feed = await this.Service.GetRssUrlForChannel(username);

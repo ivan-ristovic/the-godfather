@@ -157,7 +157,7 @@ public sealed class WebhookModule : TheGodfatherModule
     public async Task DeleteAllAsync(CommandContext ctx,
         [Description(TranslationKey.desc_chn_wh_del)] params DiscordChannel[] channels)
     {
-        foreach (DiscordChannel channel in channels.Where(c => c.Type == ChannelType.Text))
+        foreach (DiscordChannel channel in channels.Where(c => c.IsTextOrNewsChannel()))
             await this.DeleteAllAsync(ctx, channel);
     }
     #endregion

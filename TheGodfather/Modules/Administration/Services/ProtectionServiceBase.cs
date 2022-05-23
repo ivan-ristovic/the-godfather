@@ -116,7 +116,7 @@ public abstract class ProtectionServiceBase : ITheGodfatherService, IDisposable
                 IEnumerable<DiscordChannel> overwriteTargets = guild.Channels
                     .Select(kvp => kvp.Value)
                     .Where(c => c.Type == ChannelType.Category
-                                || ((c.Type == ChannelType.Text || c.Type == ChannelType.Voice) && c.Parent is null)
+                                || ((c.IsTextOrNewsChannel() || c.Type == ChannelType.Voice) && c.Parent is null)
                     );
 
                 await Task.WhenAll(overwriteTargets.Select(c => AddOverwrite(c, muteRole)));
