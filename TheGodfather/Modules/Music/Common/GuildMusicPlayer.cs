@@ -235,6 +235,7 @@ public sealed class GuildMusicPlayer
         if (this.Volume != DefVolume)
             await this.player.SetVolumeAsync(this.Volume);
         this.player.PlaybackFinished += this.PlaybackFinishedAsync;
+        this.player.DiscordWebSocketClosed += (_, _) => this.DestroyPlayerAsync();
     }
 
     public async Task DestroyPlayerAsync()
