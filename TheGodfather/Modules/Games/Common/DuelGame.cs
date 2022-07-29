@@ -136,13 +136,6 @@ public sealed class DuelGame : BaseChannelGame
         if (mctx.TimedOut || string.IsNullOrWhiteSpace(mctx.Result.Content))
             return null;
 
-        try {
-            await msg.DeleteAsync();
-            await mctx.Result.DeleteAsync();
-        } catch (Exception e) when (e is UnauthorizedException or NotFoundException) {
-            // No permissions to delete the messages
-        }
-
         return mctx.Result.Content.Trim();
     }
 }
