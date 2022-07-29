@@ -11,6 +11,9 @@ public class InsultService : ITheGodfatherService
     public bool IsDisabled => false;
 
 
-    public Task<string> FetchInsultAsync(string username)
-        => HttpService.GetStringAsync($"{this.endpoint}?who={WebUtility.UrlEncode(username)}");
+    public async Task<string> FetchInsultAsync(string username)
+    {
+        string insult = await HttpService.GetStringAsync($"{this.endpoint}?who={WebUtility.UrlEncode(username)}");
+        return insult.Trim();
+    }
 }
