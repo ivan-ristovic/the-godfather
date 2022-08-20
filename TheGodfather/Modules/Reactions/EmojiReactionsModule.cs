@@ -194,7 +194,7 @@ public sealed class EmojiReactionsModule : TheGodfatherServiceModule<ReactionsSe
 
         return ctx.RespondWithLocalizedEmbedAsync(emb => {
             emb.WithLocalizedTitle(TranslationKey.str_er_matching);
-            emb.WithDescription(ers.Select(er => FormatEmojiReaction(ctx.Client, er).JoinWith()));
+            emb.WithDescription(ers.Select(er => FormatEmojiReaction(ctx.Client, er)).JoinWith());
             emb.WithColor(this.ModuleColor);
         });
     }
