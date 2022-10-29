@@ -2,6 +2,7 @@
 using System.IO;
 using DSharpPlus;
 using DSharpPlus.Entities;
+using DSharpPlus.EventArgs;
 using DSharpPlus.Lavalink;
 using DSharpPlus.Lavalink.EventArgs;
 using TheGodfather.Modules.Music.Common;
@@ -18,17 +19,19 @@ public sealed class MusicService : ITheGodfatherService
     public bool IsDisabled => this.lavalink.IsDisabled;
 
 
-    public MusicService(LavalinkService lavalink, LocalizationService lcs)
+    public MusicService(DiscordShardedClient client, LavalinkService lavalink, LocalizationService lcs)
     {
         this.lavalink = lavalink;
         this.lcs = lcs;
         this.rng = new SecureRandom();
         this.data = new ConcurrentDictionary<ulong, GuildMusicPlayer>();
         this.lavalink.TrackExceptionThrown += this.LavalinkErrorHandler;
+        if (!this.IsDisabled)
+            client.VoiceStateUpdated += InternalDisconnectIfAloneAsync;
     }
 
 
-    public Task<GuildMusicPlayer> GetOrCreateDataAsync(DiscordGuild guild)
+    public Task<GuildMusicPlayer> GetOrCreatePlayerAsync(DiscordGuild guild)
     {
         if (this.IsDisabled)
             throw new InvalidOperationException();
@@ -50,6 +53,25 @@ public sealed class MusicService : ITheGodfatherService
         => tracks.Shuffle(this.rng);
 
 
+    private async Task InternalDisconnectIfAloneAsync(DiscordClient client, VoiceStateUpdateEventArgs e)
+    {
+        if (this.IsDisabled || e.Guild is null)
+            return;
+
+        if (this.data.TryGetValue(e.Guild.Id, out GuildMusicPlayer? gmd)) {
+            if (gmd.Channel is not null && gmd.Channel.Users.Count < 2)
+                await this.StopPlayerAsync(gmd);   
+        }
+    }
+
+    public async Task<int> StopPlayerAsync(GuildMusicPlayer player)
+    {
+        int removed = player.EmptyQueue();
+        await player.StopAsync();
+        await player.DestroyPlayerAsync();
+        return removed;
+    }
+    
     private async Task LavalinkErrorHandler(LavalinkGuildConnection con, TrackExceptionEventArgs e)
     {
         if (e.Player?.Guild == null)

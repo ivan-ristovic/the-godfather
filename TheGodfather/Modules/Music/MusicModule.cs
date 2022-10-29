@@ -42,7 +42,7 @@ public sealed partial class MusicModule : TheGodfatherServiceModule<MusicService
                 throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.Speak) });
         }
 
-        this.Player = await this.Service.GetOrCreateDataAsync(ctx.Guild);
+        this.Player = await this.Service.GetOrCreatePlayerAsync(ctx.Guild);
         this.Player.CommandChannel = ctx.Channel;
 
         await base.BeforeExecutionAsync(ctx);
@@ -205,9 +205,7 @@ public sealed partial class MusicModule : TheGodfatherServiceModule<MusicService
     [Command("stop")]
     public async Task StopAsync(CommandContext ctx)
     {
-        int removed = this.Player.EmptyQueue();
-        await this.Player.StopAsync();
-        await this.Player.DestroyPlayerAsync();
+        int removed = await this.Service.StopPlayerAsync(this.Player);
         await ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.fmt_music_del_many(removed));
     }
     #endregion
