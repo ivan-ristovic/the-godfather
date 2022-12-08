@@ -67,7 +67,7 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="6.0.1" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.1" />
         <PackageReference Include="NETStandard.Library" Version="2.0.3" />
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
         <PackageReference Include="Npgsql" Version="6.0.2" />
         <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.2" />
         <PackageReference Include="RedditSharp" Version="2.0.0" />
