@@ -19,11 +19,11 @@ public sealed class GrantModule : TheGodfatherModule
         [Description(TranslationKey.desc_roles_add)] params DiscordRole[] roles)
     {
         if (ctx.Guild.CurrentMember is null)
-            throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
+            throw new ChecksFailedException(ctx.Command!, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
 
         if (ctx.Channel.PermissionsFor(ctx.Guild.CurrentMember).HasPermission(Permissions.Administrator | Permissions.ManageRoles))
             return this.GiveRoleAsync(ctx, roles);
-        throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
+        throw new ChecksFailedException(ctx.Command!, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
     }
     #endregion
 
@@ -39,7 +39,7 @@ public sealed class GrantModule : TheGodfatherModule
         var failedRoles = new List<DiscordRole>();
         foreach (DiscordRole role in roles.Distinct())
             if (await service.ContainsAsync(ctx.Guild.Id, role.Id))
-                await ctx.Member.GrantRoleAsync(role, ctx.BuildInvocationDetailsString("_gf: Self-granted"));
+                await ctx.Member!.GrantRoleAsync(role, ctx.BuildInvocationDetailsString("_gf: Self-granted"));
             else
                 failedRoles.Add(role);
 
@@ -64,7 +64,7 @@ public sealed class GrantModule : TheGodfatherModule
         if (service.IsNameForbidden(ctx.Guild.Id, name, out _))
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_fn_match);
 
-        await ctx.Member.ModifyAsync(m => {
+        await ctx.Member!.ModifyAsync(m => {
             m.Nickname = name;
             m.AuditLogReason = this.Localization.GetString(ctx.Guild.Id, TranslationKey.rsn_grant_name);
         });
@@ -85,12 +85,12 @@ public sealed class RevokeModule : TheGodfatherModule
         [Description(TranslationKey.desc_roles_del)] params DiscordRole[] roles)
     {
         if (ctx.Guild.CurrentMember is null)
-            throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
+            throw new ChecksFailedException(ctx.Command!, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
 
         if (ctx.Channel.PermissionsFor(ctx.Guild.CurrentMember).HasPermission(Permissions.Administrator | Permissions.ManageRoles))
             await this.RevokeRoleAsync(ctx, roles);
         else
-            throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
+            throw new ChecksFailedException(ctx.Command!, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.ManageRoles) });
     }
     #endregion
 
@@ -106,7 +106,7 @@ public sealed class RevokeModule : TheGodfatherModule
         var failedRoles = new List<DiscordRole>();
         foreach (DiscordRole role in roles.Distinct())
             if (await service.ContainsAsync(ctx.Guild.Id, role.Id))
-                await ctx.Member.RevokeRoleAsync(role, ctx.BuildInvocationDetailsString("_gf: Self-revoke"));
+                await ctx.Member!.RevokeRoleAsync(role, ctx.BuildInvocationDetailsString("_gf: Self-revoke"));
             else
                 failedRoles.Add(role);
 

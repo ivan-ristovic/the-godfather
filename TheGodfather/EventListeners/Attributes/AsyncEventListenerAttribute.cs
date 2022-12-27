@@ -42,15 +42,6 @@ public sealed class AsyncEventListenerAttribute : Attribute
 
         #region Event hooking
         switch (this.EventType) {
-            case DiscordEventType.ApplicationCommandCreated:
-                bot.Client.ApplicationCommandCreated += OnEventWithArgs;
-                break;
-            case DiscordEventType.ApplicationCommandDeleted:
-                bot.Client.ApplicationCommandDeleted += OnEventWithArgs;
-                break;
-            case DiscordEventType.ApplicationCommandUpdated:
-                bot.Client.ApplicationCommandUpdated += OnEventWithArgs;
-                break;
             case DiscordEventType.ChannelCreated:
                 bot.Client.ChannelCreated += OnEventWithArgs;
                 break;

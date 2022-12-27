@@ -29,7 +29,7 @@ public sealed partial class MusicModule : TheGodfatherServiceModule<MusicService
             throw new ServiceDisabledException(ctx);
 
         if (!ctx.Client.IsOwnedBy(ctx.User) && !await ctx.Services.GetRequiredService<PrivilegedUserService>().ContainsAsync(ctx.User.Id)) {
-            DiscordVoiceState? memberVoiceState = ctx.Member.VoiceState;
+            DiscordVoiceState? memberVoiceState = ctx.Member?.VoiceState;
             DiscordChannel? chn = memberVoiceState?.Channel;
             if (chn is null)
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_music_vc);
@@ -39,7 +39,7 @@ public sealed partial class MusicModule : TheGodfatherServiceModule<MusicService
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_music_vc_same);
 
             if (!chn.PermissionsFor(ctx.Guild.CurrentMember).HasPermission(Permissions.AccessChannels))
-                throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.Speak) });
+                throw new ChecksFailedException(ctx.Command!, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.Speak) });
         }
 
         this.Player = await this.Service.GetOrCreatePlayerAsync(ctx.Guild);

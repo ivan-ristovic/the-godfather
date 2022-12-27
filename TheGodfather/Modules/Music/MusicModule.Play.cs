@@ -65,18 +65,18 @@ public sealed partial class MusicModule
     #region internals
     private async Task InternalPlayAsync(CommandContext ctx, LavalinkLoadResult tlr)
     {
-        IEnumerable<LavalinkTrack> tracks = tlr.Tracks;
+        List<LavalinkTrack> tracks = tlr.Tracks.ToList();
         if (tlr.LoadResultType == LavalinkLoadResultType.LoadFailed || !tracks.Any() || this.Player is null)
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_music_none);
 
         if (this.Player.IsShuffled)
-            tracks = this.Service.Shuffle(tracks);
+            tracks = this.Service.Shuffle(tracks).ToList();
 
-        int trackCount = tracks.Count();
+        int trackCount = tracks.Count;
         foreach (LavalinkTrack track in tracks)
-            this.Player.Enqueue(new Song(track, ctx.Member));
+            this.Player.Enqueue(new Song(track, ctx.Member!));
 
-        DiscordChannel? chn = ctx.Member.VoiceState?.Channel ?? ctx.Guild.CurrentMember.VoiceState?.Channel;
+        DiscordChannel? chn = ctx.Member?.VoiceState?.Channel ?? ctx.Guild.CurrentMember.VoiceState?.Channel;
         if (chn is null)
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_music_vc);
 

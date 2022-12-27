@@ -55,7 +55,7 @@ public partial class RemindModule : TheGodfatherServiceModule<SchedulingService>
         this.ThrowIfDM(ctx, channel);
 
         if (!ctx.Channel.PermissionsFor(ctx.Member).HasPermission(Permissions.ManageGuild))
-            throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireUserPermissionsAttribute(Permissions.ManageGuild) });
+            throw new ChecksFailedException(ctx.Command!, ctx, new[] { new RequireUserPermissionsAttribute(Permissions.ManageGuild) });
 
         if (channel.Type != ChannelType.Text)
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
@@ -88,7 +88,7 @@ public partial class RemindModule : TheGodfatherServiceModule<SchedulingService>
         if (ids is null || !ids.Any())
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_ids_none);
 
-        if (channel.Guild != ctx.Guild || !ctx.Member.PermissionsIn(channel).HasPermission(Permissions.Administrator))
+        if (channel.Guild != ctx.Guild || (ctx.Member is not null && !ctx.Member.PermissionsIn(channel).HasPermission(Permissions.Administrator)))
             throw new CommandFailedException(ctx, TranslationKey.cmd_chk_perms_usr(Permissions.Administrator));
 
         IReadOnlyList<Reminder> reminders = await this.Service.GetRemindTasksForChannelAsync(channel.Id);
@@ -234,21 +234,18 @@ public partial class RemindModule : TheGodfatherServiceModule<SchedulingService>
     private void ThrowIfDM(CommandContext ctx, DiscordChannel? chn)
     {
         if (chn is { } && ctx.Guild is null)
-            throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireGuildAttribute() });
+            throw new ChecksFailedException(ctx.Command!, ctx, new[] { new RequireGuildAttribute() });
     }
 
     private Task PaginateRemindersAsync(CommandContext ctx, IEnumerable<Reminder> reminders, DiscordChannel? chn = null)
     {
+        reminders = reminders.ToList();
         if (!reminders.Any())
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_remind_none);
 
         CultureInfo culture = this.Localization.GetGuildCulture(ctx.Guild?.Id);
         return ctx.PaginateAsync(reminders, (emb, r) => {
-            if (chn is null)
-                emb.WithLocalizedTitle(TranslationKey.str_remind_chn);
-            else
-                emb.WithLocalizedTitle(TranslationKey.fmt_remind_chn(chn.Name));
-
+            emb.WithLocalizedTitle(chn is null ? TranslationKey.str_remind_chn : TranslationKey.fmt_remind_chn(chn.Name));
             emb.WithDescription(r.Message);
             emb.AddLocalizedField(TranslationKey.str_id, r.Id, true);
             if (r.IsRepeating)

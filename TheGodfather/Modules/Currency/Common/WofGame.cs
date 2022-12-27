@@ -57,7 +57,7 @@ public class WofGame : BaseChannelGame
             await wof.SaveAsync(ms, PngFormat.Instance);
             ms.Position = 0;
             await this.Channel.SendMessageAsync(new DiscordMessageBuilder()
-                .WithFile("wof.png", ms)
+                .AddFile("wof.png", ms)
                 .WithEmbed(new DiscordEmbedBuilder {
                     Description = lcs.GetString(
                         this.gid, TranslationKey.fmt_casino_win(

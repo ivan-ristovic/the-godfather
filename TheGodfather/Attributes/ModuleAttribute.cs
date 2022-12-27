@@ -71,6 +71,8 @@ public sealed class ModuleAttribute : Attribute
     public static ModuleAttribute AttachedTo(Command cmd)
     {
         var mattr = cmd.CustomAttributes.FirstOrDefault(attr => attr is ModuleAttribute) as ModuleAttribute;
+        if (cmd.Module is null)
+            return new ModuleAttribute(ModuleType.Uncategorized);
         mattr ??= cmd.Module.ModuleType.GetCustomAttributes(typeof(ModuleAttribute), true).FirstOrDefault() as ModuleAttribute;
         return mattr ?? (cmd.Parent is null ? new ModuleAttribute(ModuleType.Uncategorized) : AttachedTo(cmd.Parent));
     }

@@ -44,7 +44,7 @@ public sealed class CommandsModule : TheGodfatherServiceModule<CommandService>
     public Task DeleteAsync(CommandContext ctx,
         [RemainingText][Description(TranslationKey.desc_cmd)] string command)
     {
-        Command cmd = ctx.CommandsNext.FindCommand(command, out _);
+        Command? cmd = ctx.CommandsNext.FindCommand(command, out _);
         if (cmd is null)
             throw new CommandFailedException(ctx, TranslationKey.cmd_name_404(command));
         ctx.CommandsNext.UnregisterCommands(cmd);

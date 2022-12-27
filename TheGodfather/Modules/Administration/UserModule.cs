@@ -100,7 +100,7 @@ public sealed class UserModule : TheGodfatherServiceModule<ProtectionService>
         if (roles is null || !roles.Any())
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_missing_roles);
 
-        if (member.Hierarchy >= ctx.Member.Hierarchy)
+        if (member.Hierarchy >= ctx.Member?.Hierarchy)
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_role_manage_403);
 
         await Task.WhenAll(roles.Distinct().Select(r => member.GrantRoleAsync(r, ctx.BuildInvocationDetailsString())));
@@ -122,11 +122,15 @@ public sealed class UserModule : TheGodfatherServiceModule<ProtectionService>
     {
         member ??= ctx.Member;
         return ctx.RespondWithLocalizedEmbedAsync(emb => {
+            if (member is null) {
+                emb.WithLocalizedTitle(TranslationKey.str_404);
+                return;
+            }
             emb.WithTitle(member.ToDiscriminatorString());
             emb.WithThumbnail(member.AvatarUrl);
-            emb.WithColor(this.ModuleColor);
             emb.AddLocalizedTimestampField(TranslationKey.str_regtime, member.CreationTimestamp, true);
             emb.AddLocalizedTimestampField(TranslationKey.str_joined_at, member.JoinedAt, true);
+            emb.WithColor(this.ModuleColor);
             emb.AddLocalizedField(TranslationKey.str_id, member.Id, true);
             emb.AddLocalizedField(TranslationKey.str_hierarchy, member.Hierarchy, true);
             emb.AddLocalizedField(TranslationKey.str_status, ToPresenceString(member.Presence), true);
@@ -286,7 +290,7 @@ public sealed class UserModule : TheGodfatherServiceModule<ProtectionService>
         if (roles is null || !roles.Any())
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_missing_roles);
 
-        if (member.Hierarchy >= ctx.Member.Hierarchy)
+        if (member.Hierarchy >= ctx.Member?.Hierarchy)
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_role_manage_403);
 
         await Task.WhenAll(roles.Distinct().Select(r => member.GrantRoleAsync(r, ctx.BuildInvocationDetailsString())));
@@ -308,7 +312,7 @@ public sealed class UserModule : TheGodfatherServiceModule<ProtectionService>
         [Description(TranslationKey.desc_member)] DiscordMember member,
         [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
     {
-        if (member.Hierarchy >= ctx.Member.Hierarchy)
+        if (member.Hierarchy >= ctx.Member?.Hierarchy)
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_role_manage_403);
 
         await member.ReplaceRolesAsync(Enumerable.Empty<DiscordRole>(), ctx.BuildInvocationDetailsString(reason));

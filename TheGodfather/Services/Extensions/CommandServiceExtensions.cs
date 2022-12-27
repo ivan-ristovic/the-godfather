@@ -16,7 +16,7 @@ public static class CommandServiceExtensions
                     _ = cs.GetCommandUsageExamples(0, cmd.QualifiedName);
                     IEnumerable<CommandArgument> args = cmd.Overloads.SelectMany(o => o.Arguments).Distinct();
                     foreach (CommandArgument arg in args)
-                        _ = lcs.GetStringUnsafe(null, arg.Description);
+                        _ = lcs.GetStringUnsafe(null, arg.Description ?? TranslationKey.str_404.Key);
                 }
             } catch (LocalizationException e) {
                 Log.Warning(e, "Translation not found");

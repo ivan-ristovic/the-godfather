@@ -65,7 +65,7 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
                 invite = await ctx.Guild.GetVanityInviteAsync();
             } else {
                 IReadOnlyList<DiscordInvite> invites = await ctx.Guild.GetInvitesAsync();
-                invite = invites.Where(inv => !inv.IsTemporary).FirstOrDefault();
+                invite = invites.FirstOrDefault(inv => !inv.IsTemporary);
             }
         }
 
@@ -73,7 +73,7 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
             expiryTime ??= TimeSpan.FromSeconds(86400);
 
             if (!ctx.Guild.CurrentMember.PermissionsIn(ctx.Channel).HasPermission(Permissions.CreateInstantInvite))
-                throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.CreateInstantInvite) });
+                throw new ChecksFailedException(ctx.Command!, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.CreateInstantInvite) });
 
             // TODO check timespan because only some values are allowed - 400 is thrown
             invite = await ctx.Channel.CreateInviteAsync((int)expiryTime.Value.TotalSeconds, temporary: true, reason: ctx.BuildInvocationDetailsString());
@@ -302,7 +302,7 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
             member = ctx.Member;
 
         string prefix = ctx.Services.GetRequiredService<GuildConfigService>().GetGuildPrefix(ctx.Guild.Id);
-        string? simulatedMessage = await SimulationService.SimulateAsync(ctx.Channel, member, prefix);
+        string? simulatedMessage = await SimulationService.SimulateAsync(ctx.Channel, member!, prefix);
         if (simulatedMessage is null)
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_sim);
         await ctx.Channel.EmbedAsync(simulatedMessage, Emojis.Loudspeaker, this.ModuleColor);
@@ -321,7 +321,7 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
 
         return ctx.Services.GetRequiredService<FilteringService>().TextContainsFilter(ctx.Guild.Id, text, out _)
             ? throw new CommandFailedException(ctx, TranslationKey.cmd_err_say)
-            : ctx.RespondAsync(new DiscordMessageBuilder().WithContent(Formatter.BlockCode(Formatter.Strip(text))).HasTTS(true));
+            : ctx.RespondAsync(new DiscordMessageBuilder().WithContent(Formatter.BlockCode(Formatter.Strip(text))).WithTTS(true));
     }
     #endregion
 
@@ -401,7 +401,7 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
 
         await using Stream ms = await ctx.Services.GetRequiredService<ImagingService>().RateAsync(users.Select(u => (u.ToDiscriminatorString(), u.Id)));
         await ctx.RespondAsync(new DiscordMessageBuilder()
-            .WithFile("Rating.jpg", ms)
+            .AddFile("Rating.jpg", ms)
             .WithEmbed(new DiscordEmbedBuilder {
                 Description = this.Localization.GetString(ctx.Guild?.Id, TranslationKey.fmt_rating(Emojis.Ruler, users.Select(u => u.Mention).JoinWith(", "))),
                 Color = this.ModuleColor
@@ -419,7 +419,7 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
         ImagingService ims = ctx.Services.GetRequiredService<ImagingService>();
         CultureInfo culture = this.Localization.GetGuildCulture(ctx.Guild.Id);
         await using Stream ms = await ims.RipAsync(user.ToDiscriminatorString(), user.AvatarUrl, user.CreationTimestamp, desc, culture);
-        await ctx.RespondAsync(new DiscordMessageBuilder().WithFile("Grave.jpg", ms));
+        await ctx.RespondAsync(new DiscordMessageBuilder().AddFile("Grave.jpg", ms));
     }
     #endregion
 }

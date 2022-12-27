@@ -57,7 +57,7 @@ public sealed partial class ConfigModule
         [RequireUserPermissions(Permissions.Administrator)]
         public async Task DownloadAsync(CommandContext ctx)
         {
-            if (!await this.Service.WithBackupZipAsync(ctx.Guild.Id, s => ctx.RespondAsync(new DiscordMessageBuilder().WithFile("backup.zip", s))))
+            if (!await this.Service.WithBackupZipAsync(ctx.Guild.Id, s => ctx.RespondAsync(new DiscordMessageBuilder().AddFile("backup.zip", s))))
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_backup);
         }
         #endregion

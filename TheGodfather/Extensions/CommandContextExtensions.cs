@@ -151,7 +151,7 @@ internal static class CommandContextExtensions
 
         interactivityService.AddPendingResponse(ctx.Channel.Id, user.Id);
         InteractivityResult<DiscordMessage> mctx = await interactivity.WaitForMessageAsync(m => m.Channel == dm && m.Author == user, waitInterval);
-        if (interactivityService is { } && !interactivityService.RemovePendingResponse(ctx.Channel.Id, user.Id))
+        if (!interactivityService.RemovePendingResponse(ctx.Channel.Id, user.Id))
             throw new ConcurrentOperationException("Failed to remove user from pending list");
 
         return mctx.TimedOut ? null : mctx.Result;
@@ -160,7 +160,9 @@ internal static class CommandContextExtensions
     public static Task ExecuteOtherCommandAsync(this CommandContext ctx, string command, params string?[] args)
     {
         string callStr = $"{command} {args.JoinWith(" ")}";
-        Command cmd = ctx.CommandsNext.FindCommand(callStr, out string actualArgs);
+        Command? cmd = ctx.CommandsNext.FindCommand(callStr, out string? actualArgs);
+        if (cmd is null)
+            return Task.CompletedTask;
         CommandContext fctx = ctx.CommandsNext.CreateFakeContext(ctx.User, ctx.Channel, callStr, ctx.Prefix, cmd, actualArgs);
         return ctx.CommandsNext.ExecuteCommandAsync(fctx);
     }

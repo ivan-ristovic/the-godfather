@@ -11,7 +11,7 @@ public sealed class EvaluationEnvironment
     public DiscordChannel Channel => this.Context.Channel;
     public DiscordGuild Guild => this.Context.Guild;
     public DiscordUser User => this.Context.User;
-    public DiscordMember Member => this.Context.Member;
+    public DiscordMember? Member => this.Context.Member;
     public DiscordClient Client => this.Context.Client;
 
 

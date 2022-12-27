@@ -46,7 +46,7 @@ internal static partial class Listeners
             await chn.SendMessageAsync(
                 new DiscordMessageBuilder()
                     .WithEmbed(emb.Build())
-                    .WithFile($"{e.Channel.Name}-deleted-messages.txt", ms)
+                    .AddFile($"{e.Channel.Name}-deleted-messages.txt", ms)
             );
     }
 

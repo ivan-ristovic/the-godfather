@@ -19,7 +19,7 @@ public sealed class VoiceModule : TheGodfatherModule
     public Task ConnectAsync(CommandContext ctx,
         [RemainingText][Description(TranslationKey.desc_chn_voice)] DiscordChannel? channel = null)
     {
-        channel ??= ctx.Member.VoiceState?.Channel;
+        channel ??= ctx.Member?.VoiceState?.Channel;
         if (channel is null)
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_music_vc);
 
@@ -27,7 +27,7 @@ public sealed class VoiceModule : TheGodfatherModule
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_chn_type_voice);
 
         if (!channel.PermissionsFor(ctx.Guild.CurrentMember).HasPermission(Permissions.AccessChannels))
-            throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.AccessChannels) });
+            throw new ChecksFailedException(ctx.Command!, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.AccessChannels) });
 
         return ctx.Client.GetVoiceNext().ConnectAsync(channel);
     }

@@ -72,7 +72,8 @@ internal static partial class Listeners
                     .OrderBy(tup => tup.Item1)
                     .Select(tup => tup.kvp)
                     .Distinct(new CommandKeyValuePairComparer())
-                    .Take(3);
+                    .Take(3)
+                    .ToList();
 
                 if (similarCommands.Any()) {
                     emb.WithLocalizedDescription(TranslationKey.q_did_you_mean);
@@ -90,7 +91,9 @@ internal static partial class Listeners
             case InvalidOperationException _:
                 string fcmdStr = $"help {e.Command?.QualifiedName ?? ""}";
                 CommandsNextExtension cnext = bot.CNext[bot.GetId(e.Context.Guild?.Id ?? 0)];
-                Command command = cnext.FindCommand(fcmdStr, out string args);
+                Command? command = cnext.FindCommand(fcmdStr, out string? args);
+                if (command is null)
+                    break;
                 CommandContext fctx = cnext.CreateFakeContext(e.Context.User, e.Context.Channel, fcmdStr, e.Context.Prefix, command, args);
                 return cnext.ExecuteCommandAsync(fctx);
             case ConcurrentOperationException coex:
@@ -155,48 +158,6 @@ internal static partial class Listeners
         }
 
         return e.Context.RespondAsync(emb.Build());
-    }
-
-    [AsyncEventListener(DiscordEventType.ApplicationCommandCreated)]
-    public static Task ApplicationCommandCreateEventHandlerAsync(TheGodfatherBot bot, ApplicationCommandEventArgs e)
-    {
-        if (e.Command is null)
-            return Task.CompletedTask;
-
-        LogExt.Information(
-            bot.GetId(e.Guild?.Id),
-            new[] { "Command created for application {ApplicationId}: {ApplicationCommand}", "{Guild}" },
-            e.Command.ApplicationId, e.Command, e.Guild?.ToString() ?? "DM"
-        );
-        return Task.CompletedTask;
-    }
-
-    [AsyncEventListener(DiscordEventType.ApplicationCommandDeleted)]
-    public static Task ApplicationCommandDeleteEventHandlerAsync(TheGodfatherBot bot, ApplicationCommandEventArgs e)
-    {
-        if (e.Command is null)
-            return Task.CompletedTask;
-
-        LogExt.Information(
-            bot.GetId(e.Guild?.Id),
-            new[] { "Command deleted for application {ApplicationId}: {ApplicationCommand}", "{Guild}" },
-            e.Command.ApplicationId, e.Command, e.Guild?.ToString() ?? "DM"
-        );
-        return Task.CompletedTask;
-    }
-
-    [AsyncEventListener(DiscordEventType.ApplicationCommandUpdated)]
-    public static Task ApplicationCommandUpdateEventHandlerAsync(TheGodfatherBot bot, ApplicationCommandEventArgs e)
-    {
-        if (e.Command is null)
-            return Task.CompletedTask;
-
-        LogExt.Information(
-            bot.GetId(e.Guild?.Id),
-            new[] { "Command updated for application {ApplicationId}: {ApplicationCommand}", "{Guild}" },
-            e.Command.ApplicationId, e.Command, e.Guild?.ToString() ?? "DM"
-        );
-        return Task.CompletedTask;
     }
 
     [AsyncEventListener(DiscordEventType.ComponentInteractionCreated)]

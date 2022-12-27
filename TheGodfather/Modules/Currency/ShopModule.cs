@@ -26,7 +26,11 @@ public sealed class ShopModule : TheGodfatherServiceModule<ShopService>
         [Description(TranslationKey.desc_member)] DiscordMember? member = null)
     {
         member ??= ctx.Member;
-
+        if (member is null) {
+            await ctx.FailAsync(TranslationKey.cmd_err_shop_purchased_none(TranslationKey.str_404));
+            return;
+        }
+            
         IReadOnlyList<PurchasedItem> purchased = await this.Service.Purchases.GetAllCompleteAsync(member.Id);
         if (!purchased.Any()) {
             await ctx.FailAsync(TranslationKey.cmd_err_shop_purchased_none(member.Mention));

@@ -28,13 +28,10 @@ public static class SimulationService
         if (pastMessages.Count == 0)
             return null;
 
-        var words = new List<string>();
-        foreach (DiscordMessage message in pastMessages) {
-            IEnumerable<string> split = SplitMessage(message.Content);
-            if (!split.Any())
-                continue;
-            words.Add(split.JoinWith(" "));
-        }
+        var words = pastMessages
+            .Select(message => SplitMessage(message.Content).JoinWith(" ").Trim())
+            .Where(split => !string.IsNullOrEmpty(split))
+            .ToList();
 
         return words.Count > 0 ? words.Shuffle(_rng).JoinWith(" ") : null;
 

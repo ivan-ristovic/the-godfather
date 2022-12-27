@@ -310,68 +310,68 @@ internal static partial class Listeners
     }
 
     [AsyncEventListener(DiscordEventType.PresenceUpdated)]
-    public static async Task MemberPresenceUpdateEventHandlerAsync(TheGodfatherBot bot, PresenceUpdateEventArgs e)
+    public static Task MemberPresenceUpdateEventHandlerAsync(TheGodfatherBot bot, PresenceUpdateEventArgs e)
     {
         // FIXME This handler is now broken thanks to Discord making giving partial update objects. I give up.
-        return;
-        
-        if (e.User is null || e.User.IsBot)
-            return;
+        return Task.CompletedTask;
 
-        Log.Debug("Presence updated: {User}", e.User);
-        if (!IsUpdated(e.UserBefore, e.UserAfter))
-            return;
-
-        LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
-        IEnumerable<DiscordGuild> guilds = bot.Client.ShardClients.Values
-                                               .SelectMany(s => s.Guilds)
-                                               .Select(kvp => kvp.Value)
-                                           ?? Enumerable.Empty<DiscordGuild>();
-        Log.Debug("Logging user update: {User}", e.User);
-        foreach (DiscordGuild guild in guilds) {
-            if (!await e.UserAfter.IsMemberOfAsync(guild))
-                continue;
-
-            if (!LoggingService.IsLogEnabledForGuild(bot, guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
-                continue;
-
-            emb.WithLocalizedTitle(DiscordEventType.GuildMemberUpdated, TranslationKey.evt_gld_mem_upd, e.User);
-            emb.WithThumbnail(e.UserAfter.AvatarUrl);
-
-            emb.AddLocalizedPropertyChangeField(TranslationKey.str_name, e.UserBefore.Username, e.UserAfter.Username);
-            emb.AddLocalizedPropertyChangeField(TranslationKey.str_discriminator, e.UserBefore.Discriminator, e.UserAfter.Discriminator);
-            if (e.UserAfter.AvatarUrl != e.UserBefore.AvatarUrl)
-                emb.AddLocalizedField(TranslationKey.str_avatar, Formatter.MaskedUrl(ls.GetString(guild.Id, TranslationKey.str_avatar_old), new Uri(e.UserBefore.AvatarUrl)));
-            emb.AddLocalizedPropertyChangeField(TranslationKey.str_email, e.UserBefore.Email, e.UserAfter.Email);
-            emb.AddLocalizedPropertyChangeField(TranslationKey.str_locale, e.UserBefore.Locale, e.UserAfter.Locale);
-            emb.AddLocalizedPropertyChangeField(TranslationKey.str_mfa, e.UserBefore.MfaEnabled, e.UserAfter.MfaEnabled);
-            emb.AddLocalizedPropertyChangeField(TranslationKey.str_flags_oauth, e.UserBefore.OAuthFlags, e.UserAfter.OAuthFlags);
-            emb.AddLocalizedPropertyChangeField(TranslationKey.str_premium_type, e.UserBefore.PremiumType, e.UserAfter.PremiumType);
-            emb.AddLocalizedPropertyChangeField(TranslationKey.str_verified, e.UserBefore.Verified, e.UserAfter.Verified);
-
-            // TODO improve
-            // emb.AddLocalizedField(TranslationKey.str_activity, e.Activity.ToDetailedString());
-
-            if (emb.FieldCount == 0)
-                return;
-
-            await logService.LogAsync(guild, emb);
-        }
-
-
-        static bool IsUpdated(DiscordUser? before, DiscordUser? after)
-        {
-            if (before is null || after is null)
-                return false;
-            return !Equals(before?.Username, after?.Username)
-                   || !Equals(before?.Discriminator, after?.Discriminator)
-                   || !Equals(before?.AvatarUrl, after?.AvatarUrl)
-                   || !Equals(before?.Email, after?.Email)
-                   || !Equals(before?.MfaEnabled, after?.MfaEnabled)
-                   || !Equals(before?.OAuthFlags, after?.OAuthFlags)
-                   || !Equals(before?.PremiumType, after?.PremiumType)
-                   || !Equals(before?.Verified, after?.Verified)
-                ;
-        }
+        // if (e.User is null || e.User.IsBot)
+        //     return;
+        //
+        // Log.Debug("Presence updated: {User}", e.User);
+        // if (!IsUpdated(e.UserBefore, e.UserAfter))
+        //     return;
+        //
+        // LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
+        // IEnumerable<DiscordGuild> guilds = bot.Client.ShardClients.Values
+        //                                        .SelectMany(s => s.Guilds)
+        //                                        .Select(kvp => kvp.Value)
+        //                                    ?? Enumerable.Empty<DiscordGuild>();
+        // Log.Debug("Logging user update: {User}", e.User);
+        // foreach (DiscordGuild guild in guilds) {
+        //     if (!await e.UserAfter.IsMemberOfAsync(guild))
+        //         continue;
+        //
+        //     if (!LoggingService.IsLogEnabledForGuild(bot, guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
+        //         continue;
+        //
+        //     emb.WithLocalizedTitle(DiscordEventType.GuildMemberUpdated, TranslationKey.evt_gld_mem_upd, e.User);
+        //     emb.WithThumbnail(e.UserAfter.AvatarUrl);
+        //
+        //     emb.AddLocalizedPropertyChangeField(TranslationKey.str_name, e.UserBefore.Username, e.UserAfter.Username);
+        //     emb.AddLocalizedPropertyChangeField(TranslationKey.str_discriminator, e.UserBefore.Discriminator, e.UserAfter.Discriminator);
+        //     if (e.UserAfter.AvatarUrl != e.UserBefore.AvatarUrl)
+        //         emb.AddLocalizedField(TranslationKey.str_avatar, Formatter.MaskedUrl(ls.GetString(guild.Id, TranslationKey.str_avatar_old), new Uri(e.UserBefore.AvatarUrl)));
+        //     emb.AddLocalizedPropertyChangeField(TranslationKey.str_email, e.UserBefore.Email, e.UserAfter.Email);
+        //     emb.AddLocalizedPropertyChangeField(TranslationKey.str_locale, e.UserBefore.Locale, e.UserAfter.Locale);
+        //     emb.AddLocalizedPropertyChangeField(TranslationKey.str_mfa, e.UserBefore.MfaEnabled, e.UserAfter.MfaEnabled);
+        //     emb.AddLocalizedPropertyChangeField(TranslationKey.str_flags_oauth, e.UserBefore.OAuthFlags, e.UserAfter.OAuthFlags);
+        //     emb.AddLocalizedPropertyChangeField(TranslationKey.str_premium_type, e.UserBefore.PremiumType, e.UserAfter.PremiumType);
+        //     emb.AddLocalizedPropertyChangeField(TranslationKey.str_verified, e.UserBefore.Verified, e.UserAfter.Verified);
+        //
+        //     // TODO improve
+        //     // emb.AddLocalizedField(TranslationKey.str_activity, e.Activity.ToDetailedString());
+        //
+        //     if (emb.FieldCount == 0)
+        //         return;
+        //
+        //     await logService.LogAsync(guild, emb);
+        // }
+        //
+        //
+        // static bool IsUpdated(DiscordUser? before, DiscordUser? after)
+        // {
+        //     if (before is null || after is null)
+        //         return false;
+        //     return !Equals(before?.Username, after?.Username)
+        //            || !Equals(before?.Discriminator, after?.Discriminator)
+        //            || !Equals(before?.AvatarUrl, after?.AvatarUrl)
+        //            || !Equals(before?.Email, after?.Email)
+        //            || !Equals(before?.MfaEnabled, after?.MfaEnabled)
+        //            || !Equals(before?.OAuthFlags, after?.OAuthFlags)
+        //            || !Equals(before?.PremiumType, after?.PremiumType)
+        //            || !Equals(before?.Verified, after?.Verified)
+        //         ;
+        // }
     }
 }

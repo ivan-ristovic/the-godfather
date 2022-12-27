@@ -32,6 +32,10 @@ public sealed class BankModule : TheGodfatherServiceModule<BankAccountService>
         [Description(TranslationKey.desc_member)] DiscordMember? member = null)
     {
         member ??= ctx.Member;
+        if (member is null) {
+            await ctx.FailAsync(TranslationKey.cmd_err_shop_purchased_none(TranslationKey.str_404));
+            return;
+        }
 
         BankAccount? balance = await this.Service.GetAsync(ctx.Guild.Id, member.Id);
         await ctx.RespondWithLocalizedEmbedAsync(emb => {

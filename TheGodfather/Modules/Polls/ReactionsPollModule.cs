@@ -27,7 +27,7 @@ public sealed class ReactionsPollModule : TheGodfatherServiceModule<ChannelEvent
         if (timeout < TimeSpan.FromSeconds(10) || timeout >= TimeSpan.FromDays(1))
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_poll_time(Poll.MinTimeSeconds, Poll.MaxTimeDays));
 
-        var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member, question, timeout);
+        var rpoll = new ReactionsPoll(ctx.Client.GetInteractivity(), ctx.Channel, ctx.Member!, question, timeout);
         this.Service.RegisterEventInChannel(rpoll, ctx.Channel.Id);
         try {
             await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Question, TranslationKey.q_poll_ans);
@@ -65,7 +65,7 @@ public sealed class ReactionsPollModule : TheGodfatherServiceModule<ChannelEvent
         if (poll is null or not ReactionsPoll)
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_poll_none);
 
-        if (!ctx.Member.PermissionsIn(ctx.Channel).HasPermission(Permissions.Administrator) && ctx.User != poll.Initiator)
+        if (ctx.Member == null || !ctx.Member.PermissionsIn(ctx.Channel).HasPermission(Permissions.Administrator) && ctx.User != poll.Initiator)
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_poll_cancel_perms);
 
         poll.Stop();

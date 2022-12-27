@@ -58,7 +58,7 @@ public sealed class CountriesQuizGame : BaseChannelGame, IQuiz
 
             await using (var fs = new FileStream(question, FileMode.Open)) {
                 await this.Channel.SendMessageAsync(new DiscordMessageBuilder()
-                    .WithFile("flag.png", fs)
+                    .AddFile("flag.png", fs)
                     .WithEmbed(emb.Build())
                 );
             }

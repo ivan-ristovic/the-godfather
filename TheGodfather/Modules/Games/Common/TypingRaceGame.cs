@@ -79,7 +79,7 @@ public sealed class TypingRaceGame : BaseChannelGame
             await using var ms = new MemoryStream();
             await image.SaveAsync(ms, PngFormat.Instance);
             ms.Position = 0;
-            await this.Channel.SendMessageAsync(new DiscordMessageBuilder().WithFile("typing-challenge.png", ms));
+            await this.Channel.SendMessageAsync(new DiscordMessageBuilder().AddFile("typing-challenge.png", ms));
         }
 
         await this.Interactivity.WaitForMessageAsync(

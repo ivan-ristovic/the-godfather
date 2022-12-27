@@ -5,9 +5,6 @@ namespace TheGodfather.EventListeners.Common;
 public enum DiscordEventType
 {
     #region Event types
-    ApplicationCommandCreated,
-    ApplicationCommandDeleted,
-    ApplicationCommandUpdated,
     ChannelCreated,
     ChannelDeleted,
     ChannelPinsUpdated,
@@ -69,10 +66,7 @@ public static class DiscordEventTypeExtensions
     public static DiscordColor ToDiscordColor(this DiscordEventType type)
     {
         switch (type) {
-            #region Application commands
-            case DiscordEventType.ApplicationCommandCreated:
-            case DiscordEventType.ApplicationCommandDeleted:
-            case DiscordEventType.ApplicationCommandUpdated:
+            #region Component Interactions
             case DiscordEventType.ComponentInteractionCreated:
                 return DiscordColor.Sienna;
             #endregion

@@ -511,7 +511,7 @@ public sealed class OwnerModule : TheGodfatherModule
         }
 
         await using FileStream fs = fi.OpenRead();
-        await ctx.RespondAsync(new DiscordMessageBuilder().WithFile(fs));
+        await ctx.RespondAsync(new DiscordMessageBuilder().AddFile(fs));
     }
 
     [Command("log")][Priority(0)]
@@ -578,7 +578,7 @@ public sealed class OwnerModule : TheGodfatherModule
         if (string.IsNullOrWhiteSpace(command))
             throw new InvalidCommandUsageException(ctx);
 
-        Command? cmd = ctx.CommandsNext.FindCommand(command, out string args);
+        Command? cmd = ctx.CommandsNext.FindCommand(command, out string? args);
         if (cmd is null)
             throw new CommandFailedException(ctx, TranslationKey.cmd_404(command));
         if (cmd.ExecutionChecks.Any(c => c is RequireOwnerAttribute or RequirePrivilegedUserAttribute))

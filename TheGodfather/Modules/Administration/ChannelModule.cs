@@ -194,7 +194,7 @@ public sealed class ChannelModule : TheGodfatherModule
     {
         channel ??= ctx.Channel;
 
-        if (ctx.Channel.IsPrivate || !ctx.Member.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
+        if (ctx.Channel.IsPrivate || ctx.Member is null || !ctx.Member.PermissionsIn(channel).HasPermission(Permissions.AccessChannels))
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_chn_perms);
 
         return ctx.RespondWithLocalizedEmbedAsync(emb => {
@@ -555,7 +555,7 @@ public sealed class ChannelModule : TheGodfatherModule
     {
         member ??= ctx.Member;
         channel ??= ctx.Channel;
-        Permissions perms = member.PermissionsIn(channel);
+        Permissions perms = member!.PermissionsIn(channel);
 
         string permsStr = this.Localization.GetString(ctx.Guild.Id, TranslationKey.fmt_chn_perms_none(member.DisplayName, channel.Name));
         if (perms.HasPermission(Permissions.AccessChannels))
@@ -579,7 +579,7 @@ public sealed class ChannelModule : TheGodfatherModule
         [Description(TranslationKey.desc_role)] DiscordRole role,
         [Description(TranslationKey.desc_chn_mod)] DiscordChannel? channel = null)
     {
-        if (role.Position > ctx.Member.Hierarchy)
+        if (role.Position > ctx.Member?.Hierarchy)
             throw new CommandFailedException(ctx, TranslationKey.fmt_role_perms_none);
 
         channel ??= ctx.Channel;
@@ -823,7 +823,7 @@ public sealed class ChannelModule : TheGodfatherModule
     private static void CheckIfMemberIsAllowedToAccessChannel(CommandContext ctx, DiscordChannel channel)
     {
         if (!channel.PermissionsFor(ctx.Member).HasPermission(Permissions.AccessChannels))
-            throw new ChecksFailedException(ctx.Command, ctx, new[] { new RequireUserPermissionsAttribute(Permissions.AccessChannels) });
+            throw new ChecksFailedException(ctx.Command!, ctx, new[] { new RequireUserPermissionsAttribute(Permissions.AccessChannels) });
     }
     #endregion
 }
