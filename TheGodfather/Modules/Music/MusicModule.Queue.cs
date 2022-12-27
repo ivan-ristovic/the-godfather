@@ -58,7 +58,7 @@ public sealed partial class MusicModule
     {
         int removed = this.Player.EmptyQueue();
         if (removed == 0)
-            throw new CommandFailedException(ctx);
+            throw new CommandFailedException(ctx, TranslationKey.str_music_queue_none);
     
         return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.fmt_music_del_many(removed));
     }
