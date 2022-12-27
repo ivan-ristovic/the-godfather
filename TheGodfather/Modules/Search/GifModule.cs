@@ -1,6 +1,7 @@
 ﻿using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using GiphyDotNet.Model.GiphyImage;
+using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Search;
@@ -19,10 +20,7 @@ public sealed class GifModule : TheGodfatherServiceModule<GiphyService>
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_query);
 
         Data[]? res = await this.Service.SearchGifAsync(query);
-        if (res?.Any() ?? false)
-            await ctx.RespondAsync(res.First().Url);
-        else
-            await ctx.FailAsync(TranslationKey.cmd_err_res_none);
+        await ctx.SendFirstGifAsync(res);
     }
     #endregion
 
@@ -31,11 +29,8 @@ public sealed class GifModule : TheGodfatherServiceModule<GiphyService>
     [Aliases("r", "rand", "rnd", "rng")]
     public async Task RandomAsync(CommandContext ctx)
     {
-        GiphyDotNet.Model.GiphyRandomImage.Data? res = await this.Service.GetRandomGifAsync();
-        if (res is null)
-            await ctx.FailAsync(TranslationKey.cmd_err_res_none);
-        else
-            await ctx.RespondAsync(res.Url);
+        Data? res = await this.Service.GetRandomGifAsync();
+        await ctx.SendGifAsync(res);
     }
     #endregion
 
@@ -46,24 +41,7 @@ public sealed class GifModule : TheGodfatherServiceModule<GiphyService>
         [Description(TranslationKey.desc_res_num)] int amount = 5)
     {
         Data[]? res = await this.Service.GetTrendingGifsAsync(amount);
-
-        if (res is null || !res.Any()) {
-            await ctx.FailAsync(TranslationKey.cmd_err_res_none);
-            return;
-        }
-
-        await ctx.PaginateAsync(res, (emb, r) => {
-            emb.WithLocalizedTitle(TranslationKey.str_trending);
-            emb.WithDescription(r.Caption, false);
-            emb.WithColor(this.ModuleColor);
-            emb.WithImageUrl(r.Images.DownsizedLarge.Url);
-            emb.AddLocalizedField(TranslationKey.str_posted_by, r.Username, true);
-            emb.AddLocalizedField(TranslationKey.str_rating, r.Rating, true);
-            if (DateTimeOffset.TryParse(r.TrendingDatetime, out DateTimeOffset dt))
-                emb.WithLocalizedTimestamp(dt);
-            emb.WithUrl(r.Url);
-            return emb;
-        });
+        await ctx.PaginateGiphyData(res, this.ModuleColor);
     }
     #endregion
 }
@@ -82,10 +60,7 @@ public sealed class StickerModule : TheGodfatherServiceModule<GiphyService>
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_query);
 
         Data[]? res = await this.Service.SearchStickerAsync(query);
-        if (res?.Any() ?? false)
-            await ctx.RespondAsync(res.First().Url);
-        else
-            await ctx.FailAsync(TranslationKey.cmd_err_res_none);
+        await ctx.SendFirstGifAsync(res);
     }
     #endregion
 
@@ -94,11 +69,8 @@ public sealed class StickerModule : TheGodfatherServiceModule<GiphyService>
     [Aliases("r", "rand", "rnd", "rng")]
     public async Task RandomAsync(CommandContext ctx)
     {
-        GiphyDotNet.Model.GiphyRandomImage.Data? res = await this.Service.GetRandomStickerAsync();
-        if (res is null)
-            await ctx.FailAsync(TranslationKey.cmd_err_res_none);
-        else
-            await ctx.RespondAsync(res.Url);
+        Data? res = await this.Service.GetRandomStickerAsync();
+        await ctx.SendGifAsync(res);
     }
     #endregion
 
@@ -109,24 +81,7 @@ public sealed class StickerModule : TheGodfatherServiceModule<GiphyService>
         [Description(TranslationKey.desc_res_num)] int amount = 5)
     {
         Data[]? res = await this.Service.GetTrendingStickerssAsync(amount);
-
-        if (res is null || !res.Any()) {
-            await ctx.FailAsync(TranslationKey.cmd_err_res_none);
-            return;
-        }
-
-        await ctx.PaginateAsync(res, (emb, r) => {
-            emb.WithLocalizedTitle(TranslationKey.str_trending);
-            emb.WithDescription(r.Caption, false);
-            emb.WithColor(this.ModuleColor);
-            emb.WithImageUrl(r.Images.DownsizedLarge.Url);
-            emb.AddLocalizedField(TranslationKey.str_posted_by, r.Username, true);
-            emb.AddLocalizedField(TranslationKey.str_rating, r.Rating, true);
-            if (DateTimeOffset.TryParse(r.TrendingDatetime, out DateTimeOffset dt))
-                emb.WithLocalizedTimestamp(dt);
-            emb.WithUrl(r.Url);
-            return emb;
-        });
+        await ctx.PaginateGiphyData(res, this.ModuleColor);
     }
     #endregion
 }

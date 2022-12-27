@@ -1,7 +1,7 @@
 ﻿using GiphyDotNet.Manager;
 using GiphyDotNet.Model.Parameters;
 using ImageData = GiphyDotNet.Model.GiphyImage.Data;
-using RandomImageData = GiphyDotNet.Model.GiphyRandomImage.Data;
+using RandomImageData = GiphyDotNet.Model.GiphyImage.Data;
 using RandomImageResult = GiphyDotNet.Model.Results.GiphyRandomResult;
 using SearchResult = GiphyDotNet.Model.Results.GiphySearchResult;
 
@@ -29,12 +29,12 @@ public sealed class GiphyService : ITheGodfatherService
         if (amount is < 1 or > 20)
             amount = 1;
 
-        SearchResult res = await this.giphy!.GifSearch(new SearchParameter {
+        SearchResult? res = await this.giphy!.GifSearch(new SearchParameter {
             Query = query,
             Limit = amount
         }).ConfigureAwait(false);
 
-        return res.Data;
+        return res?.Data;
     }
 
     public async Task<RandomImageData?> GetRandomGifAsync()
@@ -42,7 +42,7 @@ public sealed class GiphyService : ITheGodfatherService
         if (this.IsDisabled)
             return null;
 
-        RandomImageResult res = await this.giphy!.RandomGif(new RandomParameter()).ConfigureAwait(false);
+        RandomImageResult? res = await this.giphy!.RandomGif(new RandomParameter()).ConfigureAwait(false);
         return res?.Data;
     }
 
@@ -54,11 +54,11 @@ public sealed class GiphyService : ITheGodfatherService
         if (amount is < 1 or > 20)
             amount = 1;
 
-        SearchResult res = await this.giphy!.TrendingGifs(new TrendingParameter {
+        SearchResult? res = await this.giphy!.TrendingGifs(new TrendingParameter {
             Limit = amount
         }).ConfigureAwait(false);
 
-        return res.Data;
+        return res?.Data;
     }
 
     public async Task<ImageData[]?> SearchStickerAsync(string query, int amount = 1)
@@ -69,12 +69,12 @@ public sealed class GiphyService : ITheGodfatherService
         if (amount is < 1 or > 20)
             amount = 1;
 
-        SearchResult res = await this.giphy!.StickerSearch(new SearchParameter {
+        SearchResult? res = await this.giphy!.StickerSearch(new SearchParameter {
             Query = query,
             Limit = amount
         }).ConfigureAwait(false);
 
-        return res.Data;
+        return res?.Data;
     }
 
     public async Task<RandomImageData?> GetRandomStickerAsync()
@@ -82,7 +82,7 @@ public sealed class GiphyService : ITheGodfatherService
         if (this.IsDisabled)
             return null;
 
-        RandomImageResult res = await this.giphy!.RandomSticker(new RandomParameter()).ConfigureAwait(false);
+        RandomImageResult? res = await this.giphy!.RandomSticker(new RandomParameter()).ConfigureAwait(false);
         return res?.Data;
     }
 
@@ -94,10 +94,10 @@ public sealed class GiphyService : ITheGodfatherService
         if (amount is < 1 or > 20)
             amount = 1;
 
-        SearchResult res = await this.giphy!.TrendingStickers(new TrendingParameter {
+        SearchResult? res = await this.giphy!.TrendingStickers(new TrendingParameter {
             Limit = amount
         }).ConfigureAwait(false);
 
-        return res.Data;
+        return res?.Data;
     }
 }

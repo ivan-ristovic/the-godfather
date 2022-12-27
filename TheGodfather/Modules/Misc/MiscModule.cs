@@ -337,7 +337,7 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
             return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Clock1, TranslationKey.fmt_time(tz, time));
         }
 
-        if (!TZConvert.TryGetTimeZoneInfo(timezone, out TimeZoneInfo info))
+        if (!TZConvert.TryGetTimeZoneInfo(timezone, out TimeZoneInfo? info))
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_tz);
 
         CultureInfo culture = this.Localization.GetGuildCulture(ctx.Guild.Id);
