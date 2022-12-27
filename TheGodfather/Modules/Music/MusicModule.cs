@@ -59,7 +59,7 @@ public sealed partial class MusicModule : TheGodfatherServiceModule<MusicService
             return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.str_music_none);
 
         return ctx.RespondWithLocalizedEmbedAsync(emb => {
-            emb.WithLocalizedTitle(TranslationKey.str_music_queue);
+            emb.WithLocalizedTitle(TranslationKey.str_music_playing);
             emb.WithColor(this.ModuleColor);
             emb.WithDescription(Formatter.Bold(Formatter.Sanitize(song.Track.Title)));
             emb.AddLocalizedField(TranslationKey.str_author, song.Track.Author, true);

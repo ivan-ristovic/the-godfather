@@ -1504,6 +1504,7 @@
   "str-music-none": "Not playing anything currently.",
   "str-music-pause": "Paused.",
   "str-music-player": "Player information",
+  "str-music-playing": "Now playing",
   "str-music-queue": "Current playback queue",
   "str-music-queue-len": "Queue length",
   "str-music-queue-none": "Queue is empty.",

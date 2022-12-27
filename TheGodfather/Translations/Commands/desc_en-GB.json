@@ -339,6 +339,7 @@
   "message unpin": "Unpins the message by index (starting from 1) or message ID. If the index is not given, unpins the most recent one.",
   "message unpinall": "Unpins all pinned messages in given channel. If the channel is not provided, uses the current one.",
   "music": "Music playback and queue management commands. Group call prints information about currently playing track.",
+  "music clear": "Clears the current queue.",
   "music forward": "Forwards the track playback by the specified amount.",
   "music info": "Prints player information.",
   "music pause": "Toggles playback pause.",

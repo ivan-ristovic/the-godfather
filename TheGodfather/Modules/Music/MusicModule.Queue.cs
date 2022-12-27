@@ -50,4 +50,17 @@ public sealed partial class MusicModule
         return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.fmt_music_del(Formatter.Sanitize(song.Track.Title), Formatter.Sanitize(song.Track.Author)));
     }
     #endregion
+    
+    #region music clear
+    [Command("clear")]
+    [Aliases("removeall", "empty", "rmrf", "rma", "clearall", "delall", "da", "cl", "-a", "--", ">>>")]
+    public Task ClearAsync(CommandContext ctx)
+    {
+        int removed = this.Player.EmptyQueue();
+        if (removed == 0)
+            throw new CommandFailedException(ctx);
+    
+        return ctx.InfoAsync(this.ModuleColor, Emojis.Headphones, TranslationKey.fmt_music_del_many(removed));
+    }
+    #endregion
 }
