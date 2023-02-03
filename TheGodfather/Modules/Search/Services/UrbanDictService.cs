@@ -8,7 +8,7 @@ public sealed class UrbanDictService : TheGodfatherHttpService
 {
     public override bool IsDisabled => false;
 
-    private const string UrbanDictUrl = "http://api.urbandictionary.com/v0";
+    private const string UrbanDictUrl = "https://api.urbandictionary.com/v0";
 
 
     public static async Task<UrbanDictData?> GetDefinitionForTermAsync(string query)
