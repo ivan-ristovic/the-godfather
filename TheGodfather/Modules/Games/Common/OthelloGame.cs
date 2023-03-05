@@ -42,7 +42,7 @@ public sealed class OthelloGame : BaseBoardGame
             bool found = false;
             int current = this.BoardElementAt(posY, posX);
 
-            if (current == -1 || current == 0 || current == val)
+            if (current is -1 or 0 || current == val)
                 continue;
 
             while (!found) {

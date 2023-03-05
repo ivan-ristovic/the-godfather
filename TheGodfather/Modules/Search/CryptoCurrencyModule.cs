@@ -42,7 +42,7 @@ public sealed class CryptoCurrencyModule : TheGodfatherServiceModule<CryptoCurre
     public async Task ListAsync(CommandContext ctx,
         [Description(TranslationKey.desc_start_index)] int from = 0)
     {
-        if (from < 0 || from > CryptoCurrencyService.CurrencyPoolSize)
+        if (from is < 0 or > CryptoCurrencyService.CurrencyPoolSize)
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_index(0, CryptoCurrencyService.CurrencyPoolSize));
 
         IReadOnlyList<CryptoResponseData>? res;

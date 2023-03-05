@@ -56,5 +56,5 @@ internal static class DiscordChannelExtensions
         => channel.IsNSFW || channel.Name.StartsWith("nsfw", StringComparison.InvariantCultureIgnoreCase);
     
     public static bool IsTextOrNewsChannel(this DiscordChannel channel)
-        => channel.Type == ChannelType.Text || channel.Type == ChannelType.News;
+        => channel.Type is ChannelType.Text or ChannelType.News;
 }

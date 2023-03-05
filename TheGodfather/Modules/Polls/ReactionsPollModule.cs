@@ -32,7 +32,7 @@ public sealed class ReactionsPollModule : TheGodfatherServiceModule<ChannelEvent
         try {
             await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Question, TranslationKey.q_poll_ans);
             List<string>? options = await ctx.WaitAndParsePollOptionsAsync();
-            if (options is null || options.Count < 2 || options.Count > Poll.MaxPollOptions)
+            if (options is null || options.Count is < 2 or > Poll.MaxPollOptions)
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_poll_opt(Poll.MaxPollOptions));
             rpoll.Options = options;
 

@@ -16,7 +16,7 @@ public sealed class RedditService : TheGodfatherHttpService
 
     public async Task<IEnumerable<RedditPost>?> GetPostsAsync(string sub, RedditCategory category, int limit = 10)
     {
-        if (limit < 1 || limit > DiscordLimits.EmbedFieldLimit)
+        if (limit is < 1 or > DiscordLimits.EmbedFieldLimit)
             limit = 10;
 
         if (string.IsNullOrWhiteSpace(sub))

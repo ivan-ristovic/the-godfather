@@ -33,7 +33,7 @@ public sealed class EmojiModule : TheGodfatherModule
         [Description(TranslationKey.desc_emoji_name)] string name,
         [Description(TranslationKey.desc_emoji_url)] Uri? url = null)
     {
-        if (string.IsNullOrWhiteSpace(name) || name.Length < 2 || name.Length > DiscordLimits.EmojiNameLimit)
+        if (string.IsNullOrWhiteSpace(name) || name.Length is < 2 or > DiscordLimits.EmojiNameLimit)
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_emoji_name(2, DiscordLimits.EmojiNameLimit));
 
         if (url is null)
@@ -143,7 +143,7 @@ public sealed class EmojiModule : TheGodfatherModule
         [Description(TranslationKey.desc_name_new)] string newname,
         [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
     {
-        if (string.IsNullOrWhiteSpace(newname) || newname.Length < 2 || newname.Length > DiscordLimits.EmojiNameLimit)
+        if (string.IsNullOrWhiteSpace(newname) || newname.Length is < 2 or > DiscordLimits.EmojiNameLimit)
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_emoji_name(2, DiscordLimits.EmojiNameLimit));
 
         try {

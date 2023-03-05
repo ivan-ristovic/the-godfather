@@ -18,7 +18,7 @@ public partial class GamesModule
             [Description(TranslationKey.desc_game_ms_cols)] int cols = 9,
             [Description(TranslationKey.desc_game_ms_bombs)] int bombs = 10)
         {
-            if (rows < 4 || rows > 9 || cols < 4 || cols > 12)
+            if (rows is < 4 or > 9 || cols is < 4 or > 12)
                 throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_game_ms_dim(4, 9, 4, 12));
 
             try {

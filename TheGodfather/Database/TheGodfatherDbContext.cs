@@ -97,7 +97,7 @@ public class TheGodfatherDbContext : DbContext
     {
         mb.HasDefaultSchema("gf");
 
-        if (this.Provider == DbProvider.Sqlite || this.Provider == DbProvider.SqliteInMemory)
+        if (this.Provider is DbProvider.Sqlite or DbProvider.SqliteInMemory)
             foreach (IMutableEntityType entityType in mb.Model.GetEntityTypes()) {
                 IEnumerable<PropertyInfo> properties = entityType.ClrType.GetProperties()
                         .Where(p => p.PropertyType == typeof(DateTimeOffset) || p.PropertyType == typeof(DateTimeOffset?))

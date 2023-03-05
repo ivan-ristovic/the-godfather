@@ -78,7 +78,7 @@ public sealed partial class ConfigModule : TheGodfatherServiceModule<GuildConfig
         public async Task WelcomeMessageAsync(CommandContext ctx,
             [RemainingText][Description(TranslationKey.desc_welcome_msg)] string message)
         {
-            if (string.IsNullOrWhiteSpace(message) || message.Length < 3 || message.Length > GuildConfig.MemberUpdateMessageLimit)
+            if (string.IsNullOrWhiteSpace(message) || message.Length is < 3 or > GuildConfig.MemberUpdateMessageLimit)
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_memupd_msg(GuildConfig.MemberUpdateMessageLimit));
 
             await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.WelcomeMessage = message);
@@ -165,7 +165,7 @@ public sealed partial class ConfigModule : TheGodfatherServiceModule<GuildConfig
         public async Task WelcomeMessageAsync(CommandContext ctx,
             [RemainingText][Description(TranslationKey.desc_leave_msg)] string message)
         {
-            if (string.IsNullOrWhiteSpace(message) || message.Length < 3 || message.Length > GuildConfig.MemberUpdateMessageLimit)
+            if (string.IsNullOrWhiteSpace(message) || message.Length is < 3 or > GuildConfig.MemberUpdateMessageLimit)
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_memupd_msg(GuildConfig.MemberUpdateMessageLimit));
 
             await this.Service.ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.WelcomeMessage = message);

@@ -86,7 +86,7 @@ public sealed class GuildMusicPlayer
         if (this.player is null || !this.player.IsConnected)
             return;
 
-        if (volume < MinVolume || volume > MaxVolume)
+        if (volume is < MinVolume or > MaxVolume)
             volume = DefVolume;
 
         await this.player.SetVolumeAsync(volume);

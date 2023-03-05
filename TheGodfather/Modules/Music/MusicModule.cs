@@ -216,7 +216,7 @@ public sealed partial class MusicModule : TheGodfatherServiceModule<MusicService
     public async Task VolumeAsync(CommandContext ctx,
         [Description(TranslationKey.desc_music_vol)] int volume = 100)
     {
-        if (volume < GuildMusicPlayer.MinVolume || volume > GuildMusicPlayer.MaxVolume)
+        if (volume is < GuildMusicPlayer.MinVolume or > GuildMusicPlayer.MaxVolume)
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_music_vol(GuildMusicPlayer.MinVolume, GuildMusicPlayer.MaxVolume));
 
         await this.Player.SetVolumeAsync(volume);

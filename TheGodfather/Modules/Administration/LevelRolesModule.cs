@@ -45,7 +45,7 @@ public sealed class LevelRolesModule : TheGodfatherServiceModule<LevelRoleServic
         [Description(TranslationKey.desc_rank)] short rank,
         [Description(TranslationKey.desc_role_grant)] DiscordRole role)
     {
-        if (rank < 1 || rank > 1000)
+        if (rank is < 1 or > 1000)
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_rank(1, 1000));
 
         LevelRole? lr = await this.Service.GetAsync(ctx.Guild.Id, rank);
