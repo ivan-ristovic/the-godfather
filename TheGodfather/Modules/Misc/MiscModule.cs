@@ -174,10 +174,11 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
             return ctx.InfoAsync(this.ModuleColor, Emojis.Ruler, TranslationKey.cmd_err_size_bot);
 
         int size = this.Service.Size(user.Id).Length;
-        IEnumerable<DiscordMember> cockbros = ctx.Guild.Members
-                .Select(kvp => kvp.Value)
-                .Where(m => m != user && m != ctx.Client.CurrentUser && this.Service.Size(m.Id).Length == size)
-            ;
+        var cockbros = ctx.Guild.Members
+                          .Select(kvp => kvp.Value)
+                          .Where(m => m != user && m != ctx.Client.CurrentUser && this.Service.Size(m.Id).Length == size)
+                          .ToList()
+                          ;
 
         return cockbros.Any()
             ? ctx.PaginateAsync(TranslationKey.fmt_penisbros(user.Mention), cockbros, m => m.Mention, this.ModuleColor)
