@@ -1,9 +1,9 @@
 ﻿using DSharpPlus;
+using DSharpPlus.AsyncEvents;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Lavalink;
 using DSharpPlus.Lavalink.EventArgs;
 using DSharpPlus.Net;
-using Emzi0767.Utilities;
 using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Music.Services;
@@ -26,7 +26,7 @@ public sealed class LavalinkService : ITheGodfatherService
         this.cfg = cfg.CurrentConfiguration.LavalinkConfig;
         this.client = client;
         this.client.Ready += this.InitializeLavalinkAsync;
-        this.trackError = new AsyncEvent<LavalinkGuildConnection, TrackExceptionEventArgs>("LAVALINK_ERROR", TimeSpan.Zero, this.LavalinkErrorHandler);
+        this.trackError = new AsyncEvent<LavalinkGuildConnection, TrackExceptionEventArgs>("LAVALINK_ERROR", this.LavalinkErrorHandler);
     }
 
 
