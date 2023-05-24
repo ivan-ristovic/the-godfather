@@ -50,7 +50,7 @@ public sealed class RssFeedsModule : TheGodfatherServiceModule<RssFeedsService>
             [Description(TranslationKey.desc_rss_url)] Uri url,
             [RemainingText][Description(TranslationKey.desc_name_f)] string? name = null)
         {
-            if (chn.IsTextOrNewsChannel())
+            if (!chn.IsTextOrNewsChannel())
                 throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
 
             if (!RssFeedsService.IsValidFeedURL(url.AbsoluteUri))
@@ -80,7 +80,7 @@ public sealed class RssFeedsModule : TheGodfatherServiceModule<RssFeedsService>
             [Description(TranslationKey.desc_sub_chn)] DiscordChannel? chn = null)
         {
             chn ??= ctx.Channel;
-            if (chn.IsTextOrNewsChannel())
+            if (!chn.IsTextOrNewsChannel())
                 throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
 
             IReadOnlyList<RssSubscription> subs = await this.Service.Subscriptions.GetAllAsync((ctx.Guild.Id, chn.Id));

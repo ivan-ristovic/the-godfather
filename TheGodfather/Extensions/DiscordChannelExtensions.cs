@@ -46,7 +46,7 @@ internal static class DiscordChannelExtensions
         IEnumerable<DiscordOverwrite> roleOverwrites = channel.PermissionOverwrites.Where(o => o.Type == OverwriteType.Role);
         foreach (DiscordOverwrite overwrite in roleOverwrites) {
             DiscordRole? r = await overwrite.GetRoleAsync();
-            if (r is { } && r == role)
+            if (r is not null && r == role)
                 return overwrite;
         }
         return null;
