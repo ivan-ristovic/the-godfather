@@ -78,13 +78,36 @@ public sealed class SearchModule : TheGodfatherModule
         await ctx.RespondWithLocalizedEmbedAsync(emb => {
             emb.WithTitle(info.Ip);
             emb.WithColor(this.ModuleColor);
-            emb.AddLocalizedField(TranslationKey.str_location, $"{info.City}, {info.RegionName} {info.RegionCode}, {info.CountryName} {info.CountryCode}");
+            emb.AddLocalizedField(TranslationKey.str_location, FormatLocation(info));
             emb.AddLocalizedField(TranslationKey.str_location_exact, $"({info.Latitude} , {info.Longitude})", true);
             emb.AddLocalizedField(TranslationKey.str_isp, info.Isp, true);
             emb.AddLocalizedField(TranslationKey.str_org, info.Organization, true);
-            emb.AddLocalizedField(TranslationKey.str_as, info.As, true);
+            emb.AddLocalizedField(TranslationKey.str_hosting, info.Hosting, true);
+            emb.AddLocalizedField(TranslationKey.str_mobile, info.Mobile, true);
+            emb.AddLocalizedField(TranslationKey.str_proxy, info.Proxy, true);
+            if (!string.IsNullOrWhiteSpace(info.Reverse))
+                emb.AddLocalizedField(TranslationKey.str_reverse, info.Reverse, true);
             emb.WithLocalizedFooter(TranslationKey.fmt_powered_by("ip-api"), null);
+            emb.AddLocalizedField(TranslationKey.str_as, info.As, true);
+            if (!string.IsNullOrWhiteSpace(info.ASName))
+                emb.AddLocalizedField(TranslationKey.str_as_name, info.ASName, true);
         });
+
+        static string FormatLocation(IpInfo info)
+        {
+            return new[] {
+                info.District,
+                info.City,
+                info.Region,
+                info.RegionName,
+                info.RegionCode,
+                info.CountryName,
+                info.CountryCode,
+                info.ContinentCode,
+                info.Continent,
+            }.Where(s => !string.IsNullOrWhiteSpace(s))
+             .JoinWith(", ");
+        }
     }
     #endregion
 
