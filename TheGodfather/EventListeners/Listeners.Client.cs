@@ -82,7 +82,7 @@ internal static partial class Listeners
             "read the documentation @ https://github.com/ivan-ristovic/the-godfather \n" +
             $"{Emojis.SmallBlueDiamond} If you have any questions or problems, feel free to use the {Formatter.Bold("report")} " +
             $"command in order to send a message to the bot owners ({owners}). Alternatively, you can create an issue on " +
-            "GitHub or join WorldMafia Discord server for quick support (https://worldmafia.net/discord)."
+            "GitHub or join TheGodfather Discord server for quick support (https://discord.gg/z7KZGQQxRz)."
             , Emojis.Wave
         );
     }
