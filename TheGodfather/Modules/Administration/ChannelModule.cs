@@ -607,7 +607,6 @@ public sealed class ChannelModule : TheGodfatherModule
     #region checks
     private static readonly ImmutableArray<int> _ratelimitValues = new[] { 0, 5, 10, 15, 30, 45, 60, 75, 90, 120 }.ToImmutableArray();
 
-
     private static async Task CheckPotentialChannelNameAsync(CommandContext ctx, string? name, bool throwIfNull = true, bool textChannel = false)
     {
         if (!string.IsNullOrWhiteSpace(name)) {
