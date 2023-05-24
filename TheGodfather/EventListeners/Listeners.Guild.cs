@@ -44,7 +44,7 @@ internal static partial class Listeners
     [AsyncEventListener(DiscordEventType.GuildBanRemoved)]
     public static async Task GuildUnbanEventHandlerAsync(TheGodfatherBot bot, GuildBanRemoveEventArgs e)
     {
-        LogExt.Debug(bot.GetId(e.Guild.Id), "Unanned: {Member} {Guild}", e.Member, e.Guild);
+        LogExt.Debug(bot.GetId(e.Guild.Id), "Unbanned: {Member} {Guild}", e.Member, e.Guild);
         if (!LoggingService.IsLogEnabledForGuild(bot, e.Guild.Id, out LoggingService logService, out LocalizedEmbedBuilder emb))
             return;
 

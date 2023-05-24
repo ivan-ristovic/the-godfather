@@ -104,7 +104,6 @@ public sealed class GuildModule : TheGodfatherModule
             emb.AddLocalizedField(TranslationKey.str_members, ctx.Guild.MemberCount, true);
             emb.AddLocalizedField(TranslationKey.str_owner, ctx.Guild.Owner.Mention, true);
             emb.AddLocalizedField(TranslationKey.str_created_at, ctx.Guild.CreationTimestamp, true);
-            emb.AddLocalizedField(TranslationKey.str_region, ctx.Guild.VoiceRegion.Name, true);
             emb.AddLocalizedField(TranslationKey.str_verlvl, ctx.Guild.VerificationLevel, true);
             emb.AddLocalizedField(TranslationKey.str_vanity_url, ctx.Guild.VanityUrlCode, true, false);
             emb.AddLocalizedField(TranslationKey.str_discovery_url, ctx.Guild.DiscoverySplashUrl, true, false);
