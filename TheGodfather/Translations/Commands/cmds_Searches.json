@@ -400,6 +400,13 @@
       ]
     ]
   },
+  "weather graph": {
+    "usage": [
+      [
+        "arg-city"
+      ]
+    ]
+  },
   "wikipedia": {
     "usage": [
       [

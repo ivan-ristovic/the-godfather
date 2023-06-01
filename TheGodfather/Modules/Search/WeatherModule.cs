@@ -26,7 +26,6 @@ public sealed class WeatherModule : TheGodfatherServiceModule<WeatherService>
         }
 
         await ctx.RespondWithLocalizedEmbedAsync(emb => {
-            emb.WithColor(this.ModuleColor);
             string locationStr = $"[{data.Name + ", " + data.Sys.Country}]({WeatherService.GetCityUrl(data.Id)})";
             emb.AddLocalizedField(TranslationKey.str_w_location(Emojis.Globe), locationStr, true);
             emb.AddLocalizedField(TranslationKey.str_w_coordinates(Emojis.Ruler), $"{data.Coord.Lat}, {data.Coord.Lon}", true);
@@ -71,6 +70,28 @@ public sealed class WeatherModule : TheGodfatherServiceModule<WeatherService>
         => this.ForecastAsync(ctx, 7, query);
     #endregion
 
+    #region weather graph
+    [Command("graph")]
+    [Aliases("g")]
+    public async Task GraphAsync(CommandContext ctx,
+        [RemainingText][Description(TranslationKey.desc_query)] string query)
+    {
+        if (string.IsNullOrWhiteSpace(query))
+            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_query);
+
+        string? data = this.Service.GraphFor(query);
+        if (data is null) {
+            await ctx.FailAsync(TranslationKey.cmd_err_weather);
+            return;
+        }
+
+        await ctx.RespondWithLocalizedEmbedAsync(emb => {
+            emb.WithColor(this.ModuleColor);
+            emb.WithImageUrl(data);
+            emb.WithLocalizedFooter(TranslationKey.fmt_powered_by(WeatherService.GraphServiceUrl), null);
+        });
+    }
+    #endregion
 
     #region internals
     private LocalizedEmbedBuilder AddDataToEmbed(LocalizedEmbedBuilder emb, PartialWeatherData data)
@@ -82,7 +103,7 @@ public sealed class WeatherModule : TheGodfatherServiceModule<WeatherService>
         emb.AddLocalizedField(TranslationKey.str_w_temp_minmax(Emojis.Thermometer), $"{data.Main.TempMin:F1}°C / {data.Main.TempMax:F1}°C", true);
         emb.AddLocalizedField(TranslationKey.str_w_wind(Emojis.Wind), $"{data.Wind.Speed} m/s", true);
         emb.WithThumbnail(WeatherService.GetWeatherIconUrl(data.Weather[0]));
-        emb.WithLocalizedFooter(TranslationKey.fmt_powered_by("openweathermap.org"), null);
+        emb.WithLocalizedFooter(TranslationKey.fmt_powered_by(WeatherService.ServiceUrl), null);
         return emb;
     }
     #endregion

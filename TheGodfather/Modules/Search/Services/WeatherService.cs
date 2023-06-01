@@ -6,8 +6,12 @@ namespace TheGodfather.Modules.Search.Services;
 
 public class WeatherService : TheGodfatherHttpService
 {
-    private const string WeatherServiceUrl = "https://openweathermap.org";
-    private const string WeatherApiUrl = "http://api.openweathermap.org/data/2.5";
+    public const string ServiceUrl = "openweathermap.org";
+    public const string GraphServiceUrl = "wttr.in";
+    
+    private const string WeatherGraphUrl = $"https://v2.{GraphServiceUrl}";
+    private const string WeatherServiceUrl = $"https://{ServiceUrl}";
+    private const string WeatherApiUrl = $"http://api.{ServiceUrl}/data/2.5";
 
     public override bool IsDisabled => string.IsNullOrWhiteSpace(this.key);
 
@@ -55,5 +59,13 @@ public class WeatherService : TheGodfatherHttpService
         } catch {
             return null;
         }
+    }
+    
+    public string? GraphFor(string query)
+    {
+        if (this.IsDisabled || string.IsNullOrWhiteSpace(query))
+            return null;
+
+        return $"{WeatherGraphUrl}/{WebUtility.UrlEncode(query)}.png";
     }
 }
