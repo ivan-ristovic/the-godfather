@@ -19,55 +19,46 @@ public sealed class WeatherModule : TheGodfatherServiceModule<WeatherService>
         if (string.IsNullOrWhiteSpace(query))
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_query);
 
-        CompleteWeatherData? data = await this.Service.GetCurrentDataAsync(query);
+        string lang = this.Localization.GetGuildCulture(ctx.Guild?.Id).TwoLetterISOLanguageName;
+        WeatherResponse? data = await this.Service.GetAsync(query, lang);
         if (data is null) {
             await ctx.FailAsync(TranslationKey.cmd_err_weather);
             return;
         }
 
         await ctx.RespondWithLocalizedEmbedAsync(emb => {
-            string locationStr = $"[{data.Name + ", " + data.Sys.Country}]({WeatherService.GetCityUrl(data.Id)})";
-            emb.AddLocalizedField(TranslationKey.str_w_location(Emojis.Globe), locationStr, true);
-            emb.AddLocalizedField(TranslationKey.str_w_coordinates(Emojis.Ruler), $"{data.Coord.Lat}, {data.Coord.Lon}", true);
-            this.AddDataToEmbed(emb, data);
+            emb.AddLocalizedField(TranslationKey.str_w_location(Emojis.Globe), $"{data.Location.Name + ", " + data.Location.Country}", true);
+            emb.AddLocalizedField(TranslationKey.str_w_coordinates(Emojis.Ruler), $"{data.Lat}, {data.Lon}", true);
+            this.AddCurrentDataToEmbed(emb, data.Current);
         });
     }
     #endregion
 
     #region weather forecast
-    [Command("forecast")][Priority(1)]
-    [Aliases("f")]
+    [Command("forecast")]
+    [Aliases("f", "daily")]
     public async Task ForecastAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_amount_days)] int amount,
         [RemainingText][Description(TranslationKey.desc_query)] string query)
     {
         if (string.IsNullOrWhiteSpace(query))
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_query);
 
-        if (amount is < 1 or > 31)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_weather_f(1, 31));
-
-        Forecast? data = await this.Service.GetForecastAsync(query);
-        if (data is null || !data.WeatherDataList.Any()) {
+        string lang = this.Localization.GetGuildCulture(ctx.Guild?.Id).TwoLetterISOLanguageName;
+        WeatherResponse? data = await this.Service.GetAsync(query, lang);
+        if (data is null) {
             await ctx.FailAsync(TranslationKey.cmd_err_weather);
             return;
         }
 
-        await ctx.PaginateAsync(data.WeatherDataList.Select((d, i) => (d, i)).Take(amount), (emb, r) => {
+        await ctx.PaginateAsync(data.Daily.Select((d, i) => (d, i)), (emb, r) => {
             DateTime date = DateTime.Now.AddDays(r.i + 1);
             emb.WithLocalizedTitle(TranslationKey.fmt_weather_f(date.DayOfWeek, date.Date.ToShortDateString()));
-            string locationStr = $"[{data.City.Name + ", " + data.City.Country}]({WeatherService.GetCityUrl(data.City)})";
-            emb.AddLocalizedField(TranslationKey.str_w_location(Emojis.Globe), locationStr, true);
-            emb.AddLocalizedField(TranslationKey.str_w_coordinates(Emojis.Ruler), $"{data.City.Coord.Lat}, {data.City.Coord.Lon}", true);
-            this.AddDataToEmbed(emb, r.d);
+            emb.AddLocalizedField(TranslationKey.str_w_location(Emojis.Globe), $"{data.Location.Name + ", " + data.Location.Country}", true);
+            emb.AddLocalizedField(TranslationKey.str_w_coordinates(Emojis.Ruler), $"{data.Lat}, {data.Lon}", true);
+            this.AddDailyDataToEmbed(emb, r.d);
             return emb;
         }, this.ModuleColor);
     }
-
-    [Command("forecast")][Priority(0)]
-    public Task ForecastAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_query)] string query)
-        => this.ForecastAsync(ctx, 7, query);
     #endregion
 
     #region weather graph
@@ -94,14 +85,28 @@ public sealed class WeatherModule : TheGodfatherServiceModule<WeatherService>
     #endregion
 
     #region internals
-    private LocalizedEmbedBuilder AddDataToEmbed(LocalizedEmbedBuilder emb, PartialWeatherData data)
+    private LocalizedEmbedBuilder AddCurrentDataToEmbed(LocalizedEmbedBuilder emb, Current data)
     {
         emb.WithColor(this.ModuleColor);
+        emb.WithDescription(data.Weather.First().Description.Humanize());
         emb.AddLocalizedField(TranslationKey.str_w_condition(Emojis.Cloud), data.Weather.Select(w => w.Main).JoinWith(", "), true);
-        emb.AddLocalizedField(TranslationKey.str_w_humidity(Emojis.Drops), $"{data.Main.Humidity}%", true);
-        emb.AddLocalizedField(TranslationKey.str_w_temp(Emojis.Thermometer), $"{data.Main.Temp:F1}°C", true);
-        emb.AddLocalizedField(TranslationKey.str_w_temp_minmax(Emojis.Thermometer), $"{data.Main.TempMin:F1}°C / {data.Main.TempMax:F1}°C", true);
-        emb.AddLocalizedField(TranslationKey.str_w_wind(Emojis.Wind), $"{data.Wind.Speed} m/s", true);
+        emb.AddLocalizedField(TranslationKey.str_w_humidity(Emojis.Drops), $"{data.Humidity}%", true);
+        emb.AddLocalizedField(TranslationKey.str_w_temp(Emojis.Thermometer), $"{data.Temp:F1}°C (~{data.FeelsLike:F1}°C)", true);
+        emb.AddLocalizedField(TranslationKey.str_w_wind(Emojis.Wind), $"{data.WindSpeed} m/s", true);
+        emb.WithThumbnail(WeatherService.GetWeatherIconUrl(data.Weather[0]));
+        emb.WithLocalizedFooter(TranslationKey.fmt_powered_by(WeatherService.ServiceUrl), null);
+        return emb;
+    }
+    
+    private LocalizedEmbedBuilder AddDailyDataToEmbed(LocalizedEmbedBuilder emb, Daily data)
+    {
+        emb.WithColor(this.ModuleColor);
+        emb.WithDescription(data.Weather.First().Description.Humanize());
+        emb.AddLocalizedField(TranslationKey.str_w_condition(Emojis.Cloud), data.Weather.Select(w => w.Main).JoinWith(", "), true);
+        emb.AddLocalizedField(TranslationKey.str_w_humidity(Emojis.Drops), $"{data.Humidity}%", true);
+        emb.AddLocalizedField(TranslationKey.str_w_temp(Emojis.Thermometer), $"{data.Temp:F1}°C (~{data.FeelsLike:F1}°C)", true);
+        emb.AddLocalizedField(TranslationKey.str_w_temp_minmax(Emojis.Thermometer), $"{data.Temp.Min:F1}°C / {data.Temp.Max:F1}°C", true);
+        emb.AddLocalizedField(TranslationKey.str_w_wind(Emojis.Wind), $"{data.WindSpeed} m/s", true);
         emb.WithThumbnail(WeatherService.GetWeatherIconUrl(data.Weather[0]));
         emb.WithLocalizedFooter(TranslationKey.fmt_powered_by(WeatherService.ServiceUrl), null);
         return emb;
