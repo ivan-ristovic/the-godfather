@@ -60,7 +60,7 @@ public class WeatherService : TheGodfatherHttpService
                 string response = await _http.GetStringAsync(url).ConfigureAwait(false);
                 List<GeocodingData>? data = JsonConvert.DeserializeObject<List<GeocodingData>>(response);
                 if (data is null || data.Count == 0)
-                    throw new Exception("Failed to deserialize response");
+                    return null;
                 cachedGeo = data[0];
                 this.geoCache.Set(query, cachedGeo);
             }

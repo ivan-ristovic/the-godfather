@@ -50,12 +50,12 @@ public sealed class WeatherModule : TheGodfatherServiceModule<WeatherService>
             return;
         }
 
-        await ctx.PaginateAsync(data.Daily.Select((d, i) => (d, i)), (emb, r) => {
-            DateTime date = DateTime.Now.AddDays(r.i + 1);
-            emb.WithLocalizedTitle(TranslationKey.fmt_weather_f(date.DayOfWeek, date.Date.ToShortDateString()));
+        await ctx.PaginateAsync(data.Daily, (emb, d) => {
+            var date = DateTimeOffset.FromUnixTimeSeconds(d.Dt);
+            emb.WithLocalizedTitle(TranslationKey.fmt_weather_f(date.DayOfWeek, this.Localization.GetLocalizedTimeString(ctx.Guild?.Id, date, "d")));
             emb.AddLocalizedField(TranslationKey.str_w_location(Emojis.Globe), $"{data.Location.Name + ", " + data.Location.Country}", true);
             emb.AddLocalizedField(TranslationKey.str_w_coordinates(Emojis.Ruler), $"{data.Lat}, {data.Lon}", true);
-            this.AddDailyDataToEmbed(emb, r.d);
+            this.AddDailyDataToEmbed(emb, d);
             return emb;
         }, this.ModuleColor);
     }
@@ -101,10 +101,10 @@ public sealed class WeatherModule : TheGodfatherServiceModule<WeatherService>
     private LocalizedEmbedBuilder AddDailyDataToEmbed(LocalizedEmbedBuilder emb, Daily data)
     {
         emb.WithColor(this.ModuleColor);
-        emb.WithDescription(data.Weather.First().Description.Humanize());
+        emb.WithDescription(data.Summary.Humanize());
         emb.AddLocalizedField(TranslationKey.str_w_condition(Emojis.Cloud), data.Weather.Select(w => w.Main).JoinWith(", "), true);
         emb.AddLocalizedField(TranslationKey.str_w_humidity(Emojis.Drops), $"{data.Humidity}%", true);
-        emb.AddLocalizedField(TranslationKey.str_w_temp(Emojis.Thermometer), $"{data.Temp:F1}°C (~{data.FeelsLike:F1}°C)", true);
+        emb.AddLocalizedField(TranslationKey.str_w_temp(Emojis.Thermometer), $"{data.Temp.Morn:F1}/{data.Temp.Day:F1}/{data.Temp.Eve:F1}/{data.Temp.Night:F1} °C", true);
         emb.AddLocalizedField(TranslationKey.str_w_temp_minmax(Emojis.Thermometer), $"{data.Temp.Min:F1}°C / {data.Temp.Max:F1}°C", true);
         emb.AddLocalizedField(TranslationKey.str_w_wind(Emojis.Wind), $"{data.WindSpeed} m/s", true);
         emb.WithThumbnail(WeatherService.GetWeatherIconUrl(data.Weather[0]));
