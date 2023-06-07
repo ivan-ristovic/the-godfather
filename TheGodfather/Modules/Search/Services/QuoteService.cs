@@ -13,28 +13,31 @@ public class QuoteService : TheGodfatherHttpService
     private const string RandomQuoteUrl = "https://quotesondesign.com/wp-json/wp/v2/posts/?orderby=rand&per_page=1";
 
     private static readonly Regex _tagMatcher = new("<.*?>", RegexOptions.Compiled);
-    private static readonly IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions());
+    private static readonly IMemoryCache _cache = new MemoryCache(new MemoryCacheOptions { ExpirationScanFrequency = TimeSpan.FromHours(6)});
 
+    public override bool IsDisabled => this._key == null;
 
-    public override bool IsDisabled => false;
+    private readonly string? _key;
 
-
-    public static async Task<Quote?> GetQuoteOfTheDayAsync(string? category = null)
+    public QuoteService(BotConfigService bcs)
     {
-        if (_cache.TryGetValue("qotd", out Quote quote))
+        this._key = bcs.CurrentConfiguration.QuoteKey;
+    }
+
+    public async Task<Quote?> GetQuoteOfTheDayAsync()
+    {
+        if (_cache.TryGetValue("QOTD", out Quote? quote))
             return quote;
 
         try {
-            string? response = string.IsNullOrWhiteSpace(category)
-                ? await _http.GetStringAsync(QuoteUrl).ConfigureAwait(false)
-                : await _http.GetStringAsync($"{QuoteUrl}?category={WebUtility.UrlEncode(category)}").ConfigureAwait(false);
+            string? response = await _http.GetStringAsync($"{QuoteUrl}?api_key={this._key}").ConfigureAwait(false);
             QuoteApiResponse data = JsonConvert.DeserializeObject<QuoteApiResponse>(response) ?? throw new JsonSerializationException();
             Quote? q = data?.Contents?.Quotes?.FirstOrDefault();
-            if (q is { })
-                _cache.Set("qotd", q, TimeSpan.FromMinutes(10));
+            if (q is not null)
+                _cache.Set("QOTD", q,  DateTime.Today.AddDays(1).Subtract(DateTime.Now));
             return q;
         } catch (Exception e) {
-            Log.Error(e, "Failed to retrieve quote of the day in category {Category}", category ?? "(not set)");
+            Log.Error(e, "Failed to retrieve quote of the day");
             return null;
         }
     }

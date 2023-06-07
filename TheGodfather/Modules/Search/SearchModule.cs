@@ -135,18 +135,14 @@ public sealed class SearchModule : TheGodfatherModule
     #region quoteoftheday
     [Command("quoteoftheday")]
     [Aliases("qotd", "qod", "quote", "q")]
-    public async Task QotdAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_topic)] string? category = null)
+    public async Task QotdAsync(CommandContext ctx)
     {
-        Quote? quote = await QuoteService.GetQuoteOfTheDayAsync(category);
+        Quote? quote = await ctx.Services.GetRequiredService<QuoteService>().GetQuoteOfTheDayAsync();
         if (quote is null)
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_quote);
 
         await ctx.RespondWithLocalizedEmbedAsync(emb => {
-            if (string.IsNullOrWhiteSpace(category))
-                emb.WithLocalizedTitle(TranslationKey.str_qotd);
-            else
-                emb.WithLocalizedTitle(TranslationKey.str_qotd_cat(category));
+            emb.WithLocalizedTitle(TranslationKey.str_qotd);
             emb.WithColor(this.ModuleColor);
             emb.WithLocalizedDescription(TranslationKey.fmt_qotd(quote.Content, quote.Author));
             emb.WithImageUrl(quote.BackgroundImageUrl);
