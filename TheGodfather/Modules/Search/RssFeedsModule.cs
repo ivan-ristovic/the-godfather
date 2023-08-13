@@ -26,7 +26,7 @@ public sealed class RssFeedsModule : TheGodfatherServiceModule<RssFeedsService>
 
         return ctx.PaginateAsync(res, (emb, r) => {
             emb.WithTitle(r.Title.Text);
-            emb.WithDescription(r.Summary, false);
+            emb.WithDescription(r.Summary.Text, false);
             if (r.Links.Any())
                 emb.WithUrl(r.Links.First().Uri);
             if (r.Authors.Any())
