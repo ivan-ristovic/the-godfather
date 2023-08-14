@@ -197,8 +197,7 @@ public partial class RemindModule : TheGodfatherServiceModule<SchedulingService>
         if (channel is null && await ctx.Client.CreateDmChannelAsync(ctx.User.Id) is null)
             throw new CommandFailedException(ctx, TranslationKey.err_dm_fail);
 
-        bool priv = await ctx.Services.GetRequiredService<PrivilegedUserService>().ContainsAsync(ctx.User.Id);
-        if (!priv && !ctx.Client.IsOwnedBy(ctx.User)) {
+        if (!bypassLimits) {
             IReadOnlyList<Reminder> reminders = await this.Service.GetRemindTasksForUserAsync(ctx.User.Id);
             if (reminders.Count >= 20)
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_remind_max(20));
