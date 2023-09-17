@@ -23,7 +23,7 @@ services:
     
   lavalink:
     restart: always
-    image: fredboat/lavalink:master-v3.4
+    image: ghcr.io/lavalink-devs/lavalink:3 
     volumes:
       - ./data/lavalink/application.yml:/opt/Lavalink/application.yml
     ports:
