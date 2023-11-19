@@ -111,7 +111,7 @@ internal static class TheGodfather
         Log.Information("Cleaning up ...");
 
         PeriodicService?.Dispose();
-        if (Bot is { })
+        if (Bot is not null)
             await Bot.DisposeAsync();
     
         Log.Information("Cleanup complete");

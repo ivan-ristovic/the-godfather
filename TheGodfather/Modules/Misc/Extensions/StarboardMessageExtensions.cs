@@ -23,7 +23,7 @@ public static class StarboardMessageExtensions
                 .Select(a => a.Url)
                 .FirstOrDefault(u => u.EndsWith(".jpg") || u.EndsWith(".png") || u.EndsWith(".jpeg") || u.EndsWith(".gif"))
             ;
-        if (url is { })
+        if (url is not null)
             emb.WithImageUrl(url);
 
         emb.WithLocalizedTimestamp(msg.CreationTimestamp);

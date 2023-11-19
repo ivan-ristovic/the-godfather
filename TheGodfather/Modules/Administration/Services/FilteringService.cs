@@ -46,7 +46,7 @@ public sealed class FilteringService : ITheGodfatherService
             return false;
 
         match = fs.FirstOrDefault(f => f.Regex.IsMatch(text));
-        return match is { };
+        return match is not null;
     }
 
     public IReadOnlyList<Filter> GetGuildFilters(ulong gid)

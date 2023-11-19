@@ -76,7 +76,7 @@ public sealed class CryptoCurrencyModule : TheGodfatherServiceModule<CryptoCurre
         emb.WithImageUrl(this.Service.GetWeekGraphUrl(res));
         emb.AddLocalizedField(TranslationKey.str_crypto_market_cap, $"{FormatAmount(res.Quotes.USD.MarketCap)}$", true);
         emb.AddLocalizedField(TranslationKey.str_crypto_price, $"{FormatAmount(res.Quotes.USD.Price)}$", true);
-        if (res.Quotes.USD.VolumeDay is { })
+        if (res.Quotes.USD.VolumeDay is not null)
             emb.AddLocalizedField(TranslationKey.str_crypto_volume_24h, $"{FormatAmount(res.Quotes.USD.VolumeDay.Value)}$", true);
         emb.AddLocalizedField(TranslationKey.str_crypto_change, $"{percentHour}%/{percentDay}%/{percentWeek}%/{percentMonth}%", true);
         emb.WithLocalizedFooter(TranslationKey.fmt_last_updated_at(this.Localization.GetLocalizedTime(ctx.Guild.Id, res.UpdatedAt)), null);

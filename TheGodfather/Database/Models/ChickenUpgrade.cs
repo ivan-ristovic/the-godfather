@@ -36,7 +36,7 @@ public class ChickenUpgrade : IEquatable<ChickenUpgrade>
 
 
     public bool Equals(ChickenUpgrade? other)
-        => other is { } && this.Id == other.Id;
+        => other is not null && this.Id == other.Id;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as ChickenUpgrade);

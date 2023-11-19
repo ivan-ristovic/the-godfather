@@ -56,7 +56,7 @@ public sealed class BlockingService : ITheGodfatherService
         => this.bUsers.Contains(uid);
 
     public bool IsGuildBlocked(ulong? gid)
-        => gid is { } && this.bGuilds.Contains(gid.Value);
+        => gid is not null && this.bGuilds.Contains(gid.Value);
 
     public bool IsBlocked(ulong? gid, ulong cid, ulong uid)
         => this.IsGuildBlocked(gid) || this.IsChannelBlocked(cid) || this.IsUserBlocked(uid);

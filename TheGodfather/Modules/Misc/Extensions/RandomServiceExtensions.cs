@@ -10,7 +10,7 @@ public static class RandomServiceExtensions
         if (question.StartsWith("when", StringComparison.InvariantCultureIgnoreCase) ||
             question.StartsWith("how long", StringComparison.InvariantCultureIgnoreCase)) {
             return service.GetRandomTimeAnswer();
-        } else if (question.StartsWith("who", StringComparison.InvariantCultureIgnoreCase) && channel.Guild is { }) {
+        } else if (question.StartsWith("who", StringComparison.InvariantCultureIgnoreCase) && channel.Guild is not null) {
             var rng = new SecureRandom();
             DiscordMember member = rng.ChooseRandomElement(rng.NextBool(3)
                 ? channel.Users.Where(m => IsOnline(m))

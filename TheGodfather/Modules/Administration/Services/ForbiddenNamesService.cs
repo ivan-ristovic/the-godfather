@@ -34,7 +34,7 @@ public sealed class ForbiddenNamesService : ProtectionServiceBase, ITheGodfather
                     .FirstOrDefault(fn => fn.Regex.IsMatch(name))
                 ;
         }
-        return match is { };
+        return match is not null;
     }
 
     public IReadOnlyList<ForbiddenName> GetGuildForbiddenNames(ulong gid)

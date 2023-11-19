@@ -16,13 +16,13 @@ public sealed class ChannelEventService : ITheGodfatherService
 
 
     public IChannelEvent? GetEventInChannel(ulong cid)
-        => this.events.TryGetValue(cid, out IChannelEvent? e) && e is { } ? e : null;
+        => this.events.TryGetValue(cid, out IChannelEvent? e) && e is not null ? e : null;
 
     public T? GetEventInChannel<T>(ulong cid) where T : class, IChannelEvent
         => this.GetEventInChannel(cid) as T;
 
     public bool IsEventRunningInChannel(ulong cid)
-        => this.GetEventInChannel(cid) is { };
+        => this.GetEventInChannel(cid) is not null;
 
     public bool IsEventRunningInChannel(ulong cid, out IChannelEvent? @event)
     {

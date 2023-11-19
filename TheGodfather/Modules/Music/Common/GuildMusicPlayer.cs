@@ -160,7 +160,7 @@ public sealed class GuildMusicPlayer
         RepeatMode rmode = this.RepeatMode;
         this.RepeatMode = mode;
 
-        if (this.NowPlaying.Track.TrackString is { }) {
+        if (this.NowPlaying.Track.TrackString is not null) {
             if (mode == RepeatMode.Single && mode != rmode)
                 lock (this.queue) {
                     this.queue.Insert(0, this.NowPlaying);
@@ -250,7 +250,7 @@ public sealed class GuildMusicPlayer
     }
 
     public TimeSpan GetCurrentPosition() 
-        => this.NowPlaying.Track.TrackString is not null && this.player is { } ? this.player.CurrentState.PlaybackPosition : TimeSpan.Zero;
+        => this.NowPlaying.Track.TrackString is not null && this.player is not null ? this.player.CurrentState.PlaybackPosition : TimeSpan.Zero;
 
 
     private async Task PlaybackFinishedAsync(LavalinkGuildConnection con, TrackFinishEventArgs e)

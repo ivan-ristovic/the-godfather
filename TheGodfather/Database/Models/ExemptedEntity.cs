@@ -93,7 +93,7 @@ public class ExemptedBackupEntity : IEquatable<ExemptedBackupEntity>
 
 
     public bool Equals(ExemptedBackupEntity? other)
-        => other is { } && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId;
+        => other is not null && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as ExemptedBackupEntity);

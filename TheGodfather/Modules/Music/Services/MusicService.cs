@@ -80,7 +80,7 @@ public sealed class MusicService : ITheGodfatherService
         if (!this.data.TryGetValue(e.Player.Guild.Id, out GuildMusicPlayer? gd))
             return;
 
-        if (gd.CommandChannel is { })
+        if (gd.CommandChannel is not null)
             await gd.CommandChannel.LocalizedEmbedAsync(this.lcs, Emojis.X, DiscordColor.Red, 
                 TranslationKey.err_music(Formatter.Sanitize(e.Track.Title), Formatter.Sanitize(e.Track.Author), e.Error)
             );

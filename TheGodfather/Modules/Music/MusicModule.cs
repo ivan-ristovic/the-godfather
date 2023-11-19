@@ -35,7 +35,7 @@ public sealed partial class MusicModule : TheGodfatherServiceModule<MusicService
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_music_vc);
 
             DiscordChannel? botVoiceState = ctx.Guild.CurrentMember?.VoiceState?.Channel;
-            if (botVoiceState is { } && chn != botVoiceState)
+            if (botVoiceState is not null && chn != botVoiceState)
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_music_vc_same);
 
             if (!chn.PermissionsFor(ctx.Guild.CurrentMember).HasPermission(Permissions.AccessChannels))

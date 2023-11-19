@@ -32,28 +32,30 @@ public class TranslationKeyGenerator : ISourceGenerator
         using var stringWriter = new StringWriter();
         using var sw = new IndentedTextWriter(stringWriter);
 
-        sw.WriteLine(@"#nullable enable
+        sw.WriteLine("""
+                     #nullable enable
 
-using System;
-        
-namespace TheGodfather.Translations;
+                     using System;
+                             
+                     namespace TheGodfather.Translations;
 
-public readonly partial struct TranslationKey
-{
-    public static readonly TranslationKey NotFound = new(""str-404"");
-        
-    public readonly string Key;
-    public readonly object?[] Params;
-        
-    public TranslationKey(string key, params object?[] @params)
-    {
-        if (string.IsNullOrWhiteSpace(key))
-            throw new ArgumentNullException(nameof(key));
-        this.Key = key;
-        Params = @params;
-    }
+                     public readonly partial struct TranslationKey
+                     {
+                         public static readonly TranslationKey NotFound = new("str-404");
+                             
+                         public readonly string Key;
+                         public readonly object?[] Params;
+                             
+                         public TranslationKey(string key, params object?[] @params)
+                         {
+                             if (string.IsNullOrWhiteSpace(key))
+                                 throw new ArgumentNullException(nameof(key));
+                             this.Key = key;
+                             Params = @params;
+                         }
 
-");
+
+                     """);
         sw.Indent++;
 
         foreach (KeyValuePair<string, string> property in properties) {

@@ -49,7 +49,7 @@ public sealed class LevelRolesModule : TheGodfatherServiceModule<LevelRoleServic
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_rank(1, 1000));
 
         LevelRole? lr = await this.Service.GetAsync(ctx.Guild.Id, rank);
-        if (lr is { })
+        if (lr is not null)
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_lr);
 
         await this.Service.AddAsync(new LevelRole {

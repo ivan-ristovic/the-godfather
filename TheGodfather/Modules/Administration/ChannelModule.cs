@@ -64,7 +64,7 @@ public sealed class ChannelModule : TheGodfatherModule
         {
             await CheckPotentialChannelNameAsync(ctx, name, true, true);
 
-            if (parent is { } && parent.Type != ChannelType.Category)
+            if (parent is not null && parent.Type != ChannelType.Category)
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_chn_parent);
 
             DiscordChannel c = await ctx.Guild.CreateTextChannelAsync(name, parent, nsfw: nsfw, reason: ctx.BuildInvocationDetailsString());
@@ -588,7 +588,7 @@ public sealed class ChannelModule : TheGodfatherModule
         await ctx.RespondWithLocalizedEmbedAsync(emb => {
             emb.WithLocalizedTitle(TranslationKey.fmt_chn_perms(role.Mention, channel));
             emb.WithColor(this.ModuleColor);
-            if (ow is { })
+            if (ow is not null)
                 emb.AddLocalizedField(TranslationKey.str_allowed, ow.Allowed.ToPermissionString())
                     .AddLocalizedField(TranslationKey.str_denied, ow.Denied.ToPermissionString());
             else
@@ -779,7 +779,7 @@ public sealed class ChannelModule : TheGodfatherModule
             return;
         }
 
-        if (slowmode is { } && !_ratelimitValues.Contains(slowmode.Value))
+        if (slowmode is not null && !_ratelimitValues.Contains(slowmode.Value))
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_ratelimit(_ratelimitValues.JoinWith(", ")));
 
         await channel.ModifyAsync(m => {

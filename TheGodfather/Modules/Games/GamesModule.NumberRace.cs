@@ -39,7 +39,7 @@ public partial class GamesModule
                     GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
                     await game.RunAsync(this.Localization);
 
-                    if (game.Winner is { }) {
+                    if (game.Winner is not null) {
                         if (game.IsTimeoutReached)
                             await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, TranslationKey.cmd_err_game_timeout_w(game.Winner.Mention));
                         else

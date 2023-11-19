@@ -50,7 +50,7 @@ public sealed class NumberRace : BaseChannelGame
                 this.Winner = mctx.Result.Author;
             } else {
                 await this.Channel.LocalizedEmbedAsync(lcs, Emojis.Dead, null, TranslationKey.fmt_game_nr_lost(mctx.Result.Author.Mention));
-                if (this.Winner is { } && this.Winner.Id == mctx.Result.Author.Id)
+                if (this.Winner is not null && this.Winner.Id == mctx.Result.Author.Id)
                     this.Winner = null;
                 this.participants.TryRemove(mctx.Result.Author);
             }

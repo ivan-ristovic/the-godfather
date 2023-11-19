@@ -77,7 +77,7 @@ public sealed class BankAccountService : DbAbstractionServiceBase<BankAccount, u
         List<BankAccount> topAccounts;
         await using TheGodfatherDbContext db = this.dbb.CreateContext();
         topAccounts = await 
-            (gid is { } ? db.BankAccounts.AsQueryable().Where(a => a.GuildIdDb == (long)gid) : db.BankAccounts)
+            (gid is not null ? db.BankAccounts.AsQueryable().Where(a => a.GuildIdDb == (long)gid) : db.BankAccounts)
             .OrderByDescending(a => a.Balance)
             .Take(amount)
             .ToListAsync();

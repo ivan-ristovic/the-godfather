@@ -42,7 +42,7 @@ internal static partial class Listeners
         }
         ms.Seek(0, SeekOrigin.Begin);
         DiscordChannel? chn = gcs.GetLogChannelForGuild(e.Guild);
-        if (chn is { })
+        if (chn is not null)
             await chn.SendMessageAsync(
                 new DiscordMessageBuilder()
                     .WithEmbed(emb.Build())
@@ -72,8 +72,8 @@ internal static partial class Listeners
             if (rank != 0) {
                 LocalizationService ls = bot.Services.GetRequiredService<LocalizationService>();
                 LevelRole? lr = await bot.Services.GetRequiredService<LevelRoleService>().GetAsync(e.Guild.Id, rank);
-                DiscordRole? levelRole = lr is { } ? e.Guild.GetRole(lr.RoleId) : null;
-                if (levelRole is { }) {
+                DiscordRole? levelRole = lr is not null ? e.Guild.GetRole(lr.RoleId) : null;
+                if (levelRole is not null) {
                     DiscordMember member = await e.Guild.GetMemberAsync(e.Author.Id);
                     await member.GrantRoleAsync(levelRole);
                 }
@@ -81,8 +81,8 @@ internal static partial class Listeners
                 GuildConfig gcfg = await bot.Services.GetRequiredService<GuildConfigService>().GetConfigAsync(e.Guild.Id);
                 if (!gcfg.SilentLevelUpEnabled) {
                     XpRank? rankInfo = await bot.Services.GetRequiredService<GuildRanksService>().GetAsync(e.Guild.Id, rank);
-                    string rankupStr = levelRole is { }
-                        ? ls.GetString(e.Guild.Id, TranslationKey.fmt_rankup_lr(e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/", levelRole.Mention))
+                    string rankupStr = levelRole is not null
+                                           ? ls.GetString(e.Guild.Id, TranslationKey.fmt_rankup_lr(e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/", levelRole.Mention))
                         : ls.GetString(e.Guild.Id, TranslationKey.fmt_rankup(e.Author.Mention, Formatter.Bold(rank.ToString()), rankInfo?.Name ?? "/"));
                     await e.Channel.EmbedAsync(rankupStr, Emojis.Medal);
                 }
@@ -100,7 +100,7 @@ internal static partial class Listeners
             return;
 
         CachedGuildConfig? gcfg = bot.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(e.Guild.Id);
-        if (gcfg is { }) {
+        if (gcfg is not null) {
             if (gcfg.RatelimitSettings.Enabled)
                 await bot.Services.GetRequiredService<RatelimitService>().HandleNewMessageAsync(e, gcfg.RatelimitSettings);
             if (gcfg.AntispamSettings.Enabled)
@@ -180,16 +180,16 @@ internal static partial class Listeners
         emb.AddLocalizedField(TranslationKey.str_author, e.Message.Author?.Mention, true);
 
         DiscordAuditLogMessageEntry? entry = await e.Guild.GetLatestAuditLogEntryAsync<DiscordAuditLogMessageEntry>(AuditLogActionType.MessageDelete);
-        if (entry is { }) {
+        if (entry is not null) {
             if (eventRunning && entry.UserResponsible.IsCurrent)
                 return;
         
             DiscordMember? member = await e.Guild.GetMemberAsync(entry.UserResponsible.Id);
-            if (member is { } && gcs.IsMemberExempted(e.Guild.Id, member.Id, member.Roles.SelectIds()))
+            if (member is not null && gcs.IsMemberExempted(e.Guild.Id, member.Id, member.Roles.SelectIds()))
                 return;
-            if (member is null && e.Message.Author is { }) {
+            if (member is null && e.Message.Author is not null) {
                 DiscordMember? author = await e.Guild.GetMemberAsync(e.Message.Author.Id);
-                if (author is { } && gcs.IsMemberExempted(e.Guild.Id, author.Id, author.Roles.SelectIds()))
+                if (author is not null && gcs.IsMemberExempted(e.Guild.Id, author.Id, author.Roles.SelectIds()))
                     return;
             }
             emb.AddFieldsFromAuditLogEntry(entry);
@@ -245,7 +245,7 @@ internal static partial class Listeners
             return;
 
         DiscordMember? member = await e.Guild.GetMemberAsync(e.Author.Id);
-        if (member is { } && gcs.IsMemberExempted(e.Guild.Id, member.Id, member.Roles.SelectIds()))
+        if (member is not null && gcs.IsMemberExempted(e.Guild.Id, member.Id, member.Roles.SelectIds()))
             return;
 
         string jumplink = Formatter.MaskedUrl(ls.GetString(e.Guild.Id, TranslationKey.str_jumplink), e.Message.JumpLink);

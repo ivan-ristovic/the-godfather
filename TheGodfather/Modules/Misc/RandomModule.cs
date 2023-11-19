@@ -36,7 +36,7 @@ public sealed class RandomModule : TheGodfatherServiceModule<RandomService>
         [Description(TranslationKey.desc_role)] DiscordRole? role = null)
     {
         IEnumerable<DiscordMember> members = ctx.Guild.Members.Values;
-        if (role is { })
+        if (role is not null)
             members = members.Where(m => m.Roles.Contains(role));
 
         if (!members.Any())

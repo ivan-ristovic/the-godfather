@@ -16,7 +16,7 @@ public sealed class AsyncExecutionService : ITheGodfatherService
         task.ContinueWith(OnComplete, ts);
         ts.Lock.WaitOne();
 
-        if (ts.Exception is { })
+        if (ts.Exception is not null)
             throw ts.Exception;
 
 
@@ -34,7 +34,7 @@ public sealed class AsyncExecutionService : ITheGodfatherService
         task.ContinueWith(TaskCompletionHandler, ts);
         ts.Lock.WaitOne();
 
-        if (ts.Exception is { })
+        if (ts.Exception is not null)
             throw ts.Exception;
 
         if (ts.HasResult)

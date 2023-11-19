@@ -83,20 +83,20 @@ public static class TestDbProvider
             CreateDatabase();
             SeedGuildData();
 
-            if (setup is { }) {
+            if (setup is not null) {
                 using TheGodfatherDbContext context = Database.CreateContext();
                 setup(context);
                 context.SaveChanges();
             }
 
-            if (alter is { }) {
+            if (alter is not null) {
                 using TheGodfatherDbContext context = Database.CreateContext();
                 alter(context);
                 if (ensureSave)
                     context.SaveChanges();
             }
 
-            if (verify is { }) {
+            if (verify is not null) {
                 using TheGodfatherDbContext context = Database.CreateContext();
                 verify(context);
             }
@@ -115,20 +115,20 @@ public static class TestDbProvider
             CreateDatabase();
             SeedGuildData();
 
-            if (setup is { }) {
+            if (setup is not null) {
                 await using TheGodfatherDbContext context = Database.CreateContext();
                 await setup(context);
                 await context.SaveChangesAsync();
             }
 
-            if (alter is { }) {
+            if (alter is not null) {
                 await using TheGodfatherDbContext context = Database.CreateContext();
                 await alter(context);
                 if (ensureSave)
                     await context.SaveChangesAsync();
             }
 
-            if (verify is { }) {
+            if (verify is not null) {
                 await using TheGodfatherDbContext context = Database.CreateContext();
                 await verify(context);
             }

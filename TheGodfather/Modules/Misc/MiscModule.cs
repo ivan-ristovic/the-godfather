@@ -61,7 +61,7 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
     {
         DiscordInvite? invite = null;
         if (expiryTime is null) {
-            if (ctx.Guild.VanityUrlCode is { }) {
+            if (ctx.Guild.VanityUrlCode is not null) {
                 invite = await ctx.Guild.GetVanityInviteAsync();
             } else {
                 IReadOnlyList<DiscordInvite> invites = await ctx.Guild.GetInvitesAsync();
@@ -69,7 +69,7 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
             }
         }
 
-        if (invite is null || expiryTime is { }) {
+        if (invite is null || expiryTime is not null) {
             expiryTime ??= TimeSpan.FromSeconds(86400);
 
             if (!ctx.Guild.CurrentMember.PermissionsIn(ctx.Channel).HasPermission(Permissions.CreateInstantInvite))
@@ -264,7 +264,7 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
                 Description = issue
             };
             emb.WithAuthor(ctx.User.ToString(), iconUrl: ctx.User.AvatarUrl ?? ctx.User.DefaultAvatarUrl);
-            if (ctx.Guild is { })
+            if (ctx.Guild is not null)
                 emb.AddField("Guild", $"{ctx.Guild} owned by {ctx.Guild.Owner}");
 
             await dm.SendMessageAsync("A new issue has been reported!", emb.Build());

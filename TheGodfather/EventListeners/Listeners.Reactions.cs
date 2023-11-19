@@ -55,9 +55,9 @@ internal static partial class Listeners
 
         ReactionRoleService rrs = bot.Services.GetRequiredService<ReactionRoleService>();
         ReactionRole? rr = await rrs.GetAsync(e.Guild.Id, e.Emoji.GetDiscordName(), e.Channel.Id, e.Message.Id);
-        if (rr is { }) {
+        if (rr is not null) {
             DiscordRole? role = e.Guild.GetRole(rr.RoleId);
-            if (role is { })
+            if (role is not null)
                 try {
                     DiscordMember member = await e.Guild.GetMemberAsync(e.User.Id);
                     await member.GrantRoleAsync(role, "_gf: Reaction role");
@@ -84,9 +84,9 @@ internal static partial class Listeners
 
         ReactionRoleService rrs = bot.Services.GetRequiredService<ReactionRoleService>();
         ReactionRole? rr = await rrs.GetAsync(e.Guild.Id, e.Emoji.GetDiscordName(), e.Channel.Id, e.Message.Id);
-        if (rr is { }) {
+        if (rr is not null) {
             DiscordRole? role = e.Guild.GetRole(rr.RoleId);
-            if (role is { })
+            if (role is not null)
                 try {
                     DiscordMember member = await e.Guild.GetMemberAsync(e.User.Id);
                     await member.RevokeRoleAsync(role, "_gf: Reaction role");

@@ -77,13 +77,13 @@ public partial class RemindModule
         {
             this.ThrowIfDM(ctx, channel);
 
-            if (channel is { } && channel.Type != ChannelType.Text)
+            if (channel is not null && channel.Type != ChannelType.Text)
                 throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
 
             IReadOnlyList<Reminder> reminders = await this.Service.GetRemindTasksForUserAsync(ctx.User.Id);
 
             IEnumerable<Reminder> filtered = reminders;
-            if (channel is { })
+            if (channel is not null)
                 filtered = filtered.Where(r => r.ChannelId == channel.Id);
 
             filtered = filtered

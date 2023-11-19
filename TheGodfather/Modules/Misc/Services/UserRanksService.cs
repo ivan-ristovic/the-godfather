@@ -44,7 +44,7 @@ public sealed class UserRanksService : DbAbstractionServiceBase<XpCount, ulong, 
 
     public int GetUserXp(ulong? gid, ulong uid)
     {
-        if (gid is { })
+        if (gid is not null)
             return this.xps.GetOrAdd(gid.Value, new ConcurrentDictionary<ulong, int>()).TryGetValue(uid, out int count) ? count : 0;
         return this.xps.Sum(kvp => kvp.Value.GetValueOrDefault(uid));
 

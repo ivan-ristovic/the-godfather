@@ -178,7 +178,7 @@ public partial class RemindModule : TheGodfatherServiceModule<SchedulingService>
     {
         this.ThrowIfDM(ctx, channel);
 
-        if (channel is { }) {
+        if (channel is not null) {
             if (channel.Type != ChannelType.Text)
                 throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
             if (!channel.PermissionsFor(ctx.Member).HasFlag(Permissions.SendMessages))
@@ -217,13 +217,13 @@ public partial class RemindModule : TheGodfatherServiceModule<SchedulingService>
 
         string rel = timespan.Humanize(4, this.Localization.GetGuildCulture(ctx.Guild?.Id), minUnit: TimeUnit.Minute);
         if (repeat) {
-            if (channel is { })
+            if (channel is not null)
                 await ctx.InfoAsync(this.ModuleColor, Emojis.AlarmClock, TranslationKey.fmt_remind_rep_c(channel.Mention, rel, message));
             else
                 await ctx.InfoAsync(this.ModuleColor, Emojis.AlarmClock, TranslationKey.fmt_remind_rep(rel, message));
         } else {
             string abs = this.Localization.GetLocalizedTimeString(ctx.Guild?.Id, when);
-            if (channel is { })
+            if (channel is not null)
                 await ctx.InfoAsync(this.ModuleColor, Emojis.AlarmClock, TranslationKey.fmt_remind_c(channel.Mention, rel, abs, message));
             else
                 await ctx.InfoAsync(this.ModuleColor, Emojis.AlarmClock, TranslationKey.fmt_remind(rel, abs, message));
@@ -232,7 +232,7 @@ public partial class RemindModule : TheGodfatherServiceModule<SchedulingService>
 
     private void ThrowIfDM(CommandContext ctx, DiscordChannel? chn)
     {
-        if (chn is { } && ctx.Guild is null)
+        if (chn is not null && ctx.Guild is null)
             throw new ChecksFailedException(ctx.Command!, ctx, new[] { new RequireGuildAttribute() });
     }
 

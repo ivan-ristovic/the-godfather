@@ -35,7 +35,7 @@ public class ActionHistoryEntry : IEquatable<ActionHistoryEntry>
 
 
     public bool Equals(ActionHistoryEntry? other)
-        => other is { } && this.GuildId == other.GuildId && this.UserId == other.UserId && this.Type == other.Type && this.Time == other.Time;
+        => other is not null && this.GuildId == other.GuildId && this.UserId == other.UserId && this.Type == other.Type && this.Time == other.Time;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as ActionHistoryEntry);

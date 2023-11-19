@@ -155,14 +155,14 @@ public sealed class YoutubeModule : TheGodfatherServiceModule<YtService>
             emb.WithColor(DiscordColor.Red);
             emb.WithDescription(r.Snippet.Description, false);
 
-            if (r.Snippet.Thumbnails is { })
+            if (r.Snippet.Thumbnails is not null)
                 emb.WithThumbnail(r.Snippet.Thumbnails.Default__.Url);
 
             emb.AddLocalizedField(TranslationKey.str_chn, r.Snippet.ChannelTitle, true);
             emb.AddLocalizedField(TranslationKey.str_published, r.Snippet.PublishedAt, true);
 
             string? url = this.Service.GetUrlForResourceId(r.Id);
-            if (url is { })
+            if (url is not null)
                 emb.WithUrl(url);
 
             return emb;

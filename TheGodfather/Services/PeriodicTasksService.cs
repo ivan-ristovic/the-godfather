@@ -34,8 +34,8 @@ public sealed class PeriodicTasksService : IDisposable
                 if (status is null)
                     Log.Warning("No extra bot statuses present in the database");
 
-                DiscordActivity activity = status is { }
-                    ? new DiscordActivity(status.Status, status.Activity)
+                DiscordActivity activity = status is not null
+                                               ? new DiscordActivity(status.Status, status.Activity)
                     : new DiscordActivity($"@{bot.Client.CurrentUser.Username} help", ActivityType.Playing);
 
                 AsyncExecutionService async = bot.Services.GetRequiredService<AsyncExecutionService>();
@@ -197,7 +197,7 @@ public sealed class PeriodicTasksService : IDisposable
                         StarboardModificationResult res = async.Execute(ss.SyncWithDbAsync(updMsg));
                         Log.Debug("Starboard action for message {MessageId}: {StarboardModResult}", message.Id, res.ActionType);
 
-                        if (res.Entry is { } && res.Entry.StarMessageId != 0)
+                        if (res.Entry is not null && res.Entry.StarMessageId != 0)
                             try {
                                 starMessage = async.Execute(starChannel.GetMessageAsync(res.Entry.StarMessageId));
                             } catch (NotFoundException) {
@@ -216,7 +216,7 @@ public sealed class PeriodicTasksService : IDisposable
                                     Log.Debug("Sent starboard message {MessageId} to {Channel}", message.Id, starChannel);
                                     break;
                                 case StarboardActionType.Delete:
-                                    if (starMessage is { })
+                                    if (starMessage is not null)
                                         async.Execute(starMessage.DeleteAsync("_gf: Starboard - delete"));
                                     Log.Debug("Removed starboard {MessageId} from {Channel}", message.Id, starChannel);
                                     break;

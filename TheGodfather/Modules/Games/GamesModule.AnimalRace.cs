@@ -39,7 +39,7 @@ public partial class GamesModule
                     GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
                     await game.RunAsync(this.Localization);
 
-                    if (game.WinnerIds is { })
+                    if (game.WinnerIds is not null)
                         await Task.WhenAll(game.WinnerIds.Select(w => gss.UpdateStatsAsync(w, s => s.AnimalRacesWon++)));
                 } else {
                     await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, TranslationKey.str_game_ar_none);

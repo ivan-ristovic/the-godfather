@@ -43,7 +43,7 @@ internal static partial class Listeners
             return;
 
         DiscordChannel? wchn = e.Guild.GetChannel(gcfg.WelcomeChannelId);
-        if (wchn is { }) {
+        if (wchn is not null) {
             string welcomeStr = string.IsNullOrWhiteSpace(gcfg.WelcomeMessage)
                 ? bot.Services.GetRequiredService<LocalizationService>().GetString(e.Guild.Id, TranslationKey.fmt_welcome(e.Guild.Name, e.Member.Mention))
                 : gcfg.WelcomeMessage.Replace("%user%", e.Member.Mention);
@@ -70,7 +70,7 @@ internal static partial class Listeners
                 });
             }
             try {
-                if (fname?.ActionOverride is { })
+                if (fname?.ActionOverride is not null)
                     await fns.PunishMemberAsync(e.Guild, e.Member, fname.ActionOverride.Value);
                 else
                     await e.Member.ModifyAsync(m => {
@@ -155,7 +155,7 @@ internal static partial class Listeners
 
         if (!punished) {
             DiscordChannel? lchn = e.Guild.GetChannel(gcfg.LeaveChannelId);
-            if (lchn is { }) {
+            if (lchn is not null) {
                 string leaveStr = string.IsNullOrWhiteSpace(gcfg.LeaveMessage)
                     ? bot.Services.GetRequiredService<LocalizationService>().GetString(e.Guild.Id, TranslationKey.fmt_leave(e.Member.Mention))
                     : gcfg.LeaveMessage.Replace("%user%", e.Member.Mention);
@@ -207,9 +207,9 @@ internal static partial class Listeners
         bool renamed = false, failed = false;
         if (!string.IsNullOrWhiteSpace(e.NicknameAfter) && e.NicknameAfter != e.Member.Id.ToString()) {
             ForbiddenNamesService fns = bot.Services.GetRequiredService<ForbiddenNamesService>();
-            if (fns.IsNameForbidden(e.Guild.Id, e.NicknameAfter, out ForbiddenName? fname) && fname is { }) {
+            if (fns.IsNameForbidden(e.Guild.Id, e.NicknameAfter, out ForbiddenName? fname) && fname is not null) {
                 try {
-                    if (fname.ActionOverride is { })
+                    if (fname.ActionOverride is not null)
                         await fns.PunishMemberAsync(e.Guild, e.Member, fname.ActionOverride.Value);
                     else
                         await e.Member.ModifyAsync(m => {
@@ -267,7 +267,7 @@ internal static partial class Listeners
                 break;
             case DiscordAuditLogMemberUpdateEntry uentry:
                 emb.AddFieldsFromAuditLogEntry(uentry, (emb, ent) => {
-                    if (ent.NicknameChange is { })
+                    if (ent.NicknameChange is not null)
                         AddNicknameChangeField(emb, ent.NicknameChange.Before, ent.NicknameChange.After);
                     emb.AddLocalizedField(TranslationKey.str_roles_add, ent.AddedRoles?.Select(r => r.Mention).Humanize(", "), true, false);
                     emb.AddLocalizedField(TranslationKey.str_roles_rem, ent.RemovedRoles?.Select(r => r.Mention).Humanize(", "), true, false);

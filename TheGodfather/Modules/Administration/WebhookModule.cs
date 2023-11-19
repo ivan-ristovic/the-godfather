@@ -206,7 +206,7 @@ public sealed class WebhookModule : TheGodfatherModule
         if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_send_token))
             try {
                 DiscordDmChannel? dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id);
-                if (dm is { }) {
+                if (dm is not null) {
                     var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild.Id);
                     emb.WithLocalizedTitle(TranslationKey.fmt_wh_add(Formatter.Bold(Formatter.Strip(wh.Name)), channel.Mention));
                     emb.WithDescription(Formatter.Spoiler(wh.BuildUrlString()));

@@ -13,7 +13,7 @@ internal static partial class Listeners
             from t in Assembly.GetExecutingAssembly().GetTypes()
             from m in t.GetMethods()
             let a = m.GetCustomAttribute(typeof(AsyncEventListenerAttribute), true)
-            where a is { }
+            where a is not null
             select new ListenerMethod(m, (AsyncEventListenerAttribute)a);
 
         foreach (ListenerMethod lm in ListenerMethods)

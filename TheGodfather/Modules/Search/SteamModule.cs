@@ -94,7 +94,7 @@ public sealed class SteamModule : TheGodfatherServiceModule<SteamService>
 
             if (model.IsVacBanned) {
                 int? bans = await this.Service.GetVacBanCountAsync(model.SteamID);
-                if (bans is { })
+                if (bans is not null)
                     emb.AddLocalizedField(TranslationKey.str_vac, TranslationKey.fmt_vac(bans));
                 else
                     emb.AddLocalizedField(TranslationKey.str_vac, TranslationKey.str_vac_ban, inline: true);

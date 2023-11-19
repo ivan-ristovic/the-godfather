@@ -110,14 +110,14 @@ public partial class ChickenModule
             if (!war.IsParticipating(ctx.User))
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_chicken_war_dup);
 
-            if (teamId is { }) {
+            if (teamId is not null) {
                 switch (teamId) {
                     case 1: war.AddParticipant(chicken, ctx.User, true); break;
                     case 2: war.AddParticipant(chicken, ctx.User, team2: true); break;
                     default:
                         throw new CommandFailedException(ctx, TranslationKey.cmd_err_chicken_war_team_404);
                 }
-            } else if (teamName is { }) {
+            } else if (teamName is not null) {
                 if (string.Equals(teamName, war.Team1Name, StringComparison.InvariantCultureIgnoreCase))
                     war.AddParticipant(chicken, ctx.User, true);
                 else if (string.Equals(teamName, war.Team2Name, StringComparison.InvariantCultureIgnoreCase))

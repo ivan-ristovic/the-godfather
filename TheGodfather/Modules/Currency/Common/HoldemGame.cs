@@ -138,10 +138,10 @@ public sealed class HoldemGame : BaseChannelGame
             if (participant.HasFolded) sb.AppendLine(Formatter.Bold(lcs.GetString(this.Channel.GuildId, TranslationKey.str_casino_holdem_fold))).AppendLine();
             sb.AppendLine().AppendLine();
             if (showhands) {
-                if (participant.Card1 is { })
+                if (participant.Card1 is not null)
                     sb.Append(participant.Card1.ToUserFriendlyString());
                 sb.Append(' ');
-                if (participant.Card2 is { })
+                if (participant.Card2 is not null)
                     sb.Append(participant.Card2.ToUserFriendlyString());
                 sb.Append(" | ");
                 sb.AppendLine(participant.HandRank.Humanize(LetterCasing.Title)).AppendLine();
@@ -153,7 +153,7 @@ public sealed class HoldemGame : BaseChannelGame
         emb.WithColor(DiscordColor.DarkGreen);
         emb.WithDescription(sb);
 
-        if (!this.gameOver && toMove is { })
+        if (!this.gameOver && toMove is not null)
             emb.AddLocalizedField(TranslationKey.str_casino_holdem_call, toMove.User.Mention);
 
         return msg.ModifyAsync(emb.Build());

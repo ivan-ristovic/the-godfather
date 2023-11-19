@@ -45,7 +45,7 @@ public sealed class HangmanGame : BaseChannelGame
             return;
         }
 
-        if (this.lives > 0 && this.Winner is { }) {
+        if (this.lives > 0 && this.Winner is not null) {
             await this.Channel.LocalizedEmbedAsync(lcs, Emojis.X, null, TranslationKey.fmt_winners(this.Winner.Mention));
         } else {
             this.Winner = this.initiator;

@@ -50,7 +50,7 @@ public sealed class LocalizedEmbedBuilder
     public LocalizedEmbedBuilder WithLocalizedTitle(DiscordEventType type, TranslationKey title, object? desc)
     {
         this.WithLocalizedTitle(type, title);
-        if (desc is { })
+        if (desc is not null)
             this.WithDescription(desc);
         return this;
     }
@@ -182,14 +182,14 @@ public sealed class LocalizedEmbedBuilder
     public LocalizedEmbedBuilder AddInvocationFields(DiscordUser user, DiscordChannel? channel = null)
     {
         this.AddLocalizedField(TranslationKey.evt_usr_responsible, user.Mention, true);
-        if (channel is { })
+        if (channel is not null)
             this.AddLocalizedField(TranslationKey.evt_invoke_loc, channel.Mention, true);
         return this;
     }
 
     public LocalizedEmbedBuilder AddLocalizedTimestampField(TranslationKey title, DateTimeOffset? timestamp, bool inline = false)
     {
-        if (timestamp is { })
+        if (timestamp is not null)
             this.AddLocalizedField(title, this.lcs.GetLocalizedTimeString(this.gid, timestamp), inline);
         return this;
     }
@@ -203,7 +203,7 @@ public sealed class LocalizedEmbedBuilder
             if (errReport)
                 this.AddInsufficientAuditLogPermissionsField();
         } else {
-            if (action is { })
+            if (action is not null)
                 action(this, entry);
             this.AddInvocationFields(entry.UserResponsible);
             this.AddReason(entry.Reason);
@@ -214,7 +214,7 @@ public sealed class LocalizedEmbedBuilder
 
     public LocalizedEmbedBuilder AddLocalizedPropertyChangeField<T>(TranslationKey title, PropertyChange<T>? propertyChange, bool inline = true)
     {
-        if (propertyChange is { })
+        if (propertyChange is not null)
             if (!Equals(propertyChange.Before, propertyChange.After)) {
                 if (propertyChange.After is bool aft) {
                     this.AddLocalizedField(title, aft ? TranslationKey.str_true : TranslationKey.str_false, inline);

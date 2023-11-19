@@ -350,7 +350,7 @@ public sealed partial class ConfigModule : TheGodfatherServiceModule<GuildConfig
                 await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_memupd_chn);
 
                 DiscordChannel? chn = await interactivity.WaitForChannelMentionAsync(channel, ctx.User);
-                if (chn is { } && chn.IsTextOrNewsChannel()) {
+                if (chn is not null && chn.IsTextOrNewsChannel()) {
                     if (welcome)
                         gcfg.WelcomeChannelId = chn?.Id ?? default;
                     else
@@ -412,7 +412,7 @@ public sealed partial class ConfigModule : TheGodfatherServiceModule<GuildConfig
             if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_rl_action(gcfg.RatelimitAction.Humanize()), channel, false)) {
                 await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_new_action(Enum.GetNames<Punishment.Action>().JoinWith(", ")));
                 Punishment.Action? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
-                if (action is { })
+                if (action is not null)
                     gcfg.RatelimitAction = action.Value;
             }
 
@@ -434,7 +434,7 @@ public sealed partial class ConfigModule : TheGodfatherServiceModule<GuildConfig
             if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_as_action(gcfg.AntispamAction.Humanize()), channel, false)) {
                 await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_new_action(Enum.GetNames<Punishment.Action>().JoinWith(", ")));
                 Punishment.Action? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
-                if (action is { })
+                if (action is not null)
                     gcfg.AntispamAction = action.Value;
             }
 
@@ -456,7 +456,7 @@ public sealed partial class ConfigModule : TheGodfatherServiceModule<GuildConfig
             if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_am_action(gcfg.AntiMentionAction.Humanize()), channel, false)) {
                 await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_new_action(Enum.GetNames<Punishment.Action>().JoinWith(", ")));
                 Punishment.Action? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
-                if (action is { })
+                if (action is not null)
                     gcfg.AntiMentionAction = action.Value;
             }
 
@@ -478,7 +478,7 @@ public sealed partial class ConfigModule : TheGodfatherServiceModule<GuildConfig
             if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_setup_af_action(gcfg.AntifloodAction.Humanize()), channel, false)) {
                 await channel.LocalizedEmbedAsync(this.Localization, TranslationKey.q_setup_new_action(Enum.GetNames<Punishment.Action>().JoinWith(", ")));
                 Punishment.Action? action = await ctx.Client.GetInteractivity().WaitForPunishmentActionAsync(channel, ctx.User);
-                if (action is { })
+                if (action is not null)
                     gcfg.AntifloodAction = action.Value;
             }
 

@@ -9,7 +9,7 @@ internal static class DiscordClientExtensions
     {
         foreach ((ulong _, DiscordGuild guild) in client.Guilds) {
             DiscordMember? member = await guild.GetMemberSilentAsync(uid);
-            if (member is { })
+            if (member is not null)
                 return await member.CreateDmChannelAsync();
         }
         return null;
@@ -19,7 +19,7 @@ internal static class DiscordClientExtensions
     {
         foreach (DiscordUser owner in client.CurrentApplication.Owners) {
             DiscordDmChannel? dm = await client.CreateDmChannelAsync(owner.Id);
-            if (dm is { })
+            if (dm is not null)
                 return dm;
         }
         return null;

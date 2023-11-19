@@ -117,7 +117,7 @@ public sealed class CommandRulesModule : TheGodfatherServiceModule<CommandRulesS
     private Task PrintRulesAsync(CommandContext ctx, DiscordChannel? chn = null, string? cmd = null, bool includeGlobalRules = false)
     {
         IEnumerable<CommandRule> crs = this.Service.GetRules(ctx.Guild.Id, cmd);
-        if (chn is { })
+        if (chn is not null)
             crs = crs.Where(cr => cr.ChannelId == chn.Id);
         else if (!includeGlobalRules)
             crs = crs.Where(cr => cr.ChannelId != 0);
@@ -139,7 +139,7 @@ public sealed class CommandRulesModule : TheGodfatherServiceModule<CommandRulesS
             string location = this.Localization.GetString(ctx.Guild.Id, TranslationKey.str_global);
             if (cr.ChannelId != 0) {
                 DiscordChannel? chn = ctx.Guild.GetChannel(cr.ChannelId);
-                if (chn is { })
+                if (chn is not null)
                     location = chn.Mention;
             }
 

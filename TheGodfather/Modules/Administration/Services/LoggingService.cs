@@ -19,7 +19,7 @@ public sealed class LoggingService : ITheGodfatherService
     public static bool IsChannelExempted(TheGodfatherBot shard, DiscordGuild? guild, DiscordChannel channel, out GuildConfigService gcs)
     {
         gcs = shard.Services.GetRequiredService<GuildConfigService>();
-        return guild is { } && gcs.IsChannelExempted(guild.Id, channel.Id, channel.ParentId);
+        return guild is not null && gcs.IsChannelExempted(guild.Id, channel.Id, channel.ParentId);
     }
 
     public static async Task TryExecuteWithReportAsync(TheGodfatherBot shard, DiscordGuild guild, Task action,
@@ -65,7 +65,7 @@ public sealed class LoggingService : ITheGodfatherService
 
     private static async Task AwaitSilentAsync(Task? task)
     {
-        if (task is { })
+        if (task is not null)
             try {
                 await task;
             } catch (Exception e) {
@@ -75,7 +75,7 @@ public sealed class LoggingService : ITheGodfatherService
 
     private static async Task AwaitSilentAsync(Func<Task>? action)
     {
-        if (action is { })
+        if (action is not null)
             try {
                 await action();
             } catch (Exception e) {

@@ -25,7 +25,7 @@ public class XpRank : IEquatable<XpRank>
 
 
     public bool Equals(XpRank? other)
-        => other is { } && this.GuildId == other.GuildId && this.Rank == other.Rank;
+        => other is not null && this.GuildId == other.GuildId && this.Rank == other.Rank;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as XpRank);

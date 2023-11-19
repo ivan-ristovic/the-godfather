@@ -39,7 +39,7 @@ internal static partial class Listeners
             return Task.CompletedTask;
 
         Exception ex = e.Exception;
-        while (ex is AggregateException or TargetInvocationException && ex.InnerException is { })
+        while (ex is AggregateException or TargetInvocationException && ex.InnerException is not null)
             ex = ex.InnerException;
 
         if (ex is ChecksFailedException chke && chke.FailedChecks.Any(c => c is NotBlockedAttribute))

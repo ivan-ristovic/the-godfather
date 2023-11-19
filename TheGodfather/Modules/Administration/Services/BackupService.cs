@@ -80,7 +80,7 @@ public sealed class BackupService : ITheGodfatherService, IDisposable
     {
         if (this.streams.TryGetValue(gid, out ConcurrentDictionary<ulong, TextWriter?>? sws))
             foreach (ulong cid in cids)
-                if (sws.TryGetValue(cid, out TextWriter? sw) && sw is { }) {
+                if (sws.TryGetValue(cid, out TextWriter? sw) && sw is not null) {
                     try {
                         await sw.DisposeAsync();
                     } catch (IOException e) {

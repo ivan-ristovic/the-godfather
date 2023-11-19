@@ -154,8 +154,8 @@ internal static class LogExt
 
     private static void InternalLogContext(LogEventLevel level, CommandContext ctx, Exception? ex, string template, params object[] propertyValues)
     {
-        object[] allPropertyValues = ctx.Guild is { }
-            ? new object[] { ctx.User, ctx.Guild, ctx.Channel }
+        object[] allPropertyValues = ctx.Guild is not null
+                                         ? new object[] { ctx.User, ctx.Guild, ctx.Channel }
             : new object[] { ctx.User, "DM", ctx.Channel };
         if (propertyValues?.Any() ?? false)
             allPropertyValues = propertyValues.Concat(allPropertyValues).ToArray();

@@ -7,7 +7,7 @@ public static class DiscordMessageExtensions
     public static async Task<DiscordMessage> ModifyOrResendAsync(this DiscordMessage? msg, DiscordChannel chn, DiscordEmbed emb)
     {
         try {
-            if (msg is { })
+            if (msg is not null)
                 msg = await msg.ModifyAsync(emb);
         } catch {
             msg = null;

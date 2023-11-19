@@ -61,10 +61,10 @@ public sealed class CryptoCurrencyService : TheGodfatherHttpService
         await this.sem.WaitAsync();
         try {
             CryptoResponseData? cachedData = this.InternalConsultCache(currency);
-            if (cachedData is { })
+            if (cachedData is not null)
                 return cachedData;
 
-            if (this.lastUpdateTime is { } && (DateTimeOffset.Now - this.lastUpdateTime.Value).TotalSeconds < CacheExpirationTimeSeconds)
+            if (this.lastUpdateTime is not null && (DateTimeOffset.Now - this.lastUpdateTime.Value).TotalSeconds < CacheExpirationTimeSeconds)
                 return null;
 
             await this.InternalTryUpdateCacheAsync();
@@ -72,7 +72,7 @@ public sealed class CryptoCurrencyService : TheGodfatherHttpService
         } catch (HttpRequestException e) {
             Log.Error(e, "Failed to fetch crypto API JSON");
             throw new SearchServiceException<CryptoResponseStatus>(e.Message, new CryptoResponseStatus {
-                ErrorCode = e.StatusCode is { } ? (int)e.StatusCode : 400,
+                ErrorCode = e.StatusCode is not null ? (int)e.StatusCode : 400,
                 ErrorMessage = e.Message
             });
         } catch (JsonSerializationException e) {

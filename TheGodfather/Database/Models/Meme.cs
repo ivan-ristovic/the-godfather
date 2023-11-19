@@ -30,7 +30,7 @@ public class Meme : IEquatable<Meme>
 
 
     public bool Equals(Meme? other)
-        => other is { } && this.GuildId == other.GuildId && this.Name == other.Name;
+        => other is not null && this.GuildId == other.GuildId && this.Name == other.Name;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as Meme);

@@ -55,7 +55,7 @@ public sealed class BirthdayModule : TheGodfatherServiceModule<BirthdayService>
         DateTimeStyles styles = DateTimeStyles.NoCurrentDateDefault | DateTimeStyles.AssumeLocal | DateTimeStyles.AllowInnerWhite;
 
         DateTime dt = DateTime.Now;
-        if (date is { } && !DateTime.TryParse(date, this.Localization.GetGuildCulture(ctx.Guild.Id).DateTimeFormat, styles, out dt))
+        if (date is not null && !DateTime.TryParse(date, this.Localization.GetGuildCulture(ctx.Guild.Id).DateTimeFormat, styles, out dt))
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_date_format);
 
         if (channel.Type != ChannelType.Text)
@@ -166,7 +166,7 @@ public sealed class BirthdayModule : TheGodfatherServiceModule<BirthdayService>
                 DiscordChannel channel = await ctx.Client.GetChannelAsync(g.Key);
                 foreach (Birthday bd in g) {
                     DiscordUser? user = await ctx.Client.GetUserAsync(bd.UserId);
-                    if (user is { })
+                    if (user is not null)
                         lines.Add($"{Formatter.InlineCode(this.Localization.GetLocalizedTimeString(ctx.Guild.Id, bd.Date, "d"))} | {user.Mention} | {channel.Mention}");
                     else
                         bdaysToRemove.Add(bd);

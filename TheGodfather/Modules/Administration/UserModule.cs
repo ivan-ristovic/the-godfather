@@ -151,8 +151,8 @@ public sealed class UserModule : TheGodfatherServiceModule<ProtectionService>
 
         string ToPresenceString(DiscordPresence? presence)
         {
-            return presence is { }
-                ? $"{presence.Status} ({presence.ClientStatus.ToUserFriendlyString()})"
+            return presence is not null
+                       ? $"{presence.Status} ({presence.ClientStatus.ToUserFriendlyString()})"
                 : this.Localization.GetString(ctx.Guild.Id, TranslationKey.str_offline);
         }
     }
@@ -183,8 +183,8 @@ public sealed class UserModule : TheGodfatherServiceModule<ProtectionService>
 
         string ToPresenceString(DiscordPresence? presence)
         {
-            return presence is { }
-                ? $"{presence.Status} ({presence.ClientStatus.ToUserFriendlyString()})"
+            return presence is not null
+                       ? $"{presence.Status} ({presence.ClientStatus.ToUserFriendlyString()})"
                 : this.Localization.GetString(ctx.Guild.Id, TranslationKey.str_offline);
         }
     }

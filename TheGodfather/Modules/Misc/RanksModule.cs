@@ -32,12 +32,12 @@ public sealed class RanksModule : TheGodfatherServiceModule<GuildRanksService>
             emb.WithTitle(user.ToDiscriminatorString());
             emb.WithThumbnail(user.AvatarUrl);
             emb.AddLocalizedField(TranslationKey.str_xp, rs.GetUserXp(ctx.Guild.Id, user.Id), true);
-            if (ctx.Guild is { }) {
+            if (ctx.Guild is not null) {
                 short rank = rs.CalculateRankForUser(ctx.Guild.Id, user.Id);
-                XpRank? rankInfo = ctx.Guild is { } ? await this.Service.GetAsync(ctx.Guild.Id, rank) : null;
+                XpRank? rankInfo = ctx.Guild is not null ? await this.Service.GetAsync(ctx.Guild.Id, rank) : null;
                 emb.AddLocalizedField(TranslationKey.str_rank, rank, true);
                 emb.AddLocalizedField(TranslationKey.str_xp_next, UserRanksService.CalculateXpNeededForRank((short)(rank + 1)), true);
-                if (rankInfo is { })
+                if (rankInfo is not null)
                     emb.AddLocalizedField(TranslationKey.str_rank_name, Formatter.Italic(rankInfo.Name), true);
                 else
                     emb.AddLocalizedField(TranslationKey.str_rank, TranslationKey.str_rank_noname, inline: true);
@@ -142,13 +142,13 @@ public sealed class RanksModule : TheGodfatherServiceModule<GuildRanksService>
             }
 
             short rank = UserRanksService.CalculateRankForXp(xpc.Xp);
-            if (ctx.Guild is { } && !ranks.ContainsKey(rank)) {
+            if (ctx.Guild is not null && !ranks.ContainsKey(rank)) {
                 XpRank? gr = await this.Service.GetAsync(ctx.Guild.Id, rank);
-                if (gr is { })
+                if (gr is not null)
                     ranks.Add(rank, gr.Name);
             }
 
-            if (ctx.Guild is { } && ranks.TryGetValue(rank, out string? name))
+            if (ctx.Guild is not null && ranks.TryGetValue(rank, out string? name))
                 emb.AddField(user?.ToDiscriminatorString() ?? unknown, $"{name} ({rank}) ({xpc.Xp} XP)");
             else
                 emb.AddField(user?.ToDiscriminatorString() ?? unknown, $"LVL {rank} ({xpc.Xp} XP)");

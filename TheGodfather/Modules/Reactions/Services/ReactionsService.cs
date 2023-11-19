@@ -204,7 +204,7 @@ public sealed class ReactionsService : ITheGodfatherService
             foreach (EmojiReaction er in toUpdate) {
                 foreach (string trigger in triggers) {
                     EmojiReactionTrigger? t = er.DbTriggers.FirstOrDefault(r => er.Id == r.ReactionId && r.Trigger == trigger);
-                    if (t is { })
+                    if (t is not null)
                         er.DbTriggers.Remove(t);
                 }
                 if (er.DbTriggers.Any())
@@ -359,7 +359,7 @@ public sealed class ReactionsService : ITheGodfatherService
             foreach (TextReaction tr in toUpdate) {
                 foreach (string trigger in triggers) {
                     TextReactionTrigger? t = tr.DbTriggers.FirstOrDefault(r => tr.Id == r.ReactionId && r.Trigger == trigger);
-                    if (t is { })
+                    if (t is not null)
                         tr.DbTriggers.Remove(t);
                 }
                 if (tr.DbTriggers.Any())

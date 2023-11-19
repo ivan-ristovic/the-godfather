@@ -34,7 +34,7 @@ public class RssSubscription : IEquatable<RssSubscription>
 
 
     public bool Equals(RssSubscription? other)
-        => other is { } && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId && this.Id == other.Id;
+        => other is not null && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId && this.Id == other.Id;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as RssSubscription);

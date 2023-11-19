@@ -36,7 +36,7 @@ public static class PeriodicTasksServiceExtensions
         if (latest.Content is TextSyndicationContent content) {
             Match m = _urlRegex.Match(content.Text);
             string? imageUrl = m.Success ? m.Groups[1].Value : null;
-            if (imageUrl is { })
+            if (imageUrl is not null)
                 emb.WithImageUrl(imageUrl);
         }
 

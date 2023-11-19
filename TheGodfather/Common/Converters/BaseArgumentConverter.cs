@@ -10,5 +10,5 @@ public abstract class BaseArgumentConverter<T> : IArgumentConverter<T>
 
 
     public Task<Optional<T>> ConvertAsync(string value, CommandContext ctx)
-        => this.TryConvert(value, out T? result) && result is { } ? Task.FromResult(new Optional<T>(result)) : Task.FromResult(new Optional<T>());
+        => this.TryConvert(value, out T? result) && result is not null ? Task.FromResult(new Optional<T>(result)) : Task.FromResult(new Optional<T>());
 }

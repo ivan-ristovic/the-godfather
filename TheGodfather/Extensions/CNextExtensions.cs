@@ -20,7 +20,7 @@ internal static class CNextExtensions
         foreach (Type converterType in converterTypes)
             try {
                 object? converterInstance = Activator.CreateInstance(converterType);
-                if (converterInstance is { }) {
+                if (converterInstance is not null) {
                     cnext.RegisterConverter((dynamic)converterInstance);
                     Log.Debug("Registered converter: {Converter}", converterType.Name);
                 }

@@ -42,7 +42,7 @@ public sealed class BankModule : TheGodfatherServiceModule<BankAccountService>
             emb.WithColor(this.ModuleColor);
             emb.WithLocalizedTitle(TranslationKey.fmt_bank_acc(Emojis.MoneyBag, member.ToDiscriminatorString()));
             emb.WithThumbnail(member.AvatarUrl);
-            if (balance is { }) {
+            if (balance is not null) {
                 string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
                 CultureInfo culture = this.Localization.GetGuildCulture(ctx.Guild.Id);
                 emb.WithLocalizedDescription(TranslationKey.fmt_bank_acc_value(balance.Balance.ToWords(culture), currency));

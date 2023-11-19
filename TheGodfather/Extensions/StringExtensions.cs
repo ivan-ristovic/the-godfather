@@ -69,8 +69,8 @@ internal static class StringExtensions
 
     public static Regex ToRegex(this string pattern, RegexOptions options = RegexOptions.IgnoreCase, bool escape = false, bool wb = false)
     {
-        return TryParseRegex(pattern, out Regex? regex, options, escape, wb) && regex is { }
-            ? regex
+        return TryParseRegex(pattern, out Regex? regex, options, escape, wb) && regex is not null
+                   ? regex
             : throw new ArgumentException($"Invalid regex string: {pattern}", nameof(pattern));
     }
 }

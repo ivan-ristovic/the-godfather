@@ -40,7 +40,7 @@ public static class ReactionServiceExtensions
             return;
 
         TextReaction? tr = service.FindMatchingTextReaction(msg.Channel.GuildId.Value, msg.Content);
-        if (tr is { } && tr.CanSend())
+        if (tr is not null && tr.CanSend())
             await msg.Channel.SendMessageAsync(tr.Response.Replace("%user%", msg.Author.Mention));
     }
 }

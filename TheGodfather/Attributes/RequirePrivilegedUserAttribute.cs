@@ -13,6 +13,6 @@ public sealed class RequirePrivilegedUserAttribute : CheckBaseAttribute
             return Task.FromResult(true);
 
         using TheGodfatherDbContext db = ctx.Services.GetRequiredService<DbContextBuilder>().CreateContext();
-        return Task.FromResult(db.PrivilegedUsers.Find((long)ctx.User.Id) is { });
+        return Task.FromResult(db.PrivilegedUsers.Find((long)ctx.User.Id) is not null);
     }
 }

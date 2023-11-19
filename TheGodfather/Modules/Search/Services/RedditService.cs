@@ -31,7 +31,7 @@ public sealed class RedditService : TheGodfatherHttpService
         try {
             string json = await _http.GetStringAsync(url);
             RedditListing res = JsonConvert.DeserializeObject<RedditListing>(json) ?? throw new JsonSerializationException();
-            if (res.ErrorMessage is { })
+            if (res.ErrorMessage is not null)
                 throw new SearchServiceException<RedditError>(res.ErrorMessage, res.Error);
 
             return res.Data.Posts
@@ -41,7 +41,7 @@ public sealed class RedditService : TheGodfatherHttpService
         } catch (HttpRequestException e) {
             Log.Error(e, "Failed to fetch reddit API JSON");
             throw new SearchServiceException<RedditError>(e.Message, new RedditError {
-                ErrorCode = e.StatusCode is { } ? (int)e.StatusCode : 400,
+                ErrorCode = e.StatusCode is not null ? (int)e.StatusCode : 400,
                 ErrorMessage = e.Message
             });
         } catch (JsonSerializationException e) {

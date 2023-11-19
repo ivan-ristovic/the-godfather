@@ -35,7 +35,7 @@ public sealed class XkcdService : TheGodfatherHttpService
     private static async Task<XkcdComic?> GetLatestComicAsync()
     {
         XkcdComic? comic = await GetComicAsync($"{XkcdUrl}/info.0.json");
-        if (comic is { })
+        if (comic is not null)
             TotalComics = comic.Id;
         return comic;
     }

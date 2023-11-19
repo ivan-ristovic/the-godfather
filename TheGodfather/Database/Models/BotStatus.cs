@@ -22,7 +22,7 @@ public class BotStatus : IEquatable<BotStatus>
 
 
     public bool Equals(BotStatus? other)
-        => other is { } && this.Id == other.Id;
+        => other is not null && this.Id == other.Id;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as BotStatus);

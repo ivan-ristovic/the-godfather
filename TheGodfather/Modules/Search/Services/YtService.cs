@@ -39,7 +39,7 @@ public sealed class YtService : TheGodfatherHttpService
             return null;
 
         string? id = await this.GetChannelIdAsync(idOrUrl);
-        return id is { } ? $"{YtUrl}/feeds/videos.xml?channel_id={idOrUrl}" : null;
+        return id is not null ? $"{YtUrl}/feeds/videos.xml?channel_id={idOrUrl}" : null;
     }
 
     public async Task<string?> GetChannelIdAsync(string? idOrUrl)
@@ -48,7 +48,7 @@ public sealed class YtService : TheGodfatherHttpService
             return null;
 
         ChannelId? cid = ChannelId.TryParse(idOrUrl);
-        if (cid is { })
+        if (cid is not null)
             return cid.Value;
 
         //VideoId? vid = VideoId.TryParse(idOrUrl);
@@ -58,7 +58,7 @@ public sealed class YtService : TheGodfatherHttpService
         //}
 
         UserName? uid = UserName.TryParse(idOrUrl);
-        if (uid is { }) {
+        if (uid is not null) {
             Channel channel = await this.ytExplode.Channels.GetByUserAsync(uid.Value);
             return channel.Id;
         }
@@ -74,7 +74,7 @@ public sealed class YtService : TheGodfatherHttpService
             if (it is null)
                 return null;
             List<Dictionary<string, string>>? items = it.ToObject<List<Dictionary<string, string>>>();
-            if (items is { } && items.Any())
+            if (items is not null && items.Any())
                 return items.First()["id"];
         } catch (Exception e) {
             Log.Error(e, "Failed to get/parse YouTube API response for request URL: {YtRequestUrl}", url);

@@ -110,7 +110,7 @@ public sealed class ReactionRolesModule : TheGodfatherServiceModule<ReactionRole
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_rr_emoji_404);
 
         ReactionRole? rr = await this.Service.GetAsync(ctx.Guild.Id, emoji.GetDiscordName(), msg?.ChannelId ?? 0, msg?.Id ?? 0);
-        if (rr is { })
+        if (rr is not null)
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_rr);
 
         if (msg is null)
@@ -128,11 +128,11 @@ public sealed class ReactionRolesModule : TheGodfatherServiceModule<ReactionRole
             emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, TranslationKey.evt_rr_change);
             emb.AddLocalizedField(TranslationKey.str_rr_role, role.Mention, true);
             emb.AddLocalizedField(TranslationKey.str_rr_emoji, emoji, true);
-            if (msg is { })
+            if (msg is not null)
                 emb.AddLocalizedField(TranslationKey.str_rr_msg, Formatter.MaskedUrl(msg.Id.ToString(), msg.JumpLink), true);
         });
 
-        if (msg is { })
+        if (msg is not null)
             await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_add_m(role.Mention, emoji, Formatter.MaskedUrl(msg.Id.ToString(), msg.JumpLink)));
         else
             await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_add(role.Mention, emoji));

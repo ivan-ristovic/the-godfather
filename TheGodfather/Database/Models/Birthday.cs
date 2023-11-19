@@ -35,7 +35,7 @@ public class Birthday : IEquatable<Birthday>
 
 
     public bool Equals(Birthday? other)
-        => other is { } && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId && this.UserId == other.UserId;
+        => other is not null && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId && this.UserId == other.UserId;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as Birthday);

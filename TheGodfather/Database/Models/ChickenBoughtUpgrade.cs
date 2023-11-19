@@ -27,7 +27,7 @@ public class ChickenBoughtUpgrade : IEquatable<ChickenBoughtUpgrade>
 
 
     public bool Equals(ChickenBoughtUpgrade? other)
-        => other is { } && this.GuildId == other.GuildId && this.UserId == other.UserId && this.Id == other.Id;
+        => other is not null && this.GuildId == other.GuildId && this.UserId == other.UserId && this.Id == other.Id;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as ChickenBoughtUpgrade);

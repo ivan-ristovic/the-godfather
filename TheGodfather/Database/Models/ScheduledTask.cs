@@ -42,7 +42,7 @@ public abstract class ScheduledTask : IEquatable<ScheduledTask>
 
 
     public bool Equals(ScheduledTask? other)
-        => other is { } && this.Id == other.Id;
+        => other is not null && this.Id == other.Id;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as ScheduledTask);
@@ -77,7 +77,7 @@ public class GuildTask : ScheduledTask, IEquatable<GuildTask>
 
 
     public bool Equals(GuildTask? other)
-        => other is { } && this.Id == other.Id;
+        => other is not null && this.Id == other.Id;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as GuildTask);
@@ -121,7 +121,7 @@ public class Reminder : ScheduledTask, IEquatable<Reminder>
 
 
     public bool Equals(Reminder? other)
-        => other is { } && this.Id == other.Id;
+        => other is not null && this.Id == other.Id;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as Reminder);

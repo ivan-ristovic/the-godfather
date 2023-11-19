@@ -9,7 +9,7 @@ public static class AutoRoleServiceExtensions
     {
         foreach (ulong rid in service.GetIds(guild.Id)) {
             DiscordRole? role = guild.GetRole(rid);
-            if (role is { })
+            if (role is not null)
                 await LoggingService.TryExecuteWithReportAsync(
                     shard, guild, member.GrantRoleAsync(role), TranslationKey.rep_role_403, TranslationKey.rep_role_404,
                     code404action: () => service.RemoveAsync(guild.Id, rid)

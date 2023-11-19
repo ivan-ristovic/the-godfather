@@ -24,7 +24,7 @@ public class Punishment : IEquatable<Punishment>
 
 
     public bool Equals(Punishment? other)
-        => other is { } && this.GuildId == other.GuildId && this.UserId == other.UserId && this.Type == other.Type;
+        => other is not null && this.GuildId == other.GuildId && this.UserId == other.UserId && this.Type == other.Type;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as Punishment);

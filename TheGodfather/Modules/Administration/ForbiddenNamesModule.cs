@@ -207,9 +207,9 @@ public sealed class ForbiddenNamesModule : TheGodfatherServiceModule<ForbiddenNa
         IReadOnlyCollection<DiscordMember> members = await ctx.Guild.GetAllMembersAsync();
         foreach (DiscordMember member in members.Where(m => !m.IsBot && m.Hierarchy < bot.Hierarchy)) {
             Regex? match = addedPatterns.FirstOrDefault(r => r.IsMatch(member.DisplayName));
-            if (match is { })
+            if (match is not null)
                 try {
-                    if (action is { })
+                    if (action is not null)
                         await this.Service.PunishMemberAsync(ctx.Guild, member, action.Value);
                     else
                         await member.ModifyAsync(m => {

@@ -46,7 +46,7 @@ public partial class CasinoModule
                 BankAccountService bas = ctx.Services.GetRequiredService<BankAccountService>();
                 if (game.Participants.Count > 1) {
                     await game.RunAsync(this.Localization);
-                    if (game.Winner is { })
+                    if (game.Winner is not null)
                         await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Cards.Suits[0], TranslationKey.fmt_winners(game.Winner.Mention));
                 } else {
                     await ctx.ImpInfoAsync(this.ModuleColor, Emojis.AlarmClock, TranslationKey.str_casino_holdem_none);

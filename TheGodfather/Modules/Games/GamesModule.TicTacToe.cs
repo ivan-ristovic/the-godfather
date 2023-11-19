@@ -36,7 +36,7 @@ public partial class GamesModule
             try {
                 await game.RunAsync(this.Localization);
 
-                if (game.Winner is { }) {
+                if (game.Winner is not null) {
                     if (game.IsTimeoutReached)
                         await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Trophy, TranslationKey.str_game_timeout(game.Winner.Mention));
                     else

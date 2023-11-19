@@ -99,7 +99,7 @@ public sealed class GuildConfigService : ITheGodfatherService
         this.gcfgs.TryRemove(gid, out _);
         await using TheGodfatherDbContext db = this.dbb.CreateContext();
         GuildConfig? gcfg = await db.Configs.FindAsync((long)gid);
-        if (gcfg is { }) {
+        if (gcfg is not null) {
             db.Configs.Remove(gcfg);
             await db.SaveChangesAsync();
             Log.Debug("Unregistered guild: {GuildId}", gid);

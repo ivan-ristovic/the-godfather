@@ -80,7 +80,7 @@ public sealed class ModuleAttribute : Attribute
     public static ModuleAttribute AttachedTo(Type t)
     {
         return GetCustomAttribute(t, typeof(ModuleAttribute)) is not ModuleAttribute moduleAttr
-            ? t.DeclaringType is { } ? AttachedTo(t.DeclaringType) : new ModuleAttribute(ModuleType.Uncategorized)
+            ? t.DeclaringType is not null ? AttachedTo(t.DeclaringType) : new ModuleAttribute(ModuleType.Uncategorized)
             : moduleAttr;
     }
 

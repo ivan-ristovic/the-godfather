@@ -54,7 +54,7 @@ public partial class GamesModule
             this.Service.RegisterEventInChannel(game, ctx.Channel.Id);
             try {
                 await game.RunAsync(this.Localization);
-                if (game.Winner is { }) {
+                if (game.Winner is not null) {
                     GameStatsService gss = ctx.Services.GetRequiredService<GameStatsService>();
                     await gss.UpdateStatsAsync(game.Winner.Id, s => s.HangmanWon++);
                 }

@@ -65,7 +65,7 @@ public sealed class XkcdModule : TheGodfatherModule
             emb.WithTitle($"xkcd #{comic.Id} - {comic.Title}");
             emb.WithImageUrl(comic.ImageUrl);
             string? url = XkcdService.CreateUrlForComic(comic.Id);
-            if (url is { })
+            if (url is not null)
                 emb.WithUrl(url);
             emb.WithColor(this.ModuleColor);
             emb.WithLocalizedFooter(TranslationKey.fmt_xkcd(comic.Month, comic.Year), null);

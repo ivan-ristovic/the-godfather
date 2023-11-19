@@ -133,7 +133,7 @@ internal static partial class Listeners
 
         Log.Debug("Channel update {Id} event count: {BeforeCount} -> {Count}", e.ChannelAfter.Id, updatesBefore, upds.Count);
         _channelUpdates.TryRemove(e.ChannelAfter.Id, out _);
-        if ((e.ChannelAfter.ParentId is { } && _channelUpdates.ContainsKey(e.ChannelAfter.ParentId.Value)) || updatesBefore < upds.Count)
+        if ((e.ChannelAfter.ParentId is not null && _channelUpdates.ContainsKey(e.ChannelAfter.ParentId.Value)) || updatesBefore < upds.Count)
             return;
 
         emb.WithLocalizedTitle(DiscordEventType.ChannelPinsUpdated, TranslationKey.evt_chn_update);
@@ -149,7 +149,7 @@ internal static partial class Listeners
                 emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_ratelimit, ent.PerUserRateLimitChange);
                 emb.AddLocalizedPropertyChangeField(TranslationKey.evt_upd_type, ent.TypeChange);
                 emb.AddLocalizedField(TranslationKey.evt_chn_ow_change, ent.OverwriteChange?.After?.Count, unknown: false);
-                if (ent.TopicChange is { }) {
+                if (ent.TopicChange is not null) {
                     string before = Formatter.BlockCode(
                         Formatter.Strip(string.IsNullOrWhiteSpace(ent.TopicChange.Before) ? " " : ent.TopicChange.Before).Truncate(450, "...")
                     );
@@ -170,9 +170,9 @@ internal static partial class Listeners
                 DiscordMember? member = owentry.Target.Type == OverwriteType.Member ? await owentry.Target.GetMemberAsync() : null;
                 DiscordRole? role = owentry.Target.Type == OverwriteType.Role ? await owentry.Target.GetRoleAsync() : null;
                 emb.AddLocalizedField(TranslationKey.evt_invoke_target, member?.Mention ?? role?.Mention, true);
-                if (owentry.AllowChange is { })
+                if (owentry.AllowChange is not null)
                     emb.AddLocalizedField(TranslationKey.str_allowed, owentry.Target.Allowed.ToPermissionString(), true);
-                if (owentry.DenyChange is { })
+                if (owentry.DenyChange is not null)
                     emb.AddLocalizedField(TranslationKey.str_denied, owentry.Target.Denied.ToPermissionString(), true);
             } catch {
                 Log.Verbose("Failed to retrieve permission overwrite target");

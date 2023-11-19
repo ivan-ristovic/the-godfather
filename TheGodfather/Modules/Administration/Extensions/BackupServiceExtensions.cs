@@ -26,15 +26,15 @@ public static class BackupServiceExtensions
         foreach (DiscordEmbed e in msg.Embeds) {
             sb.Append("----- ").Append(e.Title).AppendLine(" -----");
             sb.AppendLine(e.Description);
-            if (e.Fields is { })
+            if (e.Fields is not null)
                 foreach (DiscordEmbedField f in e.Fields) {
                     sb.Append("# ").Append(f.Name).AppendLine(" #");
                     sb.AppendLine(f.Value);
                 }
 
-            if (e.Image is { })
+            if (e.Image is not null)
                 sb.AppendLine(e.Image.Url.ToString());
-            if (e.Footer is { })
+            if (e.Footer is not null)
                 sb.AppendLine("---").AppendLine(e.Footer.Text);
             sb.Append('-', 12 + (e.Title?.Length ?? 0));
             sb.AppendLine();

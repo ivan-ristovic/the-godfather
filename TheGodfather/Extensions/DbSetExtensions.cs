@@ -24,7 +24,7 @@ public static class DbSetExtensions
         int removed = 0;
         foreach (TEntity entity in entities.Distinct()) {
             TEntity? dbEntity = await set.FindAsync(idSelector(entity));
-            if (dbEntity is { }) {
+            if (dbEntity is not null) {
                 set.Remove(dbEntity);
                 removed++;
             }

@@ -39,7 +39,7 @@ public class PurchasableItem : IEquatable<PurchasableItem>
 
 
     public bool Equals(PurchasableItem? other)
-        => other is { } && this.Id == other.Id;
+        => other is not null && this.Id == other.Id;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as PurchasableItem);

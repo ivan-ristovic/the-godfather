@@ -23,7 +23,7 @@ public class XpCount : IEquatable<XpCount>
 
 
     public bool Equals(XpCount? other)
-        => other is { } && this.GuildId == other.GuildId && this.UserId == other.UserId;
+        => other is not null && this.GuildId == other.GuildId && this.UserId == other.UserId;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as XpCount);

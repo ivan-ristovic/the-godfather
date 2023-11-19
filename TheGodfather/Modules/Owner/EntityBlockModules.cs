@@ -78,7 +78,7 @@ public abstract class BlockedEntityModule<T> : TheGodfatherServiceModule<Blockin
             TranslationKey.str_block_list,
             blocked,
 #pragma warning disable CS8603 // Possible null reference return.
-            tup => tup.Reason is { } ? $"{tup.Entity} ({tup.Reason})" : tup.Entity.ToString(),
+            tup => tup.Reason is not null ? $"{tup.Entity} ({tup.Reason})" : tup.Entity.ToString(),
 #pragma warning restore CS8603 // Possible null reference return.
             this.ModuleColor,
             5

@@ -285,7 +285,7 @@ internal static partial class Listeners
         emb.AddLocalizedField(TranslationKey.str_temporary, e.Invite.IsTemporary, true);
         emb.AddLocalizedField(TranslationKey.str_max_age_s, e.Invite.MaxAge, true);
         emb.AddLocalizedField(TranslationKey.str_max_uses, e.Invite.MaxUses, true);
-        if (e.Invite.Inviter is { })
+        if (e.Invite.Inviter is not null)
             emb.AddInvocationFields(e.Invite.Inviter, e.Channel);
         return logService.LogAsync(e.Guild, emb);
     }

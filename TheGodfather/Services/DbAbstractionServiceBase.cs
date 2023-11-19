@@ -78,7 +78,7 @@ public abstract class DbAbstractionServiceBase<TEntity, TEntityId> : ITheGodfath
     {
         await using TheGodfatherDbContext db = this.dbb.CreateContext();
         TEntity? entity = await this.DbSetSelector(db).FindAsync(this.EntityPrimaryKeySelector(id));
-        return entity is { };
+        return entity is not null;
     }
 
     public IReadOnlyList<TEntityId> GetIds()
@@ -187,7 +187,7 @@ public abstract class DbAbstractionServiceBase<TEntity, TGroupId, TEntityId> : I
     {
         await using TheGodfatherDbContext db = this.dbb.CreateContext();
         TEntity? entity = await this.DbSetSelector(db).FindAsync(this.EntityPrimaryKeySelector(grid, id));
-        return entity is { };
+        return entity is not null;
     }
 
     public IReadOnlyList<TEntityId> GetIds(TGroupId grid)

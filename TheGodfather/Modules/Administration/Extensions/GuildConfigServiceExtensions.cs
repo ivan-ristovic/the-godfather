@@ -9,6 +9,6 @@ public static class GuildConfigServiceExtensions
     public static DiscordChannel? GetLogChannelForGuild(this GuildConfigService service, DiscordGuild? guild)
     {
         CachedGuildConfig? gcfg = service.GetCachedConfig(guild?.Id ?? 0) ?? new CachedGuildConfig();
-        return guild is { } && gcfg.LoggingEnabled ? guild.GetChannel(gcfg.LogChannelId) : null;
+        return guild is not null && gcfg.LoggingEnabled ? guild.GetChannel(gcfg.LogChannelId) : null;
     }
 }

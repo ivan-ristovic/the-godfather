@@ -69,7 +69,7 @@ public sealed partial class ConfigModule
                     emb.WithLocalizedTitle(TranslationKey.str_antimention);
                     emb.WithDescription(gcfg.AntiMentionSettings.ToEmbedFieldString());
                     emb.WithColor(this.ModuleColor);
-                    if (exemptString is { })
+                    if (exemptString is not null)
                         emb.AddLocalizedField(TranslationKey.str_exempts, exemptString, true);
                 });
             });

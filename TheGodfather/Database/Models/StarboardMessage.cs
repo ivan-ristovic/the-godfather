@@ -37,7 +37,7 @@ public class StarboardMessage : IEquatable<StarboardMessage>
 
 
     public bool Equals(StarboardMessage? other)
-        => other is { } && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId && this.MessageId == other.MessageId;
+        => other is not null && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId && this.MessageId == other.MessageId;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as StarboardMessage);

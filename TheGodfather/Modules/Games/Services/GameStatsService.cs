@@ -74,7 +74,7 @@ public sealed class GameStatsService : DbAbstractionServiceBase<GameStats, ulong
             IOrderedEnumerable<GameStats> orderedStats = stats
                     .OrderByDescending(orderBy)
                 ;
-            if (thenBy is { })
+            if (thenBy is not null)
                 orderedStats = orderedStats.ThenByDescending(thenBy);
             top = orderedStats
                 .Take(amount)

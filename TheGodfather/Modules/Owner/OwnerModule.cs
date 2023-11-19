@@ -224,14 +224,14 @@ public sealed class OwnerModule : TheGodfatherModule
         }
         runTime.Stop();
 
-        if (exc is { } || res is null) {
+        if (exc is not null || res is null) {
             emb.WithLocalizedTitle(TranslationKey.str_eval_fail_run);
             emb.WithLocalizedDescription(TranslationKey.fmt_eval_fail_run(runTime.ElapsedMilliseconds, exc?.GetType(), exc?.Message));
             emb.WithColor(DiscordColor.Red);
         } else {
             emb.WithLocalizedTitle(TranslationKey.str_eval_succ);
             emb.WithColor(this.ModuleColor);
-            if (res.ReturnValue is { }) {
+            if (res.ReturnValue is not null) {
                 emb.AddLocalizedField(TranslationKey.str_result, res.ReturnValue);
                 emb.AddLocalizedField(TranslationKey.str_result_type, res.ReturnValue.GetType(), true);
             } else {
@@ -245,7 +245,7 @@ public sealed class OwnerModule : TheGodfatherModule
 
 
         Task UpdateOrRespondAsync()
-            => msg is { } ? msg.ModifyAsync(emb.Build()) : ctx.RespondAsync(emb.Build());
+            => msg is not null ? msg.ModifyAsync(emb.Build()) : ctx.RespondAsync(emb.Build());
     }
     #endregion
 
@@ -303,7 +303,7 @@ public sealed class OwnerModule : TheGodfatherModule
 
                 IEnumerable<CheckBaseAttribute> execChecks = cmd.ExecutionChecks.AsEnumerable();
                 CommandGroup? parent = cmd.Parent;
-                while (parent is { }) {
+                while (parent is not null) {
                     execChecks = execChecks.Union(parent.ExecutionChecks);
                     parent = parent.Parent;
                 }
@@ -453,7 +453,7 @@ public sealed class OwnerModule : TheGodfatherModule
                 eb.AppendLine(this.Localization.GetString(ctx.Guild?.Id, TranslationKey.cmd_err_guild_leave_fail(gid)));
             }
 
-        if (ctx.Guild is { } && !gids.Contains(ctx.Guild.Id)) {
+        if (ctx.Guild is not null && !gids.Contains(ctx.Guild.Id)) {
             if (eb.Length > 0)
                 await ctx.FailAsync(TranslationKey.fmt_err(eb));
             else

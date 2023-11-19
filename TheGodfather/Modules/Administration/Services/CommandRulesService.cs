@@ -17,12 +17,12 @@ public sealed class CommandRulesService : ITheGodfatherService
     {
         using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
             CommandRule? specialRule = DbFetch(db, qualifiedCommandName, gid, cid);
-            if (specialRule is { })
+            if (specialRule is not null)
                 return !specialRule.Allowed;
 
-            if (parentId is { }) {
+            if (parentId is not null) {
                 CommandRule? specialParentRule = DbFetch(db, qualifiedCommandName, gid, parentId.Value);
-                if (specialParentRule is { })
+                if (specialParentRule is not null)
                     return !specialParentRule.Allowed;
             }
 

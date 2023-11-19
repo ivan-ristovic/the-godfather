@@ -23,7 +23,7 @@ public abstract class SpecialRole : IEquatable<SpecialRole>
 
 
     public bool Equals(SpecialRole? other)
-        => other is { } && this.GuildId == other.GuildId && this.RoleId == other.RoleId;
+        => other is not null && this.GuildId == other.GuildId && this.RoleId == other.RoleId;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as SpecialRole);
@@ -54,7 +54,7 @@ public class LevelRole : SpecialRole, IEquatable<LevelRole>
 
 
     public bool Equals(LevelRole? other)
-        => other is { } && this.GuildId == other.GuildId && this.Rank == other.Rank;
+        => other is not null && this.GuildId == other.GuildId && this.Rank == other.Rank;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as LevelRole);
@@ -86,7 +86,7 @@ public class ReactionRole : SpecialRole, IEquatable<ReactionRole>
 
 
     public bool Equals(ReactionRole? other)
-        => other is { } && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId && this.MessageId == other.MessageId && this.Emoji == other.Emoji;
+        => other is not null && this.GuildId == other.GuildId && this.ChannelId == other.ChannelId && this.MessageId == other.MessageId && this.Emoji == other.Emoji;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as ReactionRole);

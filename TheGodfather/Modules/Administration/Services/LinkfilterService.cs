@@ -100,7 +100,7 @@ public sealed class LinkfilterService : ProtectionServiceBase
 
         emb.WithLocalizedTitle(TranslationKey.evt_lf_triggered);
         emb.WithDescription(desc);
-        if (match is { } && match.Matched is { })
+        if (match is not null && match.Matched is not null)
             emb.AddLocalizedField(TranslationKey.str_matched, match.Matched);
         emb.WithColor(DiscordColor.Red);
         emb.AddInvocationFields(e.Author, e.Channel);

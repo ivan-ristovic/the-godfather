@@ -6,7 +6,7 @@ namespace TheGodfather.Extensions;
 internal static class DiscordGuildExtensions
 {
     public static async Task<bool> HasMember(this DiscordGuild guild, ulong uid)
-        => await GetMemberSilentAsync(guild, uid) is { };
+        => await GetMemberSilentAsync(guild, uid) is not null;
 
     public static async Task<DiscordMember?> GetMemberSilentAsync(this DiscordGuild guild, ulong uid)
     {
@@ -24,7 +24,7 @@ internal static class DiscordGuildExtensions
         try {
             IReadOnlyList<DiscordAuditLogEntry>? logs = await guild.GetAuditLogsAsync(1, action_type: type);
             DiscordAuditLogEntry? entry = logs?[0];
-            return entry is { } && DateTimeOffset.UtcNow - entry.CreationTimestamp.ToUniversalTime() <= period ? entry : null;
+            return entry is not null && DateTimeOffset.UtcNow - entry.CreationTimestamp.ToUniversalTime() <= period ? entry : null;
         } catch {
             // no perms, ignored
         }

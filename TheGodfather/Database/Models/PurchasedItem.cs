@@ -21,7 +21,7 @@ public class PurchasedItem : IEquatable<PurchasedItem>
 
 
     public bool Equals(PurchasedItem? other)
-        => other is { } && this.ItemId == other.ItemId && this.UserId == other.UserId;
+        => other is not null && this.ItemId == other.ItemId && this.UserId == other.UserId;
 
     public override bool Equals(object? obj)
         => this.Equals(obj as PurchasedItem);

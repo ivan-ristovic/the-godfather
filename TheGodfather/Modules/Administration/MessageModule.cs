@@ -97,7 +97,7 @@ public sealed partial class MessageModule : TheGodfatherModule
         DiscordEmbedBuilder GetFirstEmbedOrDefaultAsBuilder(DiscordMessage m)
         {
             DiscordEmbed? em = m.Embeds.FirstOrDefault();
-            if (em is { })
+            if (em is not null)
                 return new DiscordEmbedBuilder(em);
 
             var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild.Id);
