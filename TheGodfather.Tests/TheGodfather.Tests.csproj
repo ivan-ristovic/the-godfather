@@ -24,11 +24,11 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="DSharpPlus" Version="4.4.1" />
-        <PackageReference Include="DSharpPlus.CommandsNext" Version="4.4.1" />
-        <PackageReference Include="DSharpPlus.Interactivity" Version="4.4.1" />
-        <PackageReference Include="DSharpPlus.Lavalink" Version="4.4.1" />
-        <PackageReference Include="DSharpPlus.VoiceNext" Version="4.4.1" />
+        <PackageReference Include="DSharpPlus" Version="4.4.3" />
+        <PackageReference Include="DSharpPlus.CommandsNext" Version="4.4.3" />
+        <PackageReference Include="DSharpPlus.Interactivity" Version="4.4.3" />
+        <PackageReference Include="DSharpPlus.Lavalink" Version="4.4.3" />
+        <PackageReference Include="DSharpPlus.VoiceNext" Version="4.4.3" />
         <PackageReference Include="GiphyDotNet" Version="2.4.0" />
         <PackageReference Include="Google.Apis.YouTube.v3" Version="1.60.0.3043" />
         <PackageReference Include="Humanizer.Core" Version="2.14.1" />
