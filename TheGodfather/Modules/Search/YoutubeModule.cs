@@ -84,7 +84,7 @@ public sealed class YoutubeModule : TheGodfatherServiceModule<YtService>
         [Description(TranslationKey.desc_sub_yt_username)] string username,
         [RemainingText][Description(TranslationKey.desc_name_f)] string? name = null)
     {
-        if (chn.IsTextOrNewsChannel())
+        if (!chn.IsTextOrNewsChannel())
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
 
         string? feed = await this.Service.GetRssUrlForChannel(username);
@@ -92,7 +92,9 @@ public sealed class YoutubeModule : TheGodfatherServiceModule<YtService>
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_yt);
 
         string fname = string.IsNullOrWhiteSpace(name) ? username : name;
-        await ctx.Services.GetRequiredService<RssFeedsService>().SubscribeAsync(ctx.Guild.Id, chn.Id, feed, fname);
+        if (!await ctx.Services.GetRequiredService<RssFeedsService>().SubscribeAsync(ctx.Guild.Id, chn.Id, feed, fname))
+            throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_yt);
+        
         await ctx.InfoAsync(this.ModuleColor);
     }
 

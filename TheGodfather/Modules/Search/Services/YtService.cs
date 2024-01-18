@@ -39,7 +39,7 @@ public sealed class YtService : TheGodfatherHttpService
             return null;
 
         string? id = await this.GetChannelIdAsync(idOrUrl);
-        return id is not null ? $"{YtUrl}/feeds/videos.xml?channel_id={idOrUrl}" : null;
+        return id is null ? null : $"{YtUrl}/feeds/videos.xml?channel_id={id}";
     }
 
     public async Task<string?> GetChannelIdAsync(string? idOrUrl)
@@ -59,8 +59,12 @@ public sealed class YtService : TheGodfatherHttpService
 
         UserName? uid = UserName.TryParse(idOrUrl);
         if (uid is not null) {
-            Channel channel = await this.ytExplode.Channels.GetByUserAsync(uid.Value);
-            return channel.Id;
+            try {
+                Channel channel = await this.ytExplode.Channels.GetByUserAsync(uid.Value);
+                return channel.Id;
+            } catch {
+                return null;
+            }
         }
 
         string vanityName = _ytVanityRegex.Match(idOrUrl).Groups[1].Value;
