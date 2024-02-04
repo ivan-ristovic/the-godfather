@@ -53,7 +53,7 @@
         <PackageReference Include="DSharpPlus.Lavalink" Version="4.4.6" />
         <PackageReference Include="DSharpPlus.VoiceNext" Version="4.4.6" />
         <PackageReference Include="GiphyDotNet" Version="2.4.0" />
-        <PackageReference Include="Google.Apis.YouTube.v3" Version="1.64.0.3205" />
+        <PackageReference Include="Google.Apis.YouTube.v3" Version="1.66.0.3309" />
         <PackageReference Include="Humanizer.Core" Version="2.14.1" />
         <PackageReference Include="Imgur.API" Version="4.0.1" />
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.0.1" />
@@ -86,7 +86,7 @@
         <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
         <PackageReference Include="TexasHoldemGameEngine" Version="2.0.0" />
         <PackageReference Include="TimeZoneConverter" Version="6.1.0" />
-        <PackageReference Include="YoutubeExplode" Version="6.3.11" />
+        <PackageReference Include="YoutubeExplode" Version="6.3.12" />
     </ItemGroup>
 
     <ItemGroup>
