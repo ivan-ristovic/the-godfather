@@ -31,4 +31,6 @@ public static class DiscordLimits
     public const int VoiceChannelUserLimit = 99;
     public const int VoiceChannelMinBitrate = 8;
     public const int VoiceChannelMaxBitrate = 128;
+    
+    public static TimeSpan MessageDeleteBeforeLimit { get; } = TimeSpan.FromDays(14);
 }

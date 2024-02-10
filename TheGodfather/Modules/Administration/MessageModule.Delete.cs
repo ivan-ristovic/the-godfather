@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Globalization;
+using System.Text.RegularExpressions;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
@@ -14,7 +15,50 @@ public partial class MessageModule
     public class MessageDeleteModule : TheGodfatherModule
     {
         #region message delete
-        [GroupCommand]
+        [GroupCommand, Priority(1)]
+        public async Task ExecuteGroupAsync(CommandContext ctx,
+            [Description(TranslationKey.desc_msg_del_amount)] TimeSpan ts,
+            [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
+        {
+            var min = TimeSpan.FromMinutes(1);
+            var max = DiscordLimits.MessageDeleteBeforeLimit;
+            if (ts < min || ts > max) {
+                CultureInfo culture = this.Localization.GetGuildCulture(ctx.Guild?.Id);
+                throw new CommandFailedException(ctx, TranslationKey.cmd_err_msg_del_ts(min.Humanize(1, culture), max.Humanize(1, culture)));
+            }
+
+            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_msg_del_ts))
+                return;
+
+            DateTimeOffset now = DateTimeOffset.Now;
+            DiscordMessage from = await ctx.Channel.GetLastMessageAsync() ?? ctx.Message;
+            int amount = 25;
+            int step = 1;
+            do {
+                IReadOnlyList<DiscordMessage> msgs = await ctx.Channel.GetMessagesBeforeAsync(from.Id, amount);
+                IReadOnlyList<DiscordMessage> toRemove = msgs.Where(m => now - m.Timestamp <= ts).ToList();
+                if (!toRemove.Any())
+                    break;
+                
+                await ctx.Channel.DeleteMessagesAsync(toRemove, ctx.BuildInvocationDetailsString(reason));
+                
+                if (toRemove.Count < msgs.Count)
+                    break;
+                if (amount < 100)
+                    amount *= 2;
+                step++;
+            } while (step < 10);
+
+            if (step == 10) {
+                await ctx.FailAsync(TranslationKey.cmd_err_max_iter);
+            }
+            
+            IReadOnlyList<DiscordMessage> newest = await ctx.Channel.GetMessagesAfterAsync(from.Id);
+            await ctx.Channel.DeleteMessagesAsync(newest);
+            await from.DeleteAsync();
+        }
+        
+        [GroupCommand, Priority(0)]
         public async Task ExecuteGroupAsync(CommandContext ctx,
             [Description(TranslationKey.desc_msg_del_amount)] int amount = 1,
             [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
