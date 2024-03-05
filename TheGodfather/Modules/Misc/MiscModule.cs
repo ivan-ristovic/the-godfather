@@ -229,19 +229,24 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
     #endregion
 
     #region rip
-    [Command("rip")][Priority(1)]
+    [Command("rip")][Priority(2)]
     [Aliases("restinpeace", "grave")]
     [RequireBotPermissions(Permissions.AttachFiles)]
     public Task RateAsync(CommandContext ctx,
         [Description(TranslationKey.desc_member)] DiscordMember member,
-        [RemainingText][Description(TranslationKey.desc_rip)] string? desc = "RIP")
+        [RemainingText][Description(TranslationKey.desc_rip)] string? desc)
         => this.InternalRipAsync(ctx, member, desc);
 
-    [Command("rip")][Priority(0)]
+    [Command("rip")][Priority(1)]
     public Task RateAsync(CommandContext ctx,
         [Description(TranslationKey.desc_user)] DiscordUser user,
-        [RemainingText][Description(TranslationKey.desc_rip)] string? desc = "RIP")
+        [RemainingText][Description(TranslationKey.desc_rip)] string? desc)
         => this.InternalRipAsync(ctx, user, desc);
+    
+    [Command("rip")][Priority(0)]
+    public Task RateAsync(CommandContext ctx,
+        [RemainingText][Description(TranslationKey.desc_rip)] string? desc)
+        => this.InternalRipAsync(ctx, null, desc);
     #endregion
 
     #region report
@@ -410,12 +415,16 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
         );
     }
 
-    private async Task InternalRipAsync(CommandContext ctx, DiscordUser user, string? desc)
+    private async Task InternalRipAsync(CommandContext ctx, DiscordUser? user, string? desc)
     {
+        user ??= ctx.User;
         if (user.IsCurrent) {
             await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Ruler, TranslationKey.cmd_err_size_bot);
             return;
         }
+
+        if (string.IsNullOrWhiteSpace(desc))
+            desc = "RIP";
 
         ImagingService ims = ctx.Services.GetRequiredService<ImagingService>();
         CultureInfo culture = this.Localization.GetGuildCulture(ctx.Guild.Id);

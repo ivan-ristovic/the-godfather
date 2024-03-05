@@ -16,12 +16,12 @@ using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Games.Common;
 
-public sealed class TypingRaceGame : BaseChannelGame
+public sealed partial class TypingRaceGame : BaseChannelGame
 {
     public const int MaxParticipants = 10;
     public const int MistakeThreshold = 5;
 
-    private static readonly Regex _wsRegex = new(@"\s+", RegexOptions.Compiled);
+    private static readonly Regex _wsRegex = WsRegex();
     private static readonly ImmutableDictionary<char, char> _replacements = new Dictionary<char, char> {
         #region REPLACEMENTS
         {'`', '\''},
@@ -43,10 +43,10 @@ public sealed class TypingRaceGame : BaseChannelGame
 
     private static Image<Rgba32> RenderText(string text, Font font)
     {
-        FontRectangle size = TextMeasurer.Measure(text, new RendererOptions(font) { WrappingWidth = 500 });
+        var textOpts = new RichTextOptions(font) { WrappingLength = 500 };
+        FontRectangle size = TextMeasurer.MeasureAdvance(text, textOpts);
         var img = new Image<Rgba32>(Configuration.Default, (int)size.Width, (int)size.Height * 2, Color.White);
-        var opts = new TextGraphicsOptions(new GraphicsOptions(), new TextOptions { WrapTextWidth = 500 });
-        img.Mutate(ctx => ctx.DrawText(opts, text, font, Color.Black, PointF.Empty));
+        img.Mutate(ctx => ctx.DrawText(textOpts, text, Color.Black));
         return img;
     }
 
@@ -122,4 +122,7 @@ public sealed class TypingRaceGame : BaseChannelGame
         emb.WithColor(DiscordColor.Teal);
         return emb.Build();
     }
+
+    [GeneratedRegex("\\s+", RegexOptions.Compiled)]
+    private static partial Regex WsRegex();
 }
