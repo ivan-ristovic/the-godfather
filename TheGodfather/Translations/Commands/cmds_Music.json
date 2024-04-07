@@ -62,11 +62,6 @@
       ]
     ]
   },
-  "music reshuffle": {
-    "usage": [
-      []
-    ]
-  },
   "music restart": {
     "usage": [
       []
@@ -81,7 +76,8 @@
     "usage": [
       [
         "arg-timespan"
-      ]
+      ],
+      []
     ]
   },
   "music seek": {

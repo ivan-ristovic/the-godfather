@@ -50,7 +50,7 @@ internal static class TheGodfather
         }
 
         Log.Information("Powering off");
-        Log.CloseAndFlush();
+        await Log.CloseAndFlushAsync();
         Environment.Exit(Environment.ExitCode);
     }
 

@@ -1,47 +1,49 @@
 ﻿using System.Reflection;
+using System.Threading;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.Interactivity;
 using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
-using DSharpPlus.Lavalink;
 using DSharpPlus.VoiceNext;
+using Lavalink4NET;
+using Lavalink4NET.Extensions;
+using Lavalink4NET.InactivityTracking;
+using Lavalink4NET.InactivityTracking.Extensions;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Serilog.Extensions.Logging;
 using TheGodfather.EventListeners;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Modules.Misc.Common;
+using TheGodfather.Services.Common;
 using TheGodfather.Services.Extensions;
 
 namespace TheGodfather;
 
 public sealed class TheGodfatherBot
 {
+    public BotConfigService Config { get; }
+    public DbContextBuilder Database { get; }
     public ServiceProvider Services => this.services ?? throw new BotUninitializedException();
-    public BotConfigService Config => this.config ?? throw new BotUninitializedException();
-    public DbContextBuilder Database => this.database ?? throw new BotUninitializedException();
     public DiscordShardedClient Client => this.client ?? throw new BotUninitializedException();
     public IReadOnlyDictionary<int, InteractivityExtension> Interactivity => this.interactivity ?? throw new BotUninitializedException();
     public IReadOnlyDictionary<int, CommandsNextExtension> CNext => this.cnext ?? throw new BotUninitializedException();
     public IReadOnlyDictionary<int, VoiceNextExtension> VNext => this.vnext ?? throw new BotUninitializedException();
-    public IReadOnlyDictionary<int, LavalinkExtension> Lavalink => this.lavalink ?? throw new BotUninitializedException();
     public IReadOnlyDictionary<string, Command> Commands => this.commands ?? throw new BotUninitializedException();
 
-    private readonly BotConfigService? config;
-    private readonly DbContextBuilder? database;
     private DiscordShardedClient? client;
     private ServiceProvider? services;
     private IReadOnlyDictionary<int, InteractivityExtension>? interactivity;
     private IReadOnlyDictionary<int, CommandsNextExtension>? cnext;
     private IReadOnlyDictionary<int, VoiceNextExtension>? vnext;
-    private IReadOnlyDictionary<int, LavalinkExtension>? lavalink;
     private IReadOnlyDictionary<string, Command>? commands;
 
 
     public TheGodfatherBot(BotConfigService cfg, DbContextBuilder dbb)
     {
-        this.config = cfg;
-        this.database = dbb;
+        this.Config = cfg;
+        this.Database = dbb;
     }
 
     public async Task DisposeAsync()
@@ -65,7 +67,7 @@ public sealed class TheGodfatherBot
         this.UpdateCommandList();
 
         this.interactivity = await this.SetupInteractivityAsync();
-        this.lavalink = await this.client.UseLavalinkAsync();
+        await this.SetupLavalinkAsync();
         this.vnext = await this.client.UseVoiceNextAsync(new VoiceNextConfiguration());
 
         Listeners.FindAndRegister(this);
@@ -108,11 +110,28 @@ public sealed class TheGodfatherBot
     private ServiceProvider SetupServices()
     {
         Log.Information("Initializing services...");
-        return new ServiceCollection()
+        var sc = new ServiceCollection()
             .AddSingleton(this.Config)
             .AddSingleton(this.Database)
             .AddSingleton(this.Client)
-            .AddSharedServices()
+            .AddSharedServices();
+
+        LavalinkConfig lavaConfig = this.Config.CurrentConfiguration.LavalinkConfig;
+        if (lavaConfig.Enable) {
+            sc.AddLavalink();
+            sc.AddInactivityTracking();
+            sc.ConfigureLavalink(cfg => {
+                cfg.Label = lavaConfig.Password;
+                cfg.Passphrase = lavaConfig.Password;
+                cfg.ReadyTimeout = TimeSpan.FromSeconds(lavaConfig.ReadyTimeout);
+                cfg.ResumptionOptions = new LavalinkSessionResumptionOptions(
+                    TimeSpan.FromSeconds(lavaConfig.ResumptionTimeout)
+                );
+                cfg.BaseAddress = new Uri($"http://{lavaConfig.Hostname}:{lavaConfig.Port}");
+            });
+        }
+        
+        return sc
             .BuildServiceProvider()
             .Initialize()
             ;
@@ -165,4 +184,15 @@ public sealed class TheGodfatherBot
             Timeout = TimeSpan.FromMinutes(1)
         });
     }
+    
+    private async Task SetupLavalinkAsync()
+    {
+        if (this.services is null || !this.Config.CurrentConfiguration.LavalinkConfig.Enable)
+            return;
+
+        await this.services.GetRequiredService<IHostedService>().StartAsync(CancellationToken.None);
+        await this.services.GetRequiredService<IAudioService>().StartAsync();
+        await this.services.GetRequiredService<IInactivityTrackingService>().StartAsync();
+    }
+
 }

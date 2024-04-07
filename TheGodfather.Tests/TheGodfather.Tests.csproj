@@ -27,7 +27,6 @@
         <PackageReference Include="DSharpPlus" Version="4.4.6" />
         <PackageReference Include="DSharpPlus.CommandsNext" Version="4.4.6" />
         <PackageReference Include="DSharpPlus.Interactivity" Version="4.4.6" />
-        <PackageReference Include="DSharpPlus.Lavalink" Version="4.4.6" />
         <PackageReference Include="DSharpPlus.VoiceNext" Version="4.4.6" />
         <PackageReference Include="GiphyDotNet" Version="2.4.0" />
         <PackageReference Include="Google.Apis.YouTube.v3" Version="1.67.0.3343" />

@@ -286,6 +286,7 @@
   "cmd-err-music-vc": "You need to be in the voice channel in order to invoke that command.",
   "cmd-err-music-vc-same": "You need to be in the same voice channel as I am in order to invoke that command.",
   "cmd-err-music-vol": "Volume must be in range [{0},{1}]%!",
+  "cmd-err-music-unknown": "Unknown error.",
   "cmd-err-name": "Name must be shorter than {0} characters!",
   "cmd-err-name-404": "You need to provide the name.",
   "cmd-err-name-alnum": "Name cannot contain characters that are not letters or digits.",

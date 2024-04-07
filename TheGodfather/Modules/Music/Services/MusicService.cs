@@ -1,88 +1,68 @@
-﻿using System.Collections.Concurrent;
-using System.IO;
-using DSharpPlus;
-using DSharpPlus.Entities;
+﻿using DSharpPlus;
+using DSharpPlus.AsyncEvents;
 using DSharpPlus.EventArgs;
-using DSharpPlus.Lavalink;
-using DSharpPlus.Lavalink.EventArgs;
-using TheGodfather.Modules.Music.Common;
+using DSharpPlus.Net;
+using Lavalink4NET;
+using Lavalink4NET.Events.Players;
+using Lavalink4NET.Players;
+using Lavalink4NET.Players.Queued;
+using Lavalink4NET.Rest.Entities.Tracks;
+using Microsoft.Extensions.Options;
+using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Music.Services;
 
 public sealed class MusicService : ITheGodfatherService
 {
-    private readonly LavalinkService lavalink;
-    private readonly LocalizationService lcs;
-    private readonly SecureRandom rng;
-    private readonly ConcurrentDictionary<ulong, GuildMusicPlayer> data;
+    public const int DefVolume = 100;
+    public const int MinVolume = 0;
+    public const int MaxVolume = 500;
 
-    public bool IsDisabled => this.lavalink.IsDisabled;
+    public bool IsDisabled => !this.cfg.Enable;
+
+    private readonly DiscordShardedClient client;
+    private readonly LavalinkConfig cfg;
+    private readonly IAudioService lavalink;
 
 
-    public MusicService(DiscordShardedClient client, LavalinkService lavalink, LocalizationService lcs)
+    public MusicService(BotConfigService cfg, DiscordShardedClient client, IAudioService lavalink)
     {
+        this.cfg = cfg.CurrentConfiguration.LavalinkConfig;
+        this.client = client;
+        this.client.Ready += this.InitializeLavalinkAsync;
         this.lavalink = lavalink;
-        this.lcs = lcs;
-        this.rng = new SecureRandom();
-        this.data = new ConcurrentDictionary<ulong, GuildMusicPlayer>();
-        this.lavalink.TrackExceptionThrown += this.LavalinkErrorHandler;
-        if (!this.IsDisabled)
-            client.VoiceStateUpdated += InternalDisconnectIfAloneAsync;
-    }
-
-
-    public Task<GuildMusicPlayer> GetOrCreatePlayerAsync(DiscordGuild guild)
-    {
-        if (this.IsDisabled)
-            throw new InvalidOperationException();
-
-        if (this.data.TryGetValue(guild.Id, out GuildMusicPlayer? gmd))
-            return Task.FromResult(gmd);
-
-        gmd = this.data.AddOrUpdate(guild.Id, new GuildMusicPlayer(guild, this.lavalink), (_, v) => v);
-        return Task.FromResult(gmd);
-    }
-
-    public Task<LavalinkLoadResult> GetTracksAsync(Uri uri)
-        => !this.IsDisabled ? this.lavalink.LavalinkNode!.Rest.GetTracksAsync(uri) : throw new InvalidOperationException();
-
-    public Task<LavalinkLoadResult> GetTracksAsync(FileInfo fi)
-        => !this.IsDisabled ? this.lavalink.LavalinkNode!.Rest.GetTracksAsync(fi) : throw new InvalidOperationException();
-
-    public IEnumerable<LavalinkTrack> Shuffle(IEnumerable<LavalinkTrack> tracks)
-        => tracks.Shuffle(this.rng);
-
-
-    private async Task InternalDisconnectIfAloneAsync(DiscordClient client, VoiceStateUpdateEventArgs e)
-    {
-        if (this.IsDisabled || e.Guild is null)
-            return;
-
-        if (this.data.TryGetValue(e.Guild.Id, out GuildMusicPlayer? gmd)) {
-            if (gmd.Channel is not null && gmd.Channel.Users.Count < 2)
-                await this.StopPlayerAsync(gmd);   
-        }
-    }
-
-    public async Task<int> StopPlayerAsync(GuildMusicPlayer player)
-    {
-        int removed = player.EmptyQueue();
-        await player.StopAsync();
-        await player.DestroyPlayerAsync();
-        return removed;
     }
     
-    private async Task LavalinkErrorHandler(LavalinkGuildConnection con, TrackExceptionEventArgs e)
+    
+    public async Task<PlayerResult<QueuedLavalinkPlayer>> GetPlayerAsync(ulong gid, ulong? cid, bool connect = true)
     {
-        if (e.Player?.Guild == null)
-            return;
+        var opts = Options.Create(new QueuedLavalinkPlayerOptions());
+        var channelBehavior = connect ? PlayerChannelBehavior.Join : PlayerChannelBehavior.None;
+        var retrieveOptions = new PlayerRetrieveOptions(ChannelBehavior: channelBehavior);
 
-        if (!this.data.TryGetValue(e.Player.Guild.Id, out GuildMusicPlayer? gd))
-            return;
+        var result = await this.lavalink.Players
+            .RetrieveAsync(gid, cid, playerFactory: PlayerFactory.Queued, opts, retrieveOptions)
+            .ConfigureAwait(false);
 
-        if (gd.CommandChannel is not null)
-            await gd.CommandChannel.LocalizedEmbedAsync(this.lcs, Emojis.X, DiscordColor.Red, 
-                TranslationKey.err_music(Formatter.Sanitize(e.Track.Title), Formatter.Sanitize(e.Track.Author), e.Error)
-            );
+        return result;
+    }
+
+    public ValueTask<TrackLoadResult> GetTracksAsync(Uri uri)
+    {
+        return this.GetTracksAsync(uri, TrackSearchMode.YouTube);
+    }
+    
+    public ValueTask<TrackLoadResult> GetTracksAsync(Uri uri, TrackSearchMode searchMode)
+    {
+        return this.lavalink.Tracks.LoadTracksAsync(uri.ToString(), searchMode);
+    }
+
+    private async Task InitializeLavalinkAsync(DiscordClient client, ReadyEventArgs e)
+    {
+        if (this.IsDisabled) {
+            return;
+        }
+
+        await this.lavalink.StartAsync();
     }
 }
