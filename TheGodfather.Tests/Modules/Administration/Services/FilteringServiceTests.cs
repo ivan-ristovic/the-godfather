@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using TheGodfather.Database;
 using TheGodfather.Database.Models;
 using TheGodfather.Modules.Administration.Services;
@@ -587,37 +588,34 @@ public sealed class FilteringServiceTests : ITheGodfatherServiceTest<FilteringSe
 
     private void AssertGuildFilterCount(TheGodfatherDbContext db, int index, int count)
     {
-        Assert.AreEqual(count, db.Filters.Count(f => f.GuildIdDb == (long)MockData.Ids[index]));
+        Assert.That(db.Filters.Count(f => f.GuildIdDb == (long)MockData.Ids[index]), Is.EqualTo(count));
         IReadOnlyCollection<Filter> fs = this.Service.GetGuildFilters(MockData.Ids[index]);
-        Assert.AreEqual(count, fs.Count);
-        CollectionAssert.AllItemsAreUnique(fs.Select(f => f.Id));
-        Assert.AreEqual(count, fs.Select(f => f.Regex.ToString()).Distinct().Count());
+        Assert.That(fs.Count, Is.EqualTo(count));
+        Assert.That(fs.Select(f => f.Id), Is.Unique);
+        Assert.That(fs.Select(f => f.Regex.ToString()).Distinct(), Has.Exactly(count).Items);
     }
 
     private void AssertSingleAndTest(TheGodfatherDbContext db, int index, string regex, bool match,
         params string[] tests)
     {
-        if (tests is null || !tests.Any()) {
+        if (tests.Length == 0) {
             Assert.Fail("No tests provided to assert function.");
             return;
         }
 
         Filter filter = this.Service.GetGuildFilters(MockData.Ids[index])
-            .Single(f => string.Compare(f.RegexString, regex, true) == 0);
-        Assert.IsNotNull(filter);
+            .Single(f => string.Compare(f.RegexString, regex, StringComparison.OrdinalIgnoreCase) == 0);
+        Assert.That(filter, Is.Not.Null);
 
         Filter dbf = db.Filters
             .AsQueryable()
             .Where(f => f.GuildIdDb == (long)MockData.Ids[index])
             .AsEnumerable()
-            .Single(f => string.Compare(f.RegexString, regex, true) == 0);
-        Assert.IsNotNull(dbf);
+            .Single(f => string.Compare(f.RegexString, regex, StringComparison.OrdinalIgnoreCase) == 0);
+        Assert.That(dbf, Is.Not.Null);
 
         foreach (string test in tests)
-            if (match)
-                Assert.IsTrue(filter.Regex.IsMatch(test));
-            else
-                Assert.IsFalse(filter.Regex.IsMatch(test));
+            Assert.That(filter.Regex.IsMatch(test), Is.EqualTo(match));
     }
 
     private void UpdateFilterCount(TheGodfatherDbContext db) =>

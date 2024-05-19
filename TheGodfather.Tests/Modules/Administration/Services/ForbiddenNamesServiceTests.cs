@@ -527,11 +527,11 @@ public sealed class ForbiddenNamesServiceTests : ITheGodfatherServiceTest<Forbid
                         .AsQueryable()
                         .Where(f => f.GuildIdDb == (long)gid)
                         .AsEnumerable()
-                        .Any(f => regexStrings.Any(s => string.Compare(s, f.RegexString, true) == 0)),
+                        .Any(f => regexStrings.Any(s => string.Compare(s, f.RegexString, StringComparison.OrdinalIgnoreCase) == 0)),
                     Is.False
                 );
                 Assert.That(this.Service.GetGuildForbiddenNames(gid)
-                        .Any(f => regexStrings.Any(s => string.Compare(s, f.RegexString, true) == 0)),
+                        .Any(f => regexStrings.Any(s => string.Compare(s, f.RegexString, StringComparison.OrdinalIgnoreCase) == 0)),
                     Is.False
                 );
             } else {
@@ -560,37 +560,34 @@ public sealed class ForbiddenNamesServiceTests : ITheGodfatherServiceTest<Forbid
 
     private void AssertGuildForbiddenNameCount(TheGodfatherDbContext db, int index, int count)
     {
-        Assert.AreEqual(count, db.ForbiddenNames.Count(f => f.GuildIdDb == (long)MockData.Ids[index]));
+        Assert.That(db.ForbiddenNames.Count(f => f.GuildIdDb == (long)MockData.Ids[index]), Is.EqualTo(count));
         IReadOnlyCollection<ForbiddenName> fs = this.Service.GetGuildForbiddenNames(MockData.Ids[index]);
-        Assert.AreEqual(count, fs.Count);
-        CollectionAssert.AllItemsAreUnique(fs.Select(f => f.Id));
-        Assert.AreEqual(count, fs.Select(f => f.Regex.ToString()).Distinct().Count());
+        Assert.That(fs.Count, Is.EqualTo(count));
+        Assert.That(fs.Select(f => f.Id), Is.Unique);
+        Assert.That(fs.Select(f => f.Regex.ToString()).Distinct(), Has.Exactly(count).Items);
     }
 
     private void AssertSingleAndTest(TheGodfatherDbContext db, int index, string regex, bool match,
         params string[] tests)
     {
-        if (tests is null || !tests.Any()) {
+        if (tests.Length == 0) {
             Assert.Fail("No tests provided to assert function.");
             return;
         }
 
-        ForbiddenName filter = this.Service.GetGuildForbiddenNames(MockData.Ids[index])
-            .Single(f => string.Compare(f.RegexString, regex, true) == 0);
-        Assert.IsNotNull(filter);
+        ForbiddenName fn = this.Service.GetGuildForbiddenNames(MockData.Ids[index])
+            .Single(f => string.Compare(f.RegexString, regex, StringComparison.OrdinalIgnoreCase) == 0);
+        Assert.That(fn, Is.Not.Null);
 
-        ForbiddenName dbf = db.ForbiddenNames
+        ForbiddenName dbfn = db.ForbiddenNames
             .AsQueryable()
             .Where(f => f.GuildIdDb == (long)MockData.Ids[index])
             .AsEnumerable()
-            .Single(f => string.Compare(f.RegexString, regex, true) == 0);
-        Assert.IsNotNull(dbf);
+            .Single(f => string.Compare(f.RegexString, regex, StringComparison.OrdinalIgnoreCase) == 0);
+        Assert.That(dbfn, Is.Not.Null);
 
         foreach (string test in tests)
-            if (match)
-                Assert.IsTrue(filter.Regex.IsMatch(test));
-            else
-                Assert.IsFalse(filter.Regex.IsMatch(test));
+            Assert.That(fn.Regex.IsMatch(test), Is.EqualTo(match));
     }
 
     private void UpdateForbiddenNameCount(TheGodfatherDbContext db) =>
