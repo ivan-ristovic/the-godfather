@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:7.0.202-bullseye-slim as build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 as build
 WORKDIR /src
 
 COPY . .
@@ -11,7 +11,7 @@ RUN set -xe; \
     chmod +x /app/TheGodfather
 
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0.202-bullseye-slim
+FROM mcr.microsoft.com/dotnet/runtime:8.0
 WORKDIR /app
 
 RUN set -xe; \
