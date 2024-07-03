@@ -34,7 +34,6 @@ public class DbContextBuilder
                 MaxAutoPrepare = 50,
                 AutoPrepareMinUsages = 3,
                 SslMode = SslMode.Prefer,
-                TrustServerCertificate = true
             }.ConnectionString,
             DbProvider.Sqlite => $"Data Source=data/{cfg.DatabaseName}.db;",
             DbProvider.SqlServer => $@"Data Source=(localdb)\ProjectsV13;Initial Catalog={cfg.DatabaseName};" +

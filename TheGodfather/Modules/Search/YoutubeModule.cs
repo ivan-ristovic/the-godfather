@@ -161,7 +161,7 @@ public sealed class YoutubeModule : TheGodfatherServiceModule<YtService>
                 emb.WithThumbnail(r.Snippet.Thumbnails.Default__.Url);
 
             emb.AddLocalizedField(TranslationKey.str_chn, r.Snippet.ChannelTitle, true);
-            emb.AddLocalizedField(TranslationKey.str_published, r.Snippet.PublishedAt, true);
+            emb.AddLocalizedField(TranslationKey.str_published, r.Snippet.PublishedAtDateTimeOffset, true);
 
             string? url = this.Service.GetUrlForResourceId(r.Id);
             if (url is not null)
