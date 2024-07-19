@@ -43,6 +43,13 @@ public sealed class UserModule : TheGodfatherServiceModule<ProtectionService>
     [Command("ban")][Priority(3)]
     [Aliases("b")]
     [RequireGuild][RequirePermissions(Permissions.BanMembers)]
+    public Task BanAsync(CommandContext ctx,
+        [Description(TranslationKey.desc_member)] DiscordMember member,
+        [Description(TranslationKey.desc_ban_msg_days_del)] int days,
+        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
+        => this.BanAsync(ctx, member as DiscordUser, days, reason);
+
+    [Command("ban")][Priority(2)]
     public async Task BanAsync(CommandContext ctx,
         [Description(TranslationKey.desc_user)] DiscordUser user,
         [Description(TranslationKey.desc_ban_msg_days_del)] int days,
@@ -55,13 +62,6 @@ public sealed class UserModule : TheGodfatherServiceModule<ProtectionService>
         await ctx.Guild.BanMemberAsync(user.Id, days, ctx.BuildInvocationDetailsString(reason));
         await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_ban(ctx.User.Mention, name, days));
     }
-
-    [Command("ban")][Priority(2)]
-    public Task BanAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_member)] DiscordMember member,
-        [Description(TranslationKey.desc_ban_msg_days_del)] int days,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
-        => this.BanAsync(ctx, member as DiscordUser, days, reason);
 
     [Command("ban")][Priority(1)]
     public Task BanAsync(CommandContext ctx,
