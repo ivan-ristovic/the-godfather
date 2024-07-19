@@ -6,9 +6,9 @@ using Newtonsoft.Json;
 
 namespace TheGodfather.Modules.Administration.Common;
 
-public static class LinkfilterMatcherCollection
+public static partial class LinkfilterMatcherCollection
 {
-    public static readonly Regex InviteRegex = new(@"discord(?:\.gg|app\.com\/invite)\/([\w\-]+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+    public static readonly Regex InviteRegex = DiscordInviteRegex();
 
     public static readonly LinkfilterMatcher IpLoggerMatcher = new(GetWebsiteUrlsFromJson("Resources/linkfilter/ip_loggers.json"));
 
@@ -57,4 +57,7 @@ public static class LinkfilterMatcherCollection
             return new Dictionary<string, string>();
         }
     }
+
+    [GeneratedRegex(@"discord\.(gg|app|com)\/invite\/([\w\-]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled, "en-US")]
+    private static partial Regex DiscordInviteRegex();
 }

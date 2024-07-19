@@ -10,8 +10,7 @@ public static class LinkfilterSettingsExtensions
         if (!settings.Enabled)
             return lcs.GetString(gid, TranslationKey.str_off);
 
-        var sb = new StringBuilder(lcs.GetString(gid, TranslationKey.str_lf_active));
-        sb.AppendLine();
+        var sb = new StringBuilder();
         if (settings.BlockDiscordInvites)
             sb.AppendLine(lcs.GetString(gid, TranslationKey.str_lf_invite));
         if (settings.BlockBooterWebsites)
