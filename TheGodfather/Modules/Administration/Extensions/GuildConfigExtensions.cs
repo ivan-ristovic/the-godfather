@@ -71,7 +71,7 @@ internal static class GuildConfigExtensions
             emb.AddLocalizedField(TranslationKey.str_muterole, TranslationKey.str_none, inline: true);
         }
 
-        emb.AddLocalizedField(TranslationKey.str_lf, gcfg.LinkfilterSettings.ToEmbedFieldString(), true);
+        emb.AddLocalizedField(TranslationKey.str_lf_active, gcfg.LinkfilterSettings.ToEmbedFieldString(guild.Id, lcs), true);
 
         return emb.Build();
     }

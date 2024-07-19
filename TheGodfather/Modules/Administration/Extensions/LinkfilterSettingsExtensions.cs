@@ -1,6 +1,7 @@
 ﻿using System.Text;
+using TheGodfather.Modules.Administration.Common;
 
-namespace TheGodfather.Modules.Administration.Common;
+namespace TheGodfather.Modules.Administration.Extensions;
 
 public static class LinkfilterSettingsExtensions
 {
@@ -9,7 +10,7 @@ public static class LinkfilterSettingsExtensions
         if (!settings.Enabled)
             return lcs.GetString(gid, TranslationKey.str_off);
 
-        var sb = new StringBuilder(lcs.GetString(gid, TranslationKey.str_lf));
+        var sb = new StringBuilder(lcs.GetString(gid, TranslationKey.str_lf_active));
         sb.AppendLine();
         if (settings.BlockDiscordInvites)
             sb.AppendLine(lcs.GetString(gid, TranslationKey.str_lf_invite));
