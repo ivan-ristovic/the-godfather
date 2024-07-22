@@ -53,11 +53,11 @@ internal static partial class Listeners
     [AsyncEventListener(DiscordEventType.MessageCreated)]
     public static async Task MessageCreateEventHandlerAsync(TheGodfatherBot bot, MessageCreateEventArgs e)
     {
-        if (e.Author.IsBot)
+        if (e.Author.IsBotOrSystem() || e.Message.WebhookMessage)
             return;
 
         if (e.Guild is null) {
-            LogExt.Debug(bot.GetId(null), new[] { "DM message received from {User}:", "{Message}" }, e.Author, e.Message);
+            LogExt.Debug(bot.GetId(null), ["DM message received from {User}:", "{Message}"], e.Author, e.Message);
             return;
         }
 
@@ -93,21 +93,19 @@ internal static partial class Listeners
     [AsyncEventListener(DiscordEventType.MessageCreated)]
     public static async Task MessageCreateProtectionHandlerAsync(TheGodfatherBot bot, MessageCreateEventArgs e)
     {
-        if (e.Author.IsBot || e.Guild is null)
+        if (e.Author.IsBotOrSystem() || e.Guild is null)
             return;
 
         if (bot.Services.GetRequiredService<BlockingService>().IsChannelBlocked(e.Channel.Id))
             return;
 
-        CachedGuildConfig? gcfg = bot.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(e.Guild.Id);
-        if (gcfg is not null) {
-            if (gcfg.RatelimitSettings.Enabled)
-                await bot.Services.GetRequiredService<RatelimitService>().HandleNewMessageAsync(e, gcfg.RatelimitSettings);
-            if (gcfg.AntispamSettings.Enabled)
-                await bot.Services.GetRequiredService<AntispamService>().HandleNewMessageAsync(e, gcfg.AntispamSettings);
-            if (gcfg.AntiMentionSettings.Enabled)
-                await bot.Services.GetRequiredService<AntiMentionService>().HandleNewMessageAsync(e, gcfg.AntiMentionSettings);
-        }
+        CachedGuildConfig gcfg = bot.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(e.Guild.Id);
+        if (gcfg.RatelimitSettings.Enabled)
+            await bot.Services.GetRequiredService<RatelimitService>().HandleNewMessageAsync(e, gcfg.RatelimitSettings);
+        if (gcfg.AntispamSettings.Enabled)
+            await bot.Services.GetRequiredService<AntispamService>().HandleNewMessageAsync(e, gcfg.AntispamSettings);
+        if (gcfg.AntiMentionSettings.Enabled)
+            await bot.Services.GetRequiredService<AntiMentionService>().HandleNewMessageAsync(e, gcfg.AntiMentionSettings);
     }
 
     [AsyncEventListener(DiscordEventType.MessageCreated)]
@@ -221,7 +219,7 @@ internal static partial class Listeners
     [AsyncEventListener(DiscordEventType.MessageUpdated)]
     public static async Task MessageUpdateEventHandlerAsync(TheGodfatherBot bot, MessageUpdateEventArgs e)
     {
-        if (e.Guild is null || (e.Author?.IsBot ?? false) || e.Channel is null || e.Message is null || e.Author is null)
+        if (e.Guild is null || e.Author is null || e.Author.IsBotOrSystem() || e.Channel is null || e.Message is null)
             return;
 
         if (bot.Services.GetRequiredService<BlockingService>().IsChannelBlocked(e.Channel.Id))
