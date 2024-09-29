@@ -28,10 +28,10 @@ public sealed class BankAccountService : DbAbstractionServiceBase<BankAccount, u
     public override IQueryable<BankAccount> GroupSelector(IQueryable<BankAccount> entities, ulong grid)
         => entities.Where(acc => (ulong)acc.GuildIdDb == grid);
 
-    public Task IncreaseBankAccountAsync(ulong gid, ulong uid, long change)
-        => this.ModifyBankAccountAsync(gid, uid, b => b + change);
+    public Task IncreaseBankAccountAsync(ulong gid, ulong uid, long change, bool save = true)
+        => this.ModifyBankAccountAsync(gid, uid, b => b + change, save);
 
-    public async Task<bool> TryDecreaseBankAccountAsync(ulong gid, ulong uid, long change)
+    public async Task<bool> TryDecreaseBankAccountAsync(ulong gid, ulong uid, long change, bool save = true)
     {
         await using TheGodfatherDbContext db = this.dbb.CreateContext();
         BankAccount? account = await this.GetAsync(gid, uid);
@@ -41,11 +41,12 @@ public sealed class BankAccountService : DbAbstractionServiceBase<BankAccount, u
         account.Balance -= change;
         db.BankAccounts.Update(account);
 
-        await db.SaveChangesAsync();
+        if (save)
+            await db.SaveChangesAsync();
         return true;
     }
 
-    public async Task ModifyBankAccountAsync(ulong gid, ulong uid, Func<long, long> balanceModifier)
+    public async Task ModifyBankAccountAsync(ulong gid, ulong uid, Func<long, long> balanceModifier, bool save = true)
     {
         await using TheGodfatherDbContext db = this.dbb.CreateContext();
 
@@ -69,7 +70,8 @@ public sealed class BankAccountService : DbAbstractionServiceBase<BankAccount, u
         else
             db.BankAccounts.Update(account);
 
-        await db.SaveChangesAsync();
+        if (save)
+            await db.SaveChangesAsync();
     }
 
     public async Task<IReadOnlyList<BankAccount>> GetTopAccountsAsync(ulong? gid = null, int amount = 10)
@@ -86,20 +88,18 @@ public sealed class BankAccountService : DbAbstractionServiceBase<BankAccount, u
 
     public async Task<bool> TransferAsync(ulong gid, ulong src, ulong dst, long amount)
     {
-        await using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-            try {
-                await db.Database.BeginTransactionAsync();
+        await using TheGodfatherDbContext db = this.dbb.CreateContext();
+        try {
+            await db.Database.BeginTransactionAsync();
 
-                if (!await this.TryDecreaseBankAccountAsync(gid, src, amount))
-                    return false;
-                await this.IncreaseBankAccountAsync(gid, dst, amount);
-                await db.SaveChangesAsync();
+            if (!await this.TryDecreaseBankAccountAsync(gid, src, amount, save: false))
+                return false;
+            await this.IncreaseBankAccountAsync(gid, dst, amount, save: false);
 
-                db.Database.CommitTransaction();
-            } catch {
-                db.Database.RollbackTransaction();
-                throw;
-            }
+            await db.Database.CommitTransactionAsync();
+        } catch {
+            await db.Database.RollbackTransactionAsync();
+            throw;
         }
         return true;
     }
