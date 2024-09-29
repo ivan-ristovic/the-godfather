@@ -16,7 +16,7 @@ public class LotteryGame : BaseChannelGame
     public const int DrawCount = 3;
     public const int TicketPrice = 250;
     public static readonly ImmutableArray<int> Prizes = new[] {
-        0, 2500, 50000, 1000000
+        0, 2500, 50000, 1000000,
     }.ToImmutableArray();
 
     public bool Started { get; private set; }
@@ -41,7 +41,7 @@ public class LotteryGame : BaseChannelGame
 
         DiscordMessage msg = await this.Channel.EmbedAsync(lcs.GetString(this.Channel.GuildId, TranslationKey.str_casino_lottery_starting));
 
-        IEnumerable<int> drawn = Enumerable.Range(1, MaxNumber + 1).Shuffle().Take(3);
+        var drawn = Enumerable.Range(1, MaxNumber + 1).Shuffle().Take(3).ToList();
 
         for (int i = 0; i < DrawCount; i++) {
             await Task.Delay(TimeSpan.FromSeconds(5));
@@ -56,9 +56,8 @@ public class LotteryGame : BaseChannelGame
 
     public void AddParticipant(DiscordUser user, int[] numbers)
     {
-        if (this.IsParticipating(user))
-            return;
-        this.participants.Enqueue(new Participant(user, numbers));
+        if (!this.IsParticipating(user))
+            this.participants.Enqueue(new Participant(user, numbers));
     }
 
     public bool IsParticipating(DiscordUser user)
@@ -86,17 +85,11 @@ public class LotteryGame : BaseChannelGame
     }
 
 
-    public sealed class Participant
+    public sealed class Participant(DiscordUser user, int[] numbers)
     {
-        public DiscordUser User { get; }
-        public int[] Numbers { get; }
+        public DiscordUser User { get; } = user;
+        public IEnumerable<int> Numbers { get; } = numbers.ToImmutableSortedSet();
         public ulong Id => this.User.Id;
         public int WinAmount { get; set; }
-
-        public Participant(DiscordUser user, int[] numbers)
-        {
-            this.User = user;
-            this.Numbers = numbers;
-        }
     }
 }
