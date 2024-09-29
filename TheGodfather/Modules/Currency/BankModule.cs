@@ -31,11 +31,7 @@ public sealed class BankModule : TheGodfatherServiceModule<BankAccountService>
     public async Task GetBalanceAsync(CommandContext ctx,
         [Description(TranslationKey.desc_member)] DiscordMember? member = null)
     {
-        member ??= ctx.Member;
-        if (member is null) {
-            await ctx.FailAsync(TranslationKey.cmd_err_shop_purchased_none(TranslationKey.str_404));
-            return;
-        }
+        member ??= ctx.Member!;
 
         BankAccount? balance = await this.Service.GetAsync(ctx.Guild.Id, member.Id);
         await ctx.RespondWithLocalizedEmbedAsync(emb => {
@@ -48,7 +44,7 @@ public sealed class BankModule : TheGodfatherServiceModule<BankAccountService>
                 emb.WithLocalizedDescription(TranslationKey.fmt_bank_acc_value(balance.Balance.ToWords(culture), currency));
                 emb.AddLocalizedField(TranslationKey.str_bank_acc_value_num, $"{balance.Balance:n0} {currency}");
             } else {
-                emb.WithLocalizedDescription(TranslationKey.fmt_bank_acc_none);
+                emb.WithLocalizedDescription(TranslationKey.fmt_bank_acc_none(member.DisplayName));
             }
             emb.WithLocalizedFooter(TranslationKey.fmt_bank_footer, ctx.Client.CurrentUser.AvatarUrl);
         });
@@ -94,6 +90,9 @@ public sealed class BankModule : TheGodfatherServiceModule<BankAccountService>
         if (amount is < 1 or > 1_000_000_000_000)
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_bank_grant($"{1_000_000_000_000:n0}"));
 
+        if (await this.Service.GetAsync(ctx.Guild.Id, member.Id) is null)
+            throw new CommandFailedException(ctx, TranslationKey.fmt_bank_acc_none(member.DisplayName));
+
         await this.Service.IncreaseBankAccountAsync(ctx.Guild.Id, member.Id, amount);
 
         string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
@@ -134,7 +133,7 @@ public sealed class BankModule : TheGodfatherServiceModule<BankAccountService>
 
         var sb = new StringBuilder();
         var toRemove = new List<BankAccount>();
-        foreach (BankAccount account in top)
+        foreach (BankAccount account in top) {
             try {
                 DiscordMember u = await ctx.Guild.GetMemberAsync(account.UserId);
                 sb.AppendLine($"{Formatter.Bold(u.Mention)} | {Formatter.InlineCode($"{account.Balance:n0}")}");
@@ -143,6 +142,7 @@ public sealed class BankModule : TheGodfatherServiceModule<BankAccountService>
                 sb.AppendLine($"{Formatter.Bold("?")} | {Formatter.InlineCode($"{account.Balance:n0}")}");
                 toRemove.Add(account);
             }
+        }
 
         await ctx.RespondWithLocalizedEmbedAsync(emb => {
             emb.WithLocalizedTitle(TranslationKey.str_bank_top);
@@ -198,6 +198,9 @@ public sealed class BankModule : TheGodfatherServiceModule<BankAccountService>
         if (member == ctx.User)
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_self_action);
 
+        if (await this.Service.GetAsync(ctx.Guild.Id, member.Id) is null)
+            throw new CommandFailedException(ctx, TranslationKey.fmt_bank_acc_none(member.DisplayName));
+        
         if (!await this.Service.TransferAsync(ctx.Guild.Id, ctx.User.Id, member.Id, amount))
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_funds_insuf);
 

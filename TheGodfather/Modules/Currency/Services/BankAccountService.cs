@@ -101,6 +101,7 @@ public sealed class BankAccountService : DbAbstractionServiceBase<BankAccount, u
             await db.Database.RollbackTransactionAsync();
             throw;
         }
+        await db.SaveChangesAsync();
         return true;
     }
 
