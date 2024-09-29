@@ -21,7 +21,7 @@ public partial class CasinoModule
         {
             if (this.Service.IsEventRunningInChannel(ctx.Channel.Id)) {
                 if (this.Service.GetEventInChannel(ctx.Channel.Id) is LotteryGame)
-                    await this.JoinAsync(ctx);
+                    await this.JoinAsync(ctx, numbers);
                 else
                     throw new CommandFailedException(ctx, TranslationKey.cmd_err_evt_dup);
                 return;
@@ -71,6 +71,7 @@ public partial class CasinoModule
         public async Task JoinAsync(CommandContext ctx,
             [RemainingText][Description(TranslationKey.desc_gamble_numbers_3)] params int[] numbers)
         {
+            numbers = numbers.Distinct().ToArray();
             if (numbers is null || numbers.Length != 3 || numbers.Any(n => n is < 1 or > LotteryGame.MaxNumber))
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_casino_lottery_num(LotteryGame.MaxNumber));
 
