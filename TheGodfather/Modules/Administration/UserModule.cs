@@ -293,7 +293,7 @@ public sealed class UserModule : TheGodfatherServiceModule<ProtectionService>
         if (member.Hierarchy >= ctx.Member?.Hierarchy)
             throw new CommandFailedException(ctx, TranslationKey.cmd_err_role_manage_403);
 
-        await Task.WhenAll(roles.Distinct().Select(r => member.GrantRoleAsync(r, ctx.BuildInvocationDetailsString())));
+        await Task.WhenAll(roles.Distinct().Select(r => member.RevokeRoleAsync(r, ctx.BuildInvocationDetailsString())));
         await ctx.InfoAsync(this.ModuleColor);
     }
 
