@@ -27,7 +27,7 @@ public sealed class SearchModule : TheGodfatherModule
         await ctx.RespondAsync(new DiscordEmbedBuilder {
             Description = Emojis.Animals.All[1],
             ImageUrl = url,
-            Color = this.ModuleColor
+            Color = this.ModuleColor,
         });
     }
     #endregion
