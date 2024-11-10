@@ -45,6 +45,19 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
     }
     #endregion
 
+    #region color
+    [Command("color")][Priority(1)]
+    [Aliases("clr")]
+    public Task ColorAsync(CommandContext ctx,
+                           [Description(TranslationKey.desc_members)] params DiscordMember[] members)
+        => this.InternalColorAsync(ctx, members);
+
+    [Command("color")][Priority(0)]
+    public Task ColorAsync(CommandContext ctx,
+                           [Description(TranslationKey.desc_users)] params DiscordUser[] users)
+        => this.InternalColorAsync(ctx, users);
+    #endregion
+
     #region dice
     [Command("dice")]
     [Aliases("die", "roll")]
@@ -73,7 +86,9 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
             expiryTime ??= TimeSpan.FromSeconds(86400);
 
             if (!ctx.Guild.CurrentMember.PermissionsIn(ctx.Channel).HasPermission(Permissions.CreateInstantInvite))
-                throw new ChecksFailedException(ctx.Command!, ctx, new[] { new RequireBotPermissionsAttribute(Permissions.CreateInstantInvite) });
+                throw new ChecksFailedException(ctx.Command!, ctx, [new RequireBotPermissionsAttribute(Permissions.CreateInstantInvite),
+                    ]
+                );
 
             // TODO check timespan because only some values are allowed - 400 is thrown
             invite = await ctx.Channel.CreateInviteAsync((int)expiryTime.Value.TotalSeconds, temporary: true, reason: ctx.BuildInvocationDetailsString());
@@ -371,32 +386,52 @@ public sealed class MiscModule : TheGodfatherServiceModule<RandomService>
 
 
     #region internals
-    private Task InternalPenisAsync(CommandContext ctx, IReadOnlyList<DiscordUser> users)
+
+    private static IReadOnlyList<DiscordUser> SanitizeUsers(CommandContext ctx, IReadOnlyList<DiscordUser> users)
     {
         users = users.Distinct().ToList();
         if (!users.Any())
-            users = new[] { ctx.User };
+            users = [ctx.User];
         if (users.Count >= 10)
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_size);
+        if (users.Any(u => u.IsCurrent)) 
+            throw new CommandFailedException(ctx, TranslationKey.cmd_err_size_bot);
+        return users;
+    }
+    
+    private Task InternalColorAsync(CommandContext ctx, IReadOnlyList<DiscordUser> users)
+    {
+        users = SanitizeUsers(ctx, users);
 
         var sb = new StringBuilder();
-        foreach (DiscordUser user in users) {
-            if (user.IsCurrent)
-                return ctx.ImpInfoAsync(this.ModuleColor, Emojis.Ruler, TranslationKey.cmd_err_size_bot);
+        foreach (DiscordUser user in users)
+            sb.AppendLine(Formatter.MaskedUrl(user.Username, this.Service.Color(user.Id)));
+
+        return ctx.RespondWithLocalizedEmbedAsync(emb => {
+            emb.WithColor(this.ModuleColor);
+            emb.WithDescription(sb.ToString());
+        });
+    }
+
+    private Task InternalPenisAsync(CommandContext ctx, IReadOnlyList<DiscordUser> users)
+    {
+        users = SanitizeUsers(ctx, users);
+
+        var sb = new StringBuilder();
+        foreach (DiscordUser user in users)
             sb.Append(Formatter.Bold(this.Service.Size(user.Id))).Append(' ').AppendLine(user.Mention);
-        }
 
         return ctx.RespondWithLocalizedEmbedAsync(emb => {
             emb.WithColor(this.ModuleColor);
             emb.WithLocalizedDescription(TranslationKey.fmt_size(Emojis.Ruler, sb.ToString()));
         });
     }
-
+    
     private async Task InternalRateAsync(CommandContext ctx, IReadOnlyList<DiscordUser> users)
     {
         users = users.Distinct().ToList();
         if (!users.Any())
-            users = new[] { ctx.User };
+            users = [ctx.User];
         if (users.Count > 8)
             throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_rate);
 

@@ -90,6 +90,19 @@
       ]
     ]
   },
+  "color": {
+    "usage": [
+      [],
+      [
+        "arg-usr"
+      ],
+      [
+        "arg-usr",
+        "arg-usr",
+        "arg-usr"
+      ]
+    ]
+  },
   "dice": {
     "usage": [
       [],

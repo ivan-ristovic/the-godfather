@@ -21,7 +21,7 @@ public sealed class RandomService : ITheGodfatherService
         TranslationKey.eightball_10, 
         TranslationKey.eightball_11,
         TranslationKey.eightball_12, 
-        TranslationKey.eightball_13
+        TranslationKey.eightball_13,
     }.ToImmutableArray();
 
     private static readonly ImmutableArray<TranslationKey> _timeAnswers = new[] {
@@ -35,7 +35,7 @@ public sealed class RandomService : ITheGodfatherService
         TranslationKey.eightball_t_07,
         TranslationKey.eightball_t_08,
         TranslationKey.eightball_t_09,
-        TranslationKey.eightball_t_10
+        TranslationKey.eightball_t_10,
     }.ToImmutableArray();
 
     private static readonly ImmutableArray<TranslationKey> _quantityAnswers = new[] {
@@ -47,18 +47,23 @@ public sealed class RandomService : ITheGodfatherService
         TranslationKey.eightball_q_05,
         TranslationKey.eightball_q_06,
         TranslationKey.eightball_q_07,
-        TranslationKey.eightball_q_08
+        TranslationKey.eightball_q_08,
     }.ToImmutableArray();
 
     public bool IsDisabled => false;
 
     private readonly SecureRandom rng;
+    private readonly ImmutableArray<string> colors; 
     private ImmutableDictionary<char, string> leetAlphabet;
 
 
     public RandomService(bool loadData = true)
     {
         this.rng = new SecureRandom();
+        this.colors = new[] {
+            "4b3932", "3c2e28", "f0b8a0", "593b2b", "e9b78a", "c5845c", "ffc3aa",
+            "8d5524", "c68642", "ffc3aa", "e0ac69", "ffe5c8", "ffdabe", "ffceb4",
+        }.ToImmutableArray();
         this.leetAlphabet = new Dictionary<char, string> {
             { 'i' , "i1" },
             { 'l' , "l1" },
@@ -116,6 +121,9 @@ public sealed class RandomService : ITheGodfatherService
         }
         return sb.ToString().Humanize(LetterCasing.Sentence);
     }
+
+    public Uri Color(ulong uid)
+        => new Uri($"https://www.color-hex.com/color/{this.colors[(int)(uid % (ulong)this.colors.Length)]}");
 
     public string Size(ulong uid)
         => $"8{new string('=', (int)(uid % 40))}D";
