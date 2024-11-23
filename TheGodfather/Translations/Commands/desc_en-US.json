@@ -110,6 +110,7 @@
   "chicken war": "Starts a chicken war! Users can make their chickens join one of the teams.",
   "chicken war join": "Joins a specified team (via name or number) in a pending chicken war.",
   "coinflip": "Flips a coin!",
+  "color": "Move along",
   "commandrules": "Bot command rule management (allowing or forbiding certain commands). Group call shows active command rules in specified channel or globally if the channel is not specified.",
   "commandrules allow": "Allows command execution only in specified channel(s), or globally if they are not specified.",
   "commandrules deleteall": "Remove all command rules.",
