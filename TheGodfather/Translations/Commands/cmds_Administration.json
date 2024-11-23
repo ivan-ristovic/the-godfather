@@ -1174,13 +1174,6 @@
       ]
     ]
   },
-  "filter delete id": {
-    "usage": [
-      [
-        "arg-id"
-      ]
-    ]
-  },
   "filter delete matching": {
     "usage": [
       [

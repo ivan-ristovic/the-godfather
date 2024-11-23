@@ -54,20 +54,11 @@ public sealed class FilterModule : TheGodfatherServiceModule<FilteringService>
     public class FilterDeleteModule : TheGodfatherServiceModule<FilteringService>
     {
         #region filter delete
-        [GroupCommand][Priority(1)]
-        public Task DeleteAsync(CommandContext ctx,
-            [RemainingText][Description(TranslationKey.desc_filters_del_ids)] params int[] ids)
-            => this.DeleteIdAsync(ctx, ids);
 
-        [GroupCommand][Priority(0)]
-        public Task DeleteAsync(CommandContext ctx,
-            [RemainingText][Description(TranslationKey.desc_filters_del)] params string[] regexStrings)
-            => this.DeletePatternAsync(ctx, regexStrings);
-        #endregion
-
-        #region filter delete id
-        public async Task DeleteIdAsync(CommandContext ctx,
-            [RemainingText][Description(TranslationKey.desc_filters_del_ids)] params int[] ids)
+        [GroupCommand] [Priority(1)]
+        public async Task DeleteAsync(
+            CommandContext ctx,
+            [RemainingText] [Description(TranslationKey.desc_filters_del_ids)] params int[] ids)
         {
             if (ids is null || !ids.Any())
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_f_ids_none);
@@ -85,9 +76,16 @@ public sealed class FilterModule : TheGodfatherServiceModule<FilteringService>
 
             await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_f_del(removed));
         }
+
+        [GroupCommand][Priority(0)]
+        public Task DeleteAsync(CommandContext ctx,
+            [RemainingText][Description(TranslationKey.desc_filters_del)] params string[] regexStrings)
+            => this.DeletePatternAsync(ctx, regexStrings);
         #endregion
 
         #region filter delete matching
+        [Command("matching")]
+        [Aliases("m", "match")]
         public async Task DeleteMatchingAsync(CommandContext ctx,
             [Description(TranslationKey.desc_filters_del)] string match)
         {
@@ -110,6 +108,8 @@ public sealed class FilterModule : TheGodfatherServiceModule<FilteringService>
         #endregion
 
         #region filter delete pattern
+        [Command("pattern")]
+        [Aliases("regex", "regexp", "p", "r")]
         public async Task DeletePatternAsync(CommandContext ctx,
             [RemainingText][Description(TranslationKey.desc_filters_del)] params string[] regexStrings)
         {
