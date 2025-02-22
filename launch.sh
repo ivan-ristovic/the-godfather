@@ -21,6 +21,5 @@ fi
 echo 'Starting the service stack ...'
 sleep 1
 docker compose up -d --remove-orphans
-
-source log_stream.sh
+docker compose logs -f
 
