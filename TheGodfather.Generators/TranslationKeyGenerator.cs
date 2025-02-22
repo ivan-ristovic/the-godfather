@@ -1,6 +1,7 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -10,23 +11,37 @@ using Newtonsoft.Json;
 namespace TheGodfather.Generators;
 
 [Generator]
-public class TranslationKeyGenerator : ISourceGenerator
+public class TranslationKeyGenerator : IIncrementalGenerator
 {
     private static readonly Regex _placeholderRegex = new(@"{(?<num>\d)[}:]", RegexOptions.Compiled);
 
     private static string SanitizeName(string name)
         => name.Replace("-", "_");
 
+    public record LocaleFile(string Path, string? Content);
 
-    public void Initialize(GeneratorInitializationContext context) { }
-
-    public void Execute(GeneratorExecutionContext context)
+    public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        AdditionalText defLocaleFile = context.AdditionalFiles.First(f => f.Path.EndsWith("en-GB.json"));
-        string defLocaleContents = defLocaleFile.GetText()?.ToString()
-                                   ?? throw new FileNotFoundException("Default locale en-GB not found.");
+        var defLocaleFile = context.AdditionalTextsProvider
+               .Where(at => at.Path.EndsWith("en-GB.json"))
+               .Select((at, c) => new LocaleFile(Path.GetFileNameWithoutExtension(at.Path), at.GetText(c)?.ToString()))
+               .Where(f => !string.IsNullOrWhiteSpace(f.Content))
+               .Collect()
+               ;
+        
+        var cf = context.CompilationProvider.Combine(defLocaleFile);
+            
+        context.RegisterSourceOutput(cf, this.Generate);
+    }
+
+    public void Generate(SourceProductionContext ctx, (Compilation Compilation, ImmutableArray<LocaleFile> Files) cf)
+    {
+        if (cf.Files.Length != 1) 
+            throw new FileNotFoundException("Default locale en-GB not found or multiple en-GB files found.");
+        
+        LocaleFile defLocale = cf.Files.First();
         Dictionary<string, string> properties =
-            JsonConvert.DeserializeObject<Dictionary<string, string>>(defLocaleContents)
+            JsonConvert.DeserializeObject<Dictionary<string, string>>(defLocale.Content!)
             ?? throw new JsonSerializationException();
 
         using var stringWriter = new StringWriter();
@@ -42,10 +57,10 @@ public class TranslationKeyGenerator : ISourceGenerator
                      public readonly partial struct TranslationKey
                      {
                          public static readonly TranslationKey NotFound = new("str-404");
-                             
+                                                  
                          public readonly string Key;
                          public readonly object?[] Params;
-                             
+                                                  
                          public TranslationKey(string key, params object?[] @params)
                          {
                              if (string.IsNullOrWhiteSpace(key))
@@ -53,8 +68,7 @@ public class TranslationKeyGenerator : ISourceGenerator
                              this.Key = key;
                              Params = @params;
                          }
-
-
+                         
                      """);
         sw.Indent++;
 
@@ -85,8 +99,7 @@ public class TranslationKeyGenerator : ISourceGenerator
         sw.WriteLine("}");
         sw.Flush();
 
-        string src = stringWriter.ToString();
-        Console.WriteLine(src);
-        context.AddSource("TranslationKey.g.cs", src);
+        ctx.AddSource("TranslationKey.g.cs", stringWriter.ToString());
     }
+
 }
