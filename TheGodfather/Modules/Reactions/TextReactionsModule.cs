@@ -59,7 +59,7 @@ public sealed class TextReactionsModule : TheGodfatherServiceModule<ReactionsSer
 
         int removed = await this.Service.RemoveTextReactionsAsync(ctx.Guild.Id, ids);
 
-        await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_tr_del(removed));
+        await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_tr_del(removed));
 
         if (removed > 0)
             await ctx.GuildLogAsync(emb => {
