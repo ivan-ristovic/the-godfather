@@ -11,7 +11,7 @@ using TheGodfather.Modules.Owner.Services;
 namespace TheGodfather.Modules.Reminders;
 
 [Group("remind")][Module(ModuleType.Reminders)][NotBlocked]
-[Aliases("reminders", "reminder", "todo", "todolist", "note")]
+[Aliases("reminders", "reminder", "todo", "todolist", "note", "td")]
 [Cooldown(3, 5, CooldownBucketType.Channel)]
 public partial class RemindModule : TheGodfatherServiceModule<SchedulingService>
 {
