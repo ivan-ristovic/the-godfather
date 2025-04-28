@@ -93,7 +93,7 @@ public sealed class TheGodfatherBot
             LoggerFactory = new SerilogLoggerFactory(dispose: true),
             Intents = DiscordIntents.All
                 .RemoveIntent(DiscordIntents.GuildMessageTyping)
-                .RemoveIntent(DiscordIntents.DirectMessageTyping)
+                .RemoveIntent(DiscordIntents.DirectMessageTyping),
         };
 
         var cl = new DiscordShardedClient(cfg);
@@ -124,7 +124,7 @@ public sealed class TheGodfatherBot
             CaseSensitive = false,
             EnableDefaultHelp = false,
             EnableDms = true,
-            EnableMentionPrefix = true,
+            EnableMentionPrefix = false,
             IgnoreExtraArguments = false,
             PrefixResolver = m => {
                 string p = m.Channel.Guild is null
@@ -132,7 +132,7 @@ public sealed class TheGodfatherBot
                     : this.Services.GetRequiredService<GuildConfigService>().GetGuildPrefix(m.Channel.Guild.Id);
                 return Task.FromResult(m.GetStringPrefixLength(p));
             },
-            Services = this.Services
+            Services = this.Services,
         };
         IReadOnlyDictionary<int, CommandsNextExtension> cnextExtension = await this.Client.UseCommandsNextAsync(cfg);
 

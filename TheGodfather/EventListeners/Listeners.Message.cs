@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using DSharpPlus;
+using DSharpPlus.CommandsNext;
 using DSharpPlus.Entities;
 using DSharpPlus.EventArgs;
 using DSharpPlus.Exceptions;
@@ -155,6 +156,42 @@ internal static partial class Listeners
 
         if (perms.HasFlag(Permissions.SendMessages))
             await rs.HandleTextReactionsAsync(e.Message);
+    }
+    
+    [AsyncEventListener(DiscordEventType.MessageCreated)]
+    public static async Task MessageBotMentionEventHandlerAsync(TheGodfatherBot bot, MessageCreateEventArgs e)
+    {
+        if (e.Author.IsBot || e.Guild is null || string.IsNullOrWhiteSpace(e.Message?.Content))
+            return;
+
+        if (bot.Services.GetRequiredService<BlockingService>().IsBlocked(e.Guild.Id, e.Channel.Id, e.Author.Id))
+            return;
+
+        if (TheGodfather.OpenWebUiService?.IsDisabled ?? false) {
+            return;
+        }
+        
+        int mpos = e.Message.GetMentionPrefixLength(bot.Client.CurrentUser);
+        if (mpos >= 0) {
+            Permissions perms = e.Channel.PermissionsFor(e.Guild.CurrentMember);
+            if (perms.HasFlag(Permissions.SendMessages)) {
+                await e.Channel.TriggerTypingAsync();
+
+                string query = e.Message.Content[mpos..];
+                string? response = await TheGodfather.OpenWebUiService!.ChatAsync(query);
+                if (response is null) 
+                    return;
+
+                await e.Message.RespondAsync(new DiscordEmbedBuilder {
+                    Description = response,
+                    Color = DiscordColor.Aquamarine,
+                    Footer = new DiscordEmbedBuilder.EmbedFooter {
+                        IconUrl = TheGodfather.OpenWebUiService.GetIconUrl(),
+                        Text = TheGodfather.OpenWebUiService.GetBanner(),
+                    },
+                });
+            }
+        }
     }
 
     [AsyncEventListener(DiscordEventType.MessageDeleted)]

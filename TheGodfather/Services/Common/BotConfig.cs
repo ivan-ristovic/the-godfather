@@ -84,9 +84,18 @@ public sealed class BotConfig
 
     [JsonProperty("key-crypto")]
     public string? CryptoKey { get; set; }
-
+    
     [JsonProperty("key-qotd")]
     public string? QuoteKey { get; set; }
+    
+    [JsonProperty("openwebui-url")]
+    public string? OpenWebUiUrl { get; set; }
+
+    [JsonProperty("openwebui-key")]
+    public string? OpenWebUiKey { get; set; }
+
+    [JsonProperty("openwebui-model")]
+    public string? OpenWebUiModel { get; set; }
 
     [JsonProperty("logger-special-rules")]
     public List<SpecialLoggingRule> SpecialLoggerRules { get; set; } = new();

@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 namespace TheGodfather.Services;
 
@@ -52,4 +53,13 @@ public static class HttpService
         ms.Seek(0, SeekOrigin.Begin);
         return ms;
     }
+
+    public static Task<HttpResponseMessage> PostJsonAsync<TValue>(string requestUri, TValue obj, string? bearer)
+    {
+        var http = new HttpClient();
+        if (bearer is not null)
+            http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", bearer);
+        return http.PostAsJsonAsync(new Uri(requestUri).ToString(), obj);
+    }
+
 }

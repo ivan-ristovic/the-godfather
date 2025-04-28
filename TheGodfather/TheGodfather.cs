@@ -12,9 +12,10 @@ internal static class TheGodfather
     public static string ApplicationVersion { get; }
 
     internal static TheGodfatherBot? Bot { get; private set; }
+    internal static OpenWebUiService? OpenWebUiService { get; private set; }
     private static PeriodicTasksService? PeriodicService { get; set; }
 
-
+    
     static TheGodfather()
     {
         AssemblyName info = Assembly.GetExecutingAssembly().GetName();
@@ -103,6 +104,7 @@ internal static class TheGodfather
     {
         Bot = new TheGodfatherBot(cfg, dbb);
         PeriodicService = new PeriodicTasksService(Bot, cfg.CurrentConfiguration);
+        OpenWebUiService = new OpenWebUiService(cfg.CurrentConfiguration);
         return Bot.StartAsync();
     }
 

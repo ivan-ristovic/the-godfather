@@ -36,7 +36,7 @@ public sealed class PeriodicTasksService : IDisposable
 
                 DiscordActivity activity = status is not null
                                                ? new DiscordActivity(status.Status, status.Activity)
-                    : new DiscordActivity($"@{bot.Client.CurrentUser.Username} help", ActivityType.Playing);
+                    : new DiscordActivity($"@{bot.Config.CurrentConfiguration.Prefix}help", ActivityType.Playing);
 
                 AsyncExecutionService async = bot.Services.GetRequiredService<AsyncExecutionService>();
                 async.Execute(bot.Client.UpdateStatusAsync(activity));
