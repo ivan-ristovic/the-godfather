@@ -96,6 +96,9 @@ public sealed class BotConfig
 
     [JsonProperty("openwebui-model")]
     public string? OpenWebUiModel { get; set; }
+    
+    [JsonProperty("openwebui-system-prompt")]
+    public string? OpenWebUiSystemPrompt { get; set; }
 
     [JsonProperty("logger-special-rules")]
     public List<SpecialLoggingRule> SpecialLoggerRules { get; set; } = new();

@@ -13,6 +13,7 @@ public class OpenWebUiService
     private readonly string? url;
     private readonly string? key;
     private readonly string? model;
+    private readonly Message? sysprompt;
 
     public bool IsDisabled => 
         string.IsNullOrWhiteSpace(url) 
@@ -24,7 +25,18 @@ public class OpenWebUiService
         this.url = cfg.OpenWebUiUrl;
         this.key = cfg.OpenWebUiKey;
         this.model = cfg.OpenWebUiModel;
+        this.sysprompt = CreateSystemPromptMessage(cfg.OpenWebUiSystemPrompt);
         this.sem = new SemaphoreSlim(1, 1);
+    }
+
+    private static Message? CreateSystemPromptMessage(string? prompt)
+    {
+        if (string.IsNullOrWhiteSpace(prompt)) 
+            return null;
+        return new Message {
+            Role = "system",
+            Content = prompt,
+        };
     }
 
     public string GetIconUrl() 
@@ -39,9 +51,13 @@ public class OpenWebUiService
             return null;
         
         string endpoint = $"{this.url}/api/chat/completions";
+        var messages = new List<Message>();
+        if (this.sysprompt is not null)
+            messages.Add(this.sysprompt);
+        messages.Add(new Message { Role = "user", Content = query });
         var data = new ChatPostRequestData {
             Model = this.model!,
-            Messages = [new Message { Role = "user", Content = query }],
+            Messages = messages,
         };
         
         await this.sem.WaitAsync();
