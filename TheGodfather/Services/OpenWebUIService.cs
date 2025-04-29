@@ -45,16 +45,22 @@ public class OpenWebUiService
     public string GetBanner() 
         => this.IsDisabled ? "No OpenWebUI service" : $"{this.model} @ {this.url}";
 
-    public async Task<string?> ChatAsync(string query)
+    public async Task<string?> ChatAsync(Context ctx)
     {
-        if (this.IsDisabled || string.IsNullOrWhiteSpace(query))
+        if (this.IsDisabled || string.IsNullOrWhiteSpace(ctx.Query))
             return null;
         
         string endpoint = $"{this.url}/api/chat/completions";
         var messages = new List<Message>();
         if (this.sysprompt is not null)
             messages.Add(this.sysprompt);
-        messages.Add(new Message { Role = "user", Content = query });
+        if (ctx.Guild is not null)
+            messages.Add(new Message { Role = "assistant", Content = $"You are in a chat room: {ctx.Guild}" });
+        foreach (Message msg in ctx.PreviousMessages) {
+            string content = $"{msg.Role} said: '{msg.Content}'";
+            messages.Add(new Message { Role = "assistant", Content = content });
+        }
+        messages.Add(new Message { Role = "user", Content = ctx.Query });
         var data = new ChatPostRequestData {
             Model = this.model!,
             Messages = messages,
@@ -93,6 +99,13 @@ public class OpenWebUiService
 
         return null;
     }
+
+    public class Context
+    {
+        public string? Guild { get; set; }
+        public required string Query { get; set; }
+        public required IReadOnlyList<Message> PreviousMessages { get; set; }
+    }
     
     private class ChatPostRequestData
     {
@@ -103,7 +116,7 @@ public class OpenWebUiService
         public required List<Message> Messages { get; set; }
     }
     
-    private class Message
+    public class Message
     {
         [JsonProperty("role")]
         public required string Role { get; set; }

@@ -177,8 +177,18 @@ internal static partial class Listeners
             if (perms.HasFlag(Permissions.SendMessages)) {
                 await e.Channel.TriggerTypingAsync();
 
-                string query = e.Message.Content[mpos..];
-                string? response = await TheGodfather.OpenWebUiService!.ChatAsync(query);
+                IReadOnlyList<DiscordMessage> msgs = await e.Channel.GetMessagesAsync(10);
+                var ctx = new OpenWebUiService.Context {
+                    Guild = e.Guild?.Name,
+                    Query = e.Message.Content[mpos..],
+                    PreviousMessages = msgs
+                        .Where(m => !m.Author.IsBot && !string.IsNullOrEmpty(m.Content))
+                        .Select(m => new OpenWebUiService.Message { Role = m.Author.Username, Content = m.Content })
+                        .Reverse()
+                        .ToList()
+                        .AsReadOnly(),
+                };
+                string? response = await TheGodfather.OpenWebUiService!.ChatAsync(ctx);
                 if (response is null) 
                     return;
 
@@ -186,8 +196,8 @@ internal static partial class Listeners
                     Description = response,
                     Color = DiscordColor.Aquamarine,
                     Footer = new DiscordEmbedBuilder.EmbedFooter {
-                        IconUrl = TheGodfather.OpenWebUiService.GetIconUrl(),
-                        Text = TheGodfather.OpenWebUiService.GetBanner(),
+                        IconUrl = TheGodfather.OpenWebUiService!.GetIconUrl(),
+                        Text = TheGodfather.OpenWebUiService!.GetBanner(),
                     },
                 });
             }
