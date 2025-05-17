@@ -36,7 +36,7 @@ public sealed class PeriodicTasksService : IDisposable
 
                 DiscordActivity activity = status is not null
                                                ? new DiscordActivity(status.Status, status.Activity)
-                    : new DiscordActivity($"@{bot.Config.CurrentConfiguration.Prefix}help", ActivityType.Playing);
+                    : new DiscordActivity($"{bot.Config.CurrentConfiguration.Prefix}help", ActivityType.Playing);
 
                 AsyncExecutionService async = bot.Services.GetRequiredService<AsyncExecutionService>();
                 async.Execute(bot.Client.UpdateStatusAsync(activity));
@@ -75,11 +75,12 @@ public sealed class PeriodicTasksService : IDisposable
                 IReadOnlyList<(RssFeed, SyndicationItem)> updates = async.Execute(rss.CheckAsync());
 
                 var notFound = new List<RssSubscription>();
-                foreach ((RssFeed feed, SyndicationItem latest) in updates)
-                foreach (RssSubscription sub in feed.Subscriptions) {
-                    if (!async.Execute(PeriodicTasksServiceExtensions.SendFeedUpdateAsync(bot, sub, latest)))
-                        notFound.Add(sub);
-                    async.Execute(Task.Delay(10));
+                foreach ((RssFeed feed, SyndicationItem latest) in updates) {
+                    foreach (RssSubscription sub in feed.Subscriptions) {
+                        if (!async.Execute(PeriodicTasksServiceExtensions.SendFeedUpdateAsync(bot, sub, latest)))
+                            notFound.Add(sub);
+                        async.Execute(Task.Delay(10));
+                    }
                 }
 
                 Log.Debug("Feed check finished");

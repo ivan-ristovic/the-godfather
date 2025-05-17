@@ -36,22 +36,24 @@ public sealed class SchedulingService : ITheGodfatherService, IDisposable
         void RegisterTasks(IReadOnlyDictionary<int, GuildTask> tasks)
         {
             int scheduled = 0, missed = 0;
-            foreach ((int _, GuildTask task) in tasks)
+            foreach ((int _, GuildTask task) in tasks) {
                 if (@this.async.Execute(@this.RegisterDbTaskAsync(task)))
                     scheduled++;
                 else
                     missed++;
+            }
             Log.Debug("Guild tasks: {ScheduledGuildTasksCount} scheduled; {MissedGuildTasksCount} missed", scheduled, missed);
         }
 
         void RegisterReminders(IReadOnlyDictionary<int, Reminder> reminders)
         {
             int scheduled = 0, missed = 0;
-            foreach ((int _, Reminder task) in reminders)
+            foreach ((int _, Reminder task) in reminders) {
                 if (@this.async.Execute(@this.RegisterDbTaskAsync(task)))
                     scheduled++;
                 else
                     missed++;
+            }
             Log.Debug("Reminders: {ScheduledRemindersCount} scheduled; {MissedRemindersCount} missed", scheduled, missed);
         }
     }
@@ -138,7 +140,7 @@ public sealed class SchedulingService : ITheGodfatherService, IDisposable
                 }
                 break;
             case Reminder rem:
-                if (!force && rem.IsRepeating && rem.RepeatInterval < this.ReloadSpan)
+                if (rem.IsRepeating && !force)
                     break;
 
                 if (this.reminders.TryRemove(task.Id, out ScheduledTaskExecutor? remindExec))

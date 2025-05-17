@@ -53,7 +53,7 @@ public sealed class LavalinkService : ITheGodfatherService
                     this.LavalinkNode = await lava.ConnectAsync(new LavalinkConfiguration {
                         Password = this.cfg.Password,
                         SocketEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port),
-                        RestEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port)
+                        RestEndpoint = new ConnectionEndpoint(this.cfg.Hostname, this.cfg.Port),
                     });
                     this.LavalinkNode.TrackException += async (lava, e) => await this.trackError.InvokeAsync(lava, e);
                     this.failedAttempts = 0;

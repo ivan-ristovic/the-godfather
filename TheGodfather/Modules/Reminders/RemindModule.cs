@@ -211,7 +211,7 @@ public partial class RemindModule : TheGodfatherServiceModule<SchedulingService>
             IsRepeating = repeat,
             RepeatIntervalDb = repeat ? timespan : null,
             UserId = ctx.User.Id,
-            Message = message
+            Message = message,
         };
         await this.Service.ScheduleAsync(tinfo);
 
