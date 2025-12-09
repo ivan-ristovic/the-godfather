@@ -75,7 +75,7 @@ public partial class CasinoModule
             if (numbers is null || numbers.Length != 3 || numbers.Any(n => n is < 1 or > LotteryGame.MaxNumber))
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_casino_lottery_num(LotteryGame.MaxNumber));
 
-            if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out LotteryGame? game) || game is null)
+            if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out LotteryGame game))
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_casino_lottery_none);
 
             if (game.Started)

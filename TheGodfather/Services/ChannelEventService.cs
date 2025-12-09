@@ -1,4 +1,5 @@
 ﻿using System.Collections.Concurrent;
+using System.Diagnostics.CodeAnalysis;
 
 namespace TheGodfather.Services;
 
@@ -34,13 +35,13 @@ public sealed class ChannelEventService : ITheGodfatherService
         return true;
     }
 
-    public bool IsEventRunningInChannel<T>(ulong cid, out T? @event) where T : class, IChannelEvent
+    public bool IsEventRunningInChannel<T>(ulong cid, out T @event) where T : class, IChannelEvent
     {
-        @event = null;
+        @event = null!;
         IChannelEvent? chnEvent = this.GetEventInChannel<T>(cid);
         if (chnEvent is null or not T)
             return false;
-        @event = chnEvent as T;
+        @event = (chnEvent as T)!;
         return true;
     }
 

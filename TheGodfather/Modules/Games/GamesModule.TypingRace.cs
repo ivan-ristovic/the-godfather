@@ -61,7 +61,7 @@ public partial class GamesModule
         [Aliases("+", "compete", "enter", "j", "<<", "<")]
         public Task JoinAsync(CommandContext ctx)
         {
-            if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out TypingRaceGame? game) || game is null)
+            if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out TypingRaceGame game))
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_game_tr_none);
 
             if (game.Started)

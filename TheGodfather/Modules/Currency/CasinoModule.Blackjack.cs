@@ -76,7 +76,7 @@ public partial class CasinoModule
             if (bid is < 1 or > (int)MaxBid)
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_gamble_bid(MaxBid));
                 
-            if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out BlackjackGame? game) || game is null)
+            if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out BlackjackGame game))
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_casino_blackjack_none);
 
             if (game.Started)

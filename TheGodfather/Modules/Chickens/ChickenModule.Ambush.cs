@@ -133,7 +133,7 @@ public partial class ChickenModule
         #region internals
         private async Task<Chicken> TryJoinInternalAsync(CommandContext ctx, bool team2 = true)
         {
-            if (!ctx.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar? ambush) || ambush is null)
+            if (!ctx.Services.GetRequiredService<ChannelEventService>().IsEventRunningInChannel(ctx.Channel.Id, out ChickenWar ambush))
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_chicken_ambush_none);
 
             Chicken? chicken = await this.Service.GetCompleteAsync(ctx.Guild.Id, ctx.User.Id);

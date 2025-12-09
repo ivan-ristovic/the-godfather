@@ -65,7 +65,7 @@ public partial class CasinoModule
         [Aliases("+", "compete", "enter", "j", "<<", "<")]
         public async Task JoinAsync(CommandContext ctx)
         {
-            if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out HoldemGame? game) || game is null)
+            if (!this.Service.IsEventRunningInChannel(ctx.Channel.Id, out HoldemGame game))
                 throw new CommandFailedException(ctx, TranslationKey.cmd_err_casino_holdem_none);
 
             if (game.Started)

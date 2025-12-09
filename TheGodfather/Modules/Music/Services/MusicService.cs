@@ -50,7 +50,7 @@ public sealed class MusicService : ITheGodfatherService
         => !this.IsDisabled ? this.lavalink.LavalinkNode!.Rest.GetTracksAsync(fi) : throw new InvalidOperationException();
 
     public IEnumerable<LavalinkTrack> Shuffle(IEnumerable<LavalinkTrack> tracks)
-        => tracks.Shuffle(this.rng);
+        => tracks.Shuffle();
 
 
     private async Task InternalDisconnectIfAloneAsync(DiscordClient client, VoiceStateUpdateEventArgs e)

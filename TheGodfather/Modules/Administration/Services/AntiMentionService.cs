@@ -26,7 +26,7 @@ public sealed class AntiMentionService : ProtectionServiceBase
                 .Select(kvp => kvp.Key);
 
             foreach (ulong uid in toRemove)
-                service.guildMentionInfo[gid].TryRemove(uid, out UserMentionInfo _);
+                service.guildMentionInfo[gid].TryRemove(uid, out UserMentionInfo? _);
         }
 
         Log.Debug("Cleared outdated anti-mention information");

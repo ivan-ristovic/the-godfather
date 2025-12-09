@@ -146,7 +146,7 @@ public sealed class GuildMusicPlayer
     public void Reshuffle()
     {
         lock (this.queue) {
-            this.queue = this.queue.Shuffle(this.rng).ToList();
+            this.queue = this.queue.Shuffle().ToList();
         }
     }
 

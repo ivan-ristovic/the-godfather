@@ -26,14 +26,11 @@ public class PetImagesService : TheGodfatherHttpService
         try {
             string data = await _http.GetStringAsync($"{DogUrl}/woof").ConfigureAwait(false);
             var json = JObject.Parse(data);
-            if (json["status"]?.ToString() == "success" && json["message"] is not null) {
-                return json["message"][0].ToString();
-            } else {
-                return null;
-            }
+            if (json["status"]?.ToString() == "success" && json["message"] is not null)
+                return json["message"]?[0]?.ToString();
         } catch (Exception e) {
             Log.Error(e, "Failed to retrieve random dog image");
-            return null;
         }
+        return null;
     }
 }

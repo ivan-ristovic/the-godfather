@@ -25,7 +25,7 @@ public sealed class HelpModule : TheGodfatherServiceModule<CommandService>
     public Task ExecuteGroupAsync(CommandContext ctx,
         [Description(TranslationKey.desc_module)] ModuleType module)
     {
-        Command? cmd = ctx.CommandsNext.FindCommand(module.ToString(), out string _);
+        Command? cmd = ctx.CommandsNext.FindCommand(module.ToString(), out string? _);
         if (cmd is CommandGroup group && group.IsExecutableWithoutSubcommands)
             return this.ExecuteGroupAsync(ctx, module.ToString());
 

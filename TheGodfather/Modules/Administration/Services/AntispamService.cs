@@ -26,7 +26,7 @@ public sealed class AntispamService : ProtectionServiceBase
                 .Select(kvp => kvp.Key);
 
             foreach (ulong uid in toRemove)
-                service.guildSpamInfo[gid].TryRemove(uid, out UserSpamInfo _);
+                service.guildSpamInfo[gid].TryRemove(uid, out UserSpamInfo? _);
         }
 
         Log.Debug("Cleared outdated antispam information");

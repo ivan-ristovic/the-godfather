@@ -26,7 +26,7 @@ public sealed class RatelimitService : ProtectionServiceBase
                 .Select(kvp => kvp.Key);
 
             foreach (ulong uid in toRemove)
-                service.guildRatelimitInfo[gid].TryRemove(uid, out UserRatelimitInfo _);
+                service.guildRatelimitInfo[gid].TryRemove(uid, out UserRatelimitInfo? _);
         }
     }
 

@@ -4,7 +4,6 @@ using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
 using DSharpPlus.CommandsNext.Exceptions;
 using DSharpPlus.Entities;
-using Humanizer.Localisation;
 using Microsoft.Extensions.DependencyInjection;
 using TheGodfather.Modules.Owner.Services;
 

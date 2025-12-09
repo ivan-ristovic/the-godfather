@@ -33,7 +33,7 @@ public static class SimulationService
             .Where(split => !string.IsNullOrEmpty(split))
             .ToList();
 
-        return words.Count > 0 ? words.Shuffle(_rng).JoinWith(" ") : null;
+        return words.Count > 0 ? words.Shuffle().JoinWith(" ") : null;
 
 
         static IEnumerable<string> SplitMessage(string content)
@@ -44,7 +44,7 @@ public static class SimulationService
 
             var words = sanitizedContent
                 .Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries)
-                .Shuffle(_rng)
+                .Shuffle()
                 .Distinct()
                 .ToList();
             if (words.Count < 3)
