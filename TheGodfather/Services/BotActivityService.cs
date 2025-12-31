@@ -60,11 +60,11 @@ public sealed class BotActivityService : DbAbstractionServiceBase<BotStatus, int
     public BotStatus? GetRandomStatus()
     {
         using TheGodfatherDbContext db = this.dbb.CreateContext();
-        return this.DbSetSelector(db).Shuffle().FirstOrDefault();
+        return this.DbSetSelector(db).AsEnumerable().Shuffle().FirstOrDefault();
     }
 
     public override DbSet<BotStatus> DbSetSelector(TheGodfatherDbContext db) => db.BotStatuses;
     public override BotStatus EntityFactory(int id) => new() { Id = id };
     public override int EntityIdSelector(BotStatus entity) => entity.Id;
-    public override object[] EntityPrimaryKeySelector(int id) => new object[] { id };
+    public override object[] EntityPrimaryKeySelector(int id) => [id];
 }
