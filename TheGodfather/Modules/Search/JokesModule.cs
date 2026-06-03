@@ -1,50 +1,53 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
+﻿using Discord.Commands;
 using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Search;
 
-[Group("joke")][Module(ModuleType.Searches)][NotBlocked]
-[Aliases("jokes", "j")]
-[Cooldown(3, 5, CooldownBucketType.Channel)]
+[Group("joke")]
+[Alias("jokes", "j")]
 public sealed class JokesModule : TheGodfatherModule
 {
-    #region joke
-    [GroupCommand]
-    public async Task ExecuteGroupAsync(CommandContext ctx)
+    public JokesModule(LocalizationService localization)
+        : base(localization, new Color(0x1abc9c))
+    {
+    }
+
+
+    [Command("")]
+    public async Task ExecuteGroupAsync()
     {
         string? joke = await JokesService.GetRandomJokeAsync();
         if (joke is null)
-            await ctx.FailAsync(TranslationKey.cmd_err_res_none);
+            await this.FailAsync(TranslationKey.cmd_err_res_none);
         else
-            await ctx.Channel.EmbedAsync(joke, Emojis.Joy, this.ModuleColor);
+            await this.ReplyAsync(embed: new EmbedBuilder {
+                Description = $"{Emojis.Joy} {joke}",
+                Color = this.ModuleColor
+            }.Build());
     }
-    #endregion
 
-    #region joke search
     [Command("search")]
-    [Aliases("s")]
-    public async Task SearchAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_query)] string query)
+    [Alias("s")]
+    public async Task SearchAsync([Remainder] string query)
     {
         IReadOnlyList<string>? jokes = await JokesService.SearchForJokesAsync(query);
         if (jokes is null || !jokes.Any())
-            await ctx.FailAsync(TranslationKey.cmd_err_res_none);
+            await this.FailAsync(TranslationKey.cmd_err_res_none);
         else
-            await ctx.ImpInfoAsync(this.ModuleColor, Emojis.Joy, TranslationKey.fmt_results(jokes.Take(5).JoinWith()));
+            await this.ImpInfoAsync(this.ModuleColor, Emojis.Joy, TranslationKey.fmt_results(jokes.Take(5).JoinWith()));
     }
-    #endregion
 
-    #region joke yourmom
     [Command("yourmom")]
-    [Aliases("mama", "m", "yomomma", "yomom", "yomoma", "yomamma", "yomama")]
-    public async Task YomamaAsync(CommandContext ctx)
+    [Alias("mama", "m", "yomomma", "yomom", "yomoma", "yomamma", "yomama")]
+    public async Task YomamaAsync()
     {
         string? joke = await JokesService.GetRandomYoMommaJokeAsync();
         if (joke is null)
-            await ctx.FailAsync(TranslationKey.cmd_err_res_none);
+            await this.FailAsync(TranslationKey.cmd_err_res_none);
         else
-            await ctx.Channel.EmbedAsync(joke, Emojis.Joy, this.ModuleColor);
+            await this.ReplyAsync(embed: new EmbedBuilder {
+                Description = $"{Emojis.Joy} {joke}",
+                Color = this.ModuleColor
+            }.Build());
     }
-    #endregion
 }

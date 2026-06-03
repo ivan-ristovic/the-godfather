@@ -320,6 +320,8 @@ public class GuildConfig
         get => new() {
             AntispamSettings = this.AntispamSettings,
             AntiMentionSettings = this.AntiMentionSettings,
+            AntifloodSettings = this.AntifloodSettings,
+            AntiInstantLeaveSettings = this.AntiInstantLeaveSettings,
             Currency = this.Currency ?? CachedGuildConfig.DefaultCurrency,
             LinkfilterSettings = this.LinkfilterSettings,
             Locale = this.Locale ?? BotConfig.DefaultLocale,
@@ -336,6 +338,8 @@ public class GuildConfig
         set {
             this.AntispamSettings = value.AntispamSettings;
             this.AntiMentionSettings = value.AntiMentionSettings;
+            this.AntifloodSettings = value.AntifloodSettings;
+            this.AntiInstantLeaveSettings = value.AntiInstantLeaveSettings;
             this.Currency = value.Currency;
             this.LinkfilterSettings = value.LinkfilterSettings;
             this.Locale = value.Locale;

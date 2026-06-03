@@ -1,7 +1,9 @@
 ﻿namespace TheGodfather.Exceptions;
 
-public class LocalizationException : LocalizedException
+public sealed class LocalizationException : Exception
 {
-    public LocalizationException(string rawMessage)
-        : base(rawMessage) {}
+    public LocalizationException(string message)
+        : base(message)
+    {
+    }
 }

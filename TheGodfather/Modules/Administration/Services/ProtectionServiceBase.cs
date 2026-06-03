@@ -1,200 +1,97 @@
-﻿using System.Threading;
-using DSharpPlus;
-using DSharpPlus.Entities;
+using System.Collections.Concurrent;
+using System.Threading;
 using Microsoft.EntityFrameworkCore;
-using TheGodfather.Services.Common;
+using TheGodfather.Common.Collections;
 
 namespace TheGodfather.Modules.Administration.Services;
 
-public abstract class ProtectionServiceBase : ITheGodfatherService, IDisposable
+public abstract class ExemptableProtectionServiceBase<TExempt> : ITheGodfatherService, IDisposable
+    where TExempt : ExemptedEntity, new()
 {
-    protected SemaphoreSlim csem = new(1, 1);
-    protected string reason;
-    protected readonly DbContextBuilder dbb;
-    protected readonly SchedulingService ss;
-    protected readonly LoggingService ls;
-    protected readonly GuildConfigService gcs;
-
     public bool IsDisabled => false;
 
+    protected readonly DbContextBuilder dbb;
 
-    protected ProtectionServiceBase(DbContextBuilder dbb, LoggingService ls, SchedulingService ss, GuildConfigService gcs, string reason)
+    private ConcurrentDictionary<ulong, ConcurrentHashSet<TExempt>> guildExempts = new();
+    private readonly Timer refreshTimer;
+
+
+    protected ExemptableProtectionServiceBase(DbContextBuilder dbb, TimeSpan refreshInterval)
     {
         this.dbb = dbb;
-        this.ss = ss;
-        this.ls = ls;
-        this.gcs = gcs;
-        this.reason = reason;
+        this.refreshTimer = new Timer(this.RefreshCallback, null, refreshInterval, refreshInterval);
     }
 
 
-    public async Task PunishMemberAsync(DiscordGuild guild, DiscordMember member, Punishment.Action type, TimeSpan? cooldown = null, string? reason = null)
-    {
-        Log.Debug("Punishing {Member} in guild {Guild} with action {ActionType} due to: {Reason}", member, guild, type, reason ?? this.reason);
-        try {
-            DiscordRole muteRole;
-            GuildTask gt;
-            switch (type) {
-                case Punishment.Action.Kick:
-                    await member.RemoveAsync(reason ?? this.reason);
-                    break;
-                case Punishment.Action.PermanentMute:
-                    muteRole = await this.GetOrCreateMuteRoleAsync(guild);
-                    if (member.Roles.Contains(muteRole))
-                        return;
-                    await member.GrantRoleAsync(muteRole, reason ?? this.reason);
-                    await this.LogPunishmentInCaseOfRejoinAsync(guild, member, type);
-                    break;
-                case Punishment.Action.PermanentBan:
-                    await member.BanAsync(0, reason ?? this.reason);
-                    break;
-                case Punishment.Action.TemporaryBan:
-                    await member.BanAsync(0, reason ?? this.reason);
-                    TimeSpan tempBanTime = cooldown ?? (await this.gcs.GetConfigAsync(guild.Id)).TempBanCooldown;
-                    gt = new GuildTask {
-                        ExecutionTime = DateTimeOffset.Now + tempBanTime,
-                        GuildId = guild.Id,
-                        UserId = member.Id,
-                        Type = ScheduledTaskType.Unban
-                    };
-                    await this.ss.ScheduleAsync(gt);
-                    break;
-                case Punishment.Action.TemporaryMute:
-                    muteRole = await this.GetOrCreateMuteRoleAsync(guild);
-                    if (member.Roles.Contains(muteRole))
-                        return;
-                    await member.GrantRoleAsync(muteRole, reason ?? this.reason);
-                    TimeSpan tempMuteTime = cooldown ?? (await this.gcs.GetConfigAsync(guild.Id)).TempMuteCooldown;
-                    gt = new GuildTask {
-                        ExecutionTime = DateTimeOffset.Now + tempMuteTime,
-                        GuildId = guild.Id,
-                        RoleId = muteRole.Id,
-                        UserId = member.Id,
-                        Type = ScheduledTaskType.Unmute
-                    };
-                    await this.ss.ScheduleAsync(gt);
-                    await this.LogPunishmentInCaseOfRejoinAsync(guild, member, type);
-                    break;
-            }
-        } catch (Exception e) {
-            Log.Error(e, "Failed to punish ({PunishmentType}) {Member} in {Guild}", type, member, guild);
-            if (this.ls.IsLogEnabledFor(guild.Id, out LocalizedEmbedBuilder emb)) {
-                emb.WithLocalizedTitle(TranslationKey.err_punish_failed);
-                emb.WithColor(DiscordColor.Red);
-                emb.AddLocalizedField(TranslationKey.str_user, member);
-                emb.AddLocalizedField(TranslationKey.str_rsn, reason ?? this.reason);
-                await this.ls.LogAsync(guild, emb.Build());
-            }
-        }
-    }
+    public virtual void Dispose()
+        => this.refreshTimer.Dispose();
 
-    public async Task<DiscordRole?> UnsafeGetMuteRoleAsync(DiscordGuild guild)
+    public abstract DbSet<TExempt> DbSetSelector(TheGodfatherDbContext db);
+
+    public async Task<IReadOnlyList<TExempt>> GetExemptsAsync(ulong gid)
     {
-        DiscordRole? muteRole = null;
+        List<TExempt> exempts;
         await using TheGodfatherDbContext db = this.dbb.CreateContext();
-        GuildConfig gcfg = await this.gcs.GetConfigAsync(guild.Id);
-        muteRole = guild.GetRole(gcfg.MuteRoleId);
-        if (muteRole is null)
-            muteRole = guild.Roles.Select(kvp => kvp.Value).FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
-        return muteRole;
+        exempts = await this.DbSetSelector(db).AsQueryable().Where(ex => ex.GuildIdDb == (long)gid).ToListAsync();
+        return exempts.AsReadOnly();
     }
 
-    public async Task<DiscordRole> GetOrCreateMuteRoleAsync(DiscordGuild guild)
+    public async Task ExemptAsync(ulong gid, ExemptedEntityType type, IEnumerable<ulong> ids)
     {
-        DiscordRole? muteRole = null;
+        await using TheGodfatherDbContext db = this.dbb.CreateContext();
+        DbSet<TExempt> set = this.DbSetSelector(db);
+        int added = 0;
+        foreach (ulong id in ids.Distinct()) {
+            TExempt? existing = await set.FindAsync((long)id, (long)gid, type);
+            if (existing is not null)
+                continue;
 
-        await this.csem.WaitAsync();
-        try {
-            await using TheGodfatherDbContext db = this.dbb.CreateContext();
-            GuildConfig gcfg = await this.gcs.GetConfigAsync(guild.Id);
-            muteRole = guild.GetRole(gcfg.MuteRoleId);
-            if (muteRole is null)
-                muteRole = guild.Roles.Select(kvp => kvp.Value).FirstOrDefault(r => r.Name.ToLowerInvariant() == "gf_mute");
-            if (muteRole is null) {
-                muteRole = await guild.CreateRoleAsync("gf_mute", hoist: false, mentionable: false);
-
-                IEnumerable<DiscordChannel> overwriteTargets = guild.Channels
-                    .Select(kvp => kvp.Value)
-                    .Where(c => c.Type == ChannelType.Category
-                                || ((c.IsTextOrNewsChannel() || c.Type == ChannelType.Voice) && c.Parent is null)
-                    );
-
-                await Task.WhenAll(overwriteTargets.Select(c => AddOverwrite(c, muteRole)));
-
-                gcfg.MuteRoleId = muteRole.Id;
-                db.Configs.Update(gcfg);
-                await db.SaveChangesAsync();
-            }
-        } finally {
-            this.csem.Release();
+            set.Add(new TExempt { GuildId = gid, Id = id, Type = type });
+            added++;
         }
 
-        return muteRole;
-
-
-        static async Task AddOverwrite(DiscordChannel channel, DiscordRole muteRole)
-        {
-            await channel.AddOverwriteAsync(
-                muteRole,
-                deny: Permissions.SendMessages
-                      | Permissions.SendTtsMessages
-                      | Permissions.AddReactions
-                      | Permissions.Speak
-            );
-            await Task.Delay(10);
-        }
+        if (added > 0)
+            await db.SaveChangesAsync();
+        this.UpdateExemptsForGuild(gid);
     }
 
-    public async Task LogPunishmentInCaseOfRejoinAsync(DiscordGuild guild, DiscordMember member, Punishment.Action action)
+    public async Task UnexemptAsync(ulong gid, ExemptedEntityType type, IEnumerable<ulong> ids)
     {
-        await using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-            Punishment? existing = db.Punishments.Find((long)guild.Id, (long)member.Id, action);
-            if (existing is null) {
-                db.Punishments.Add(new Punishment {
-                    GuildId = guild.Id,
-                    UserId = member.Id,
-                    Type = action
-                });
-                await db.SaveChangesAsync();
-            }
-        }
+        ulong[] idArray = ids.Distinct().ToArray();
+        await using TheGodfatherDbContext db = this.dbb.CreateContext();
+        List<TExempt> toRemove = this.DbSetSelector(db)
+            .AsQueryable()
+            .Where(ex => ex.GuildIdDb == (long)gid && ex.Type == type)
+            .AsEnumerable()
+            .Where(ex => idArray.Contains(ex.Id))
+            .ToList();
+        this.DbSetSelector(db).RemoveRange(toRemove);
+        if (toRemove.Count > 0)
+            await db.SaveChangesAsync();
+        this.UpdateExemptsForGuild(gid);
     }
 
-    public Task RemoveLoggedPunishmentInCaseOfRejoinAsync(DiscordGuild guild, DiscordMember member, Punishment.Action action)
-        => this.RemoveLoggedPunishmentInCaseOfRejoinAsync(new Punishment { GuildId = guild.Id, UserId = member.Id, Type = action });
-
-    public async Task RemoveLoggedPunishmentInCaseOfRejoinAsync(Punishment punishment)
+    public void UpdateExemptsForGuild(ulong gid)
     {
-        await using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-            Punishment? existing = db.Punishments.Find(punishment.GuildIdDb, punishment.UserIdDb, punishment.Type);
-            if (existing is not null) {
-                db.Punishments.Remove(existing);
-                await db.SaveChangesAsync();
-            }
-        }
+        using TheGodfatherDbContext db = this.dbb.CreateContext();
+        this.guildExempts[gid] = new ConcurrentHashSet<TExempt>(
+            this.DbSetSelector(db).AsQueryable().Where(ex => ex.GuildIdDb == (long)gid)
+        );
     }
 
-    public async Task<bool> ReapplyLoggedPunishmentsIfNececaryAsync(DiscordGuild guild, DiscordMember member)
+    protected bool IsExempted(ulong gid, ulong cid, ulong? parentId, ulong uid, IEnumerable<ulong> roleIds)
     {
-        Punishment? punishment;
-        await using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-            List<Punishment> punishments = await db.Punishments
-                .AsQueryable()
-                .Where(p => p.GuildIdDb == (long)guild.Id && p.UserIdDb == (long)member.Id)
-                .ToListAsync();
-            punishment = punishments.Any()
-                ? punishments.Aggregate((p1, p2) => p1.Type > p2.Type ? p1 : p2)
-                : null;
-        }
+        if (!this.guildExempts.ContainsKey(gid))
+            this.UpdateExemptsForGuild(gid);
 
-        if (punishment is null)
-            return false;
-
-        await this.PunishMemberAsync(guild, member, punishment.Type, reason: "_gf: Re-applied punishment due to rejoin");
-        return true;
+        return this.guildExempts.TryGetValue(gid, out ConcurrentHashSet<TExempt>? exempts) && exempts.Any(ex => ex.Type switch {
+            ExemptedEntityType.Channel => ex.Id == cid || ex.Id == parentId,
+            ExemptedEntityType.Member => ex.Id == uid,
+            ExemptedEntityType.Role => roleIds.Contains(ex.Id),
+            _ => false
+        });
     }
 
-    public abstract bool TryAddGuildToWatch(ulong gid);
-    public abstract bool TryRemoveGuildFromWatch(ulong gid);
-    public virtual void Dispose() { }
+    protected virtual void RefreshCallback(object? _)
+    { }
 }

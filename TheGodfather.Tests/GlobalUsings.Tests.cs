@@ -1,10 +1,12 @@
 global using System;
+global using System.Collections.Generic;
 global using System.Linq;
 global using System.Threading.Tasks;
-global using Humanizer;
-global using Serilog;
-global using TheGodfather.Attributes;
+global using Microsoft.EntityFrameworkCore;
+global using NUnit.Framework;
 global using TheGodfather.Common;
-global using TheGodfather.Extensions;
-global using TheGodfather.Translations;
+global using TheGodfather.Database.Models;
+global using TheGodfather.Modules.Administration.Services;
 global using TheGodfather.Services;
+global using TheGodfather.Services.Common;
+global using TheGodfather.Translations;

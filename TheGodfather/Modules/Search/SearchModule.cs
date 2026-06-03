@@ -1,81 +1,87 @@
 ﻿using System.Net;
 using System.ServiceModel.Syndication;
 using System.Text;
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using Microsoft.Extensions.DependencyInjection;
+using Discord.Commands;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Search;
 
-[Module(ModuleType.Searches)][NotBlocked]
-[Cooldown(5, 10, CooldownBucketType.Channel)]
 public sealed class SearchModule : TheGodfatherModule
 {
-    #region cat
+    private readonly CatFactsService catFacts;
+    private readonly QuoteService quotes;
+
+
+    public SearchModule(LocalizationService localization, CatFactsService catFacts, QuoteService quotes)
+        : base(localization, new Color(0x1abc9c))
+    {
+        this.catFacts = catFacts;
+        this.quotes = quotes;
+    }
+
+
     [Command("cat")]
-    [Aliases("kitty", "kitten")]
-    public async Task RandomCatAsync(CommandContext ctx)
+    [Alias("kitty", "kitten")]
+    public async Task RandomCatAsync()
     {
         string? url = await PetImagesService.GetRandomCatImageAsync();
-        if (url is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_image);
+        if (url is null) {
+            await this.FailAsync(TranslationKey.cmd_err_image);
+            return;
+        }
 
-        await ctx.RespondAsync(new DiscordEmbedBuilder {
+        await this.ReplyAsync(embed: new EmbedBuilder {
             Description = Emojis.Animals.All[1],
             ImageUrl = url,
-            Color = this.ModuleColor,
-        });
+            Color = this.ModuleColor
+        }.Build());
     }
-    #endregion
 
-    #region catfact
     [Command("catfact")]
-    [Aliases("kittyfact", "kittenfact")]
-    public async Task RandomCatFactAsync(CommandContext ctx)
+    [Alias("kittyfact", "kittenfact")]
+    public async Task RandomCatFactAsync()
     {
-        string? fact = await ctx.Services.GetRequiredService<CatFactsService>().GetFactAsync();
-        if (fact is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_res_none);
+        string? fact = await this.catFacts.GetFactAsync();
+        if (fact is null) {
+            await this.FailAsync(TranslationKey.cmd_err_res_none);
+            return;
+        }
 
-        await ctx.RespondAsync(new DiscordEmbedBuilder {
+        await this.ReplyAsync(embed: new EmbedBuilder {
             Description = $"{Emojis.Animals.All[1]} {fact}",
             Color = this.ModuleColor
-        });
+        }.Build());
     }
-    #endregion
 
-    #region dog
     [Command("dog")]
-    [Aliases("doge", "puppy", "pup")]
-    public async Task RandomDogAsync(CommandContext ctx)
+    [Alias("doge", "puppy", "pup")]
+    public async Task RandomDogAsync()
     {
         string? url = await PetImagesService.GetRandomDogImageAsync();
-        if (url is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_image);
+        if (url is null) {
+            await this.FailAsync(TranslationKey.cmd_err_image);
+            return;
+        }
 
-        await ctx.RespondAsync(new DiscordEmbedBuilder {
-            Description = DiscordEmoji.FromName(ctx.Client, ":dog:"),
+        await this.ReplyAsync(embed: new EmbedBuilder {
+            Description = "\U0001f436",
             ImageUrl = url,
             Color = this.ModuleColor
-        });
+        }.Build());
     }
-    #endregion
 
-    #region ip
     [Command("ip")]
-    [Aliases("ipstack", "geolocation", "iplocation", "iptracker", "iptrack", "trackip", "iplocate", "geoip")]
-    public async Task IpAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_ip)] IPAddress ip)
+    [Alias("ipstack", "geolocation", "iplocation", "iptracker", "iptrack", "trackip", "iplocate", "geoip")]
+    public async Task IpAsync(IPAddress ip)
     {
         IpInfo? info = await IpGeolocationService.GetInfoForIpAsync(ip);
-        if (info is null || !info.Success)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_geoloc);
+        if (info is null || !info.Success) {
+            await this.FailAsync(TranslationKey.cmd_err_geoloc);
+            return;
+        }
 
-        await ctx.RespondWithLocalizedEmbedAsync(emb => {
+        await this.RespondWithLocalizedEmbedAsync(emb => {
             emb.WithTitle(info.Ip);
             emb.WithColor(this.ModuleColor);
             emb.AddLocalizedField(TranslationKey.str_location, FormatLocation(info));
@@ -92,56 +98,43 @@ public sealed class SearchModule : TheGodfatherModule
             if (!string.IsNullOrWhiteSpace(info.ASName))
                 emb.AddLocalizedField(TranslationKey.str_as_name, info.ASName, true);
         });
-
-        static string FormatLocation(IpInfo info)
-        {
-            return new[] {
-                info.District,
-                info.City,
-                info.Region,
-                info.RegionName,
-                info.RegionCode,
-                info.CountryName,
-                info.CountryCode,
-                info.ContinentCode,
-                info.Continent,
-            }.Where(s => !string.IsNullOrWhiteSpace(s))
-             .JoinWith(", ");
-        }
     }
-    #endregion
 
-    #region news
     [Command("news")]
-    [Aliases("worldnews")]
-    public Task NewsRssAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_topic)] string topic = "world")
+    [Alias("worldnews")]
+    public Task NewsRssAsync(string topic = "world")
     {
-        IReadOnlyList<SyndicationItem>? res = NewsService.FetchNews(this.Localization.GetGuildCulture(ctx.Guild.Id), topic);
-        if (res is null || !res.Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_news);
+        IReadOnlyList<SyndicationItem>? results = NewsService.FetchNews(this.Localization.GetGuildCulture(this.Context.Guild?.Id), topic);
+        if (results is null || !results.Any())
+            return this.FailAsync(TranslationKey.cmd_err_news);
 
-        return ctx.RespondWithLocalizedEmbedAsync(emb => {
+        return this.RespondWithLocalizedEmbedAsync(emb => {
             emb.WithLocalizedTitle(TranslationKey.fmt_news(Emojis.Globe, topic));
             emb.WithColor(this.ModuleColor);
             var sb = new StringBuilder();
-            foreach (SyndicationItem r in res)
-                sb.Append(Emojis.SmallBlueDiamond).Append(' ').AppendLine(Formatter.MaskedUrl(r.Title.Text, r.Links.First().Uri));
+            foreach (SyndicationItem result in results)
+                sb.Append(Emojis.SmallBlueDiamond)
+                  .Append(' ')
+                  .Append('[')
+                  .Append(result.Title.Text.Replace("]", "\\]"))
+                  .Append("](")
+                  .Append(result.Links.First().Uri)
+                  .AppendLine(")");
             emb.WithDescription(sb.ToString());
         });
     }
-    #endregion
 
-    #region quoteoftheday
     [Command("quoteoftheday")]
-    [Aliases("qotd", "qod", "quote", "q")]
-    public async Task QotdAsync(CommandContext ctx)
+    [Alias("qotd", "qod", "quote", "q")]
+    public async Task QotdAsync()
     {
-        Quote? quote = await ctx.Services.GetRequiredService<QuoteService>().GetQuoteOfTheDayAsync();
-        if (quote is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_quote);
+        Quote? quote = await this.quotes.GetQuoteOfTheDayAsync();
+        if (quote is null) {
+            await this.FailAsync(TranslationKey.cmd_err_quote);
+            return;
+        }
 
-        await ctx.RespondWithLocalizedEmbedAsync(emb => {
+        await this.RespondWithLocalizedEmbedAsync(emb => {
             emb.WithLocalizedTitle(TranslationKey.str_qotd);
             emb.WithColor(this.ModuleColor);
             emb.WithLocalizedDescription(TranslationKey.fmt_qotd(quote.Content, quote.Author));
@@ -150,5 +143,20 @@ public sealed class SearchModule : TheGodfatherModule
             emb.WithLocalizedFooter(TranslationKey.fmt_powered_by("theysaidso.com"), null);
         });
     }
-    #endregion
+
+
+    private static string FormatLocation(IpInfo info)
+    {
+        return new[] {
+            info.District,
+            info.City,
+            info.Region,
+            info.RegionName,
+            info.RegionCode,
+            info.CountryName,
+            info.CountryCode,
+            info.ContinentCode,
+            info.Continent,
+        }.Where(s => !string.IsNullOrWhiteSpace(s)).JoinWith(", ");
+    }
 }

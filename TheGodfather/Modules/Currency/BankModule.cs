@@ -1,232 +1,210 @@
 ﻿using System.Globalization;
 using System.Text;
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
-using Microsoft.Extensions.DependencyInjection;
-using TheGodfather.Modules.Administration.Extensions;
-using TheGodfather.Modules.Administration.Services;
+using Discord.Commands;
+using TheGodfather.Attributes;
 using TheGodfather.Modules.Currency.Services;
-using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Currency;
 
-[Group("bank")][Module(ModuleType.Currency)][NotBlocked]
-[Aliases("$", "$$", "$$$")]
-[RequireGuild][Cooldown(3, 5, CooldownBucketType.Channel)]
-public sealed class BankModule : TheGodfatherServiceModule<BankAccountService>
+[Group("bank")]
+[Alias("$", "$$", "$$$")]
+[RequireContext(ContextType.Guild)]
+[Cooldown(3, 5, CooldownBucketType.Channel)]
+public sealed class BankModule : TheGodfatherModule
 {
-    #region bank
-    [GroupCommand]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_member)] DiscordMember? member = null)
-        => this.GetBalanceAsync(ctx, member);
-    #endregion
+    private const long MaxGrant = 1_000_000_000_000;
 
-    #region bank balance
-    [Command("balance")]
-    [Aliases("s", "status", "bal", "money")]
-    public async Task GetBalanceAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_member)] DiscordMember? member = null)
+    private readonly BankAccountService bank;
+    private readonly GuildConfigService guildConfig;
+
+
+    public BankModule(LocalizationService localization, BankAccountService bank, GuildConfigService guildConfig)
+        : base(localization, new Color(0x2ECC71))
     {
-        member ??= ctx.Member!;
+        this.bank = bank;
+        this.guildConfig = guildConfig;
+    }
 
-        BankAccount? balance = await this.Service.GetAsync(ctx.Guild.Id, member.Id);
-        await ctx.RespondWithLocalizedEmbedAsync(emb => {
+
+    [Command("")]
+    public Task ExecuteGroupAsync(IGuildUser? member = null)
+        => this.GetBalanceAsync(member);
+
+    [Command("balance")]
+    [Alias("s", "status", "bal", "money")]
+    public async Task GetBalanceAsync(IGuildUser? member = null)
+    {
+        member ??= (IGuildUser)this.Context.User;
+
+        BankAccount? balance = await this.bank.GetAsync(this.Context.Guild.Id, member.Id);
+        await this.RespondWithLocalizedEmbedAsync(emb => {
             emb.WithColor(this.ModuleColor);
-            emb.WithLocalizedTitle(TranslationKey.fmt_bank_acc(Emojis.MoneyBag, member.ToDiscriminatorString()));
-            emb.WithThumbnail(member.AvatarUrl);
+            emb.WithLocalizedTitle(TranslationKey.fmt_bank_acc(Emojis.MoneyBag, UserDiscriminatorString(member)));
+            emb.WithThumbnail(member.GetAvatarUrl() ?? member.GetDefaultAvatarUrl());
             if (balance is not null) {
-                string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
-                CultureInfo culture = this.Localization.GetGuildCulture(ctx.Guild.Id);
+                string currency = this.guildConfig.GetCachedConfig(this.Context.Guild.Id).Currency;
+                CultureInfo culture = this.Localization.GetGuildCulture(this.Context.Guild.Id);
                 emb.WithLocalizedDescription(TranslationKey.fmt_bank_acc_value(balance.Balance.ToWords(culture), currency));
                 emb.AddLocalizedField(TranslationKey.str_bank_acc_value_num, $"{balance.Balance:n0} {currency}");
             } else {
-                emb.WithLocalizedDescription(TranslationKey.fmt_bank_acc_none(member.DisplayName));
+                emb.WithLocalizedDescription(TranslationKey.fmt_bank_acc_none(UserDisplayName(member)));
             }
-            emb.WithLocalizedFooter(TranslationKey.fmt_bank_footer, ctx.Client.CurrentUser.AvatarUrl);
+            emb.WithLocalizedFooter(TranslationKey.fmt_bank_footer, this.Context.Client.CurrentUser.GetAvatarUrl());
         });
     }
-    #endregion
 
-    #region bank currency
-    [Command("currency")][Priority(1)]
-    [Aliases("setcurrency", "curr")]
-    public async Task CurrencyAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_currency)] string currency)
+    [Command("currency")]
+    [Priority(1)]
+    [Alias("setcurrency", "curr")]
+    public async Task CurrencyAsync([Remainder] string currency)
     {
         if (string.IsNullOrWhiteSpace(currency) || currency.Length > GuildConfig.CurrencyLimit)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_currency(GuildConfig.CurrencyLimit));
+            throw new LocalizedCommandException(TranslationKey.cmd_err_currency(GuildConfig.CurrencyLimit));
 
-        await ctx.Services.GetRequiredService<GuildConfigService>().ModifyConfigAsync(ctx.Guild.Id, cfg => cfg.Currency = currency);
-
-        await this.CurrencyAsync(ctx);
-
-        await ctx.GuildLogAsync(emb => {
-            emb.WithLocalizedTitle(TranslationKey.evt_cfg_upd);
-            emb.WithColor(this.ModuleColor);
-            emb.AddLocalizedField(TranslationKey.str_currency, currency, true);
-        });
+        await this.guildConfig.ModifyConfigAsync(this.Context.Guild.Id, cfg => cfg.Currency = currency);
+        await this.CurrencyAsync();
     }
 
-    [Command("currency")][Priority(0)]
-    public Task CurrencyAsync(CommandContext ctx)
+    [Command("currency")]
+    [Priority(0)]
+    [Alias("setcurrency", "curr")]
+    public Task CurrencyAsync()
     {
-        CachedGuildConfig gcfg = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id);
-        return ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, TranslationKey.str_currency_get(gcfg.Currency));
+        CachedGuildConfig gcfg = this.guildConfig.GetCachedConfig(this.Context.Guild.Id);
+        return this.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, TranslationKey.str_currency_get(gcfg.Currency));
     }
-    #endregion
 
-    #region bank grant
-    [Command("grant")][Priority(1)]
-    [Aliases("give")]
+    [Command("grant")]
+    [Priority(1)]
+    [Alias("give")]
     [RequirePrivilegedUser]
-    public async Task GrantAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_member)] DiscordMember member,
-        [Description(TranslationKey.desc_amount)] long amount)
+    public async Task GrantAsync(IGuildUser member, long amount)
     {
-        if (amount is < 1 or > 1_000_000_000_000)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_bank_grant($"{1_000_000_000_000:n0}"));
+        if (amount is < 1 or > MaxGrant)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_bank_grant($"{MaxGrant:n0}"));
 
-        if (await this.Service.GetAsync(ctx.Guild.Id, member.Id) is null)
-            throw new CommandFailedException(ctx, TranslationKey.fmt_bank_acc_none(member.DisplayName));
+        if (await this.bank.GetAsync(this.Context.Guild.Id, member.Id) is null)
+            throw new LocalizedCommandException(TranslationKey.fmt_bank_acc_none(UserDisplayName(member)));
 
-        await this.Service.IncreaseBankAccountAsync(ctx.Guild.Id, member.Id, amount);
+        await this.bank.IncreaseBankAccountAsync(this.Context.Guild.Id, member.Id, amount);
 
-        string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
-        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, TranslationKey.fmt_bank_grant(member.Mention, amount, currency));
+        string currency = this.guildConfig.GetCachedConfig(this.Context.Guild.Id).Currency;
+        await this.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, TranslationKey.fmt_bank_grant(member.Mention, amount, currency));
     }
 
-    [Command("grant")][Priority(0)]
-    public Task GrantAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_amount)] long amount,
-        [Description(TranslationKey.desc_member)] DiscordMember member)
-        => this.GrantAsync(ctx, member, amount);
-    #endregion
+    [Command("grant")]
+    [Priority(0)]
+    [RequirePrivilegedUser]
+    public Task GrantAsync(long amount, IGuildUser member)
+        => this.GrantAsync(member, amount);
 
-    #region bank register
     [Command("register")]
-    [Aliases("r", "signup", "activate")]
-    public async Task RegisterAsync(CommandContext ctx)
+    [Alias("r", "signup", "activate")]
+    public async Task RegisterAsync()
     {
-        if (await this.Service.ContainsAsync(ctx.Guild.Id, ctx.User.Id))
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_bank_register);
+        if (await this.bank.ContainsAsync(this.Context.Guild.Id, this.Context.User.Id))
+            throw new LocalizedCommandException(TranslationKey.cmd_err_bank_register);
 
-        await this.Service.AddAsync(new BankAccount {
-            GuildId = ctx.Guild.Id,
-            UserId = ctx.User.Id
+        await this.bank.AddAsync(new BankAccount {
+            GuildId = this.Context.Guild.Id,
+            UserId = this.Context.User.Id
         });
 
-        string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
-        await ctx.ImpInfoAsync(this.ModuleColor, Emojis.MoneyBag, TranslationKey.fmt_bank_register(ctx.User.Mention, BankAccount.StartingBalance, currency));
+        string currency = this.guildConfig.GetCachedConfig(this.Context.Guild.Id).Currency;
+        await this.ImpInfoAsync(
+            this.ModuleColor,
+            Emojis.MoneyBag,
+            TranslationKey.fmt_bank_register(this.Context.User.Mention, BankAccount.StartingBalance, currency)
+        );
     }
-    #endregion
 
-    #region bank top
     [Command("top")]
-    [Aliases("leaderboard", "elite")]
-    public async Task TopAsync(CommandContext ctx)
+    [Alias("leaderboard", "elite")]
+    public async Task TopAsync()
     {
-        IReadOnlyList<BankAccount> top = await this.Service.GetTopAccountsAsync(ctx.Guild.Id);
+        IReadOnlyList<BankAccount> top = await this.bank.GetTopAccountsAsync(this.Context.Guild.Id);
+        var missing = new List<BankAccount>();
+        string body = this.BuildTopList(top, missing);
 
+        await this.RespondWithLocalizedEmbedAsync(emb => {
+            emb.WithLocalizedTitle(TranslationKey.str_bank_top);
+            emb.WithColor(this.ModuleColor);
+            emb.WithDescription(body);
+        });
+
+        if (missing.Any())
+            await this.bank.RemoveAsync(missing);
+    }
+
+    [Command("topglobal")]
+    [Alias("globalleaderboard", "globalelite", "gtop", "topg", "globaltop")]
+    public async Task GlobalTopAsync()
+    {
+        IReadOnlyList<BankAccount> top = await this.bank.GetTopAccountsAsync();
+        var missing = new List<BankAccount>();
+        string body = this.BuildTopList(top, missing);
+
+        await this.RespondWithLocalizedEmbedAsync(emb => {
+            emb.WithLocalizedTitle(TranslationKey.str_bank_topg);
+            emb.WithColor(this.ModuleColor);
+            emb.WithDescription(body);
+        });
+
+        if (missing.Any())
+            await this.bank.RemoveAsync(missing);
+    }
+
+    [Command("transfer")]
+    [Priority(1)]
+    [Alias("lend", "tr")]
+    public async Task TransferAsync(IGuildUser member, long amount)
+    {
+        if (amount is < 1 or > MaxGrant)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_bank_grant($"{MaxGrant:n0}"));
+
+        if (member.Id == this.Context.User.Id)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_self_action);
+
+        if (await this.bank.GetAsync(this.Context.Guild.Id, member.Id) is null)
+            throw new LocalizedCommandException(TranslationKey.fmt_bank_acc_none(UserDisplayName(member)));
+
+        if (!await this.bank.TransferAsync(this.Context.Guild.Id, this.Context.User.Id, member.Id, amount))
+            throw new LocalizedCommandException(TranslationKey.cmd_err_funds_insuf);
+
+        await this.InfoAsync(this.ModuleColor);
+    }
+
+    [Command("transfer")]
+    [Priority(0)]
+    public Task TransferAsync(long amount, IGuildUser member)
+        => this.TransferAsync(member, amount);
+
+    [Command("unregister")]
+    [Alias("ur", "signout", "deleteaccount", "delacc", "disable", "deactivate")]
+    [RequirePrivilegedUser]
+    public async Task UnregisterAsync(IGuildUser member, bool global = false)
+    {
+        if (global)
+            await this.bank.RemoveAsync(this.Context.Guild.Id, member.Id);
+        else
+            await this.bank.RemoveAllAsync(member.Id);
+
+        await this.InfoAsync(this.ModuleColor);
+    }
+
+    private string BuildTopList(IEnumerable<BankAccount> top, ICollection<BankAccount> missing)
+    {
         var sb = new StringBuilder();
-        var toRemove = new List<BankAccount>();
         foreach (BankAccount account in top) {
-            try {
-                DiscordMember u = await ctx.Guild.GetMemberAsync(account.UserId);
-                sb.AppendLine($"{Formatter.Bold(u.Mention)} | {Formatter.InlineCode($"{account.Balance:n0}")}");
-            } catch (NotFoundException) {
-                LogExt.Debug(ctx, "Found 404 member while listing bank accouns: {UserId}", account.UserId);
-                sb.AppendLine($"{Formatter.Bold("?")} | {Formatter.InlineCode($"{account.Balance:n0}")}");
-                toRemove.Add(account);
+            SocketGuildUser? user = this.Context.Guild.GetUser(account.UserId);
+            if (user is null) {
+                sb.AppendLine($"{Bold("?")} | {InlineCode($"{account.Balance:n0}")}");
+                missing.Add(account);
+            } else {
+                sb.AppendLine($"{Bold(user.Mention)} | {InlineCode($"{account.Balance:n0}")}");
             }
         }
 
-        await ctx.RespondWithLocalizedEmbedAsync(emb => {
-            emb.WithLocalizedTitle(TranslationKey.str_bank_top);
-            emb.WithColor(this.ModuleColor);
-            emb.WithDescription(sb);
-        });
-
-        if (toRemove.Any())
-            await this.Service.RemoveAsync(toRemove);
+        return sb.ToString();
     }
-    #endregion
-
-    #region bank topglobal
-    [Command("topglobal")]
-    [Aliases("globalleaderboard", "globalelite", "gtop", "topg", "globaltop")]
-    public async Task GlobalTopAsync(CommandContext ctx)
-    {
-        IReadOnlyList<BankAccount> top = await this.Service.GetTopAccountsAsync();
-
-        var sb = new StringBuilder();
-        var toRemove = new List<BankAccount>();
-        foreach (BankAccount account in top)
-            try {
-                DiscordMember u = await ctx.Guild.GetMemberAsync(account.UserId);
-                sb.AppendLine($"{Formatter.Bold(u.Mention)} | {Formatter.InlineCode($"{account.Balance:n0}")}");
-            } catch (NotFoundException) {
-                LogExt.Debug(ctx, "Found 404 member while listing bank accouns: {UserId}", account.UserId);
-                sb.AppendLine($"{Formatter.Bold("?")} | {Formatter.InlineCode($"{account.Balance:n0}")}");
-                toRemove.Add(account);
-            }
-
-        await ctx.RespondWithLocalizedEmbedAsync(emb => {
-            emb.WithLocalizedTitle(TranslationKey.str_bank_topg);
-            emb.WithColor(this.ModuleColor);
-            emb.WithDescription(sb);
-        });
-
-        if (toRemove.Any())
-            await this.Service.RemoveAsync(toRemove);
-    }
-    #endregion
-
-    #region bank transfer
-    [Command("transfer")][Priority(1)]
-    [Aliases("lend", "tr")]
-    public async Task TransferAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_member)] DiscordMember member,
-        [Description(TranslationKey.desc_amount)] long amount)
-    {
-        if (amount is < 1 or > 1_000_000_000_000)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_bank_grant($"{1_000_000_000_000:n0}"));
-
-        if (member == ctx.User)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_self_action);
-
-        if (await this.Service.GetAsync(ctx.Guild.Id, member.Id) is null)
-            throw new CommandFailedException(ctx, TranslationKey.fmt_bank_acc_none(member.DisplayName));
-        
-        if (!await this.Service.TransferAsync(ctx.Guild.Id, ctx.User.Id, member.Id, amount))
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_funds_insuf);
-
-        await ctx.InfoAsync(this.ModuleColor);
-    }
-
-    [Command("transfer")][Priority(0)]
-    public Task TransferAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_amount)] long amount,
-        [Description(TranslationKey.desc_member)] DiscordMember member)
-        => this.TransferAsync(ctx, member, amount);
-    #endregion
-
-    #region bank unregister
-    [Command("unregister")]
-    [Aliases("ur", "signout", "deleteaccount", "delacc", "disable", "deactivate")]
-    [RequirePrivilegedUser]
-    public async Task UnregisterAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_member)] DiscordMember member,
-        [Description(TranslationKey.desc_bank_del_g)] bool global = false)
-    {
-        if (global)
-            await this.Service.RemoveAsync(ctx.Guild.Id, member.Id);
-        else
-            await this.Service.RemoveAllAsync(member.Id);
-        await ctx.InfoAsync(this.ModuleColor);
-    }
-    #endregion
 }

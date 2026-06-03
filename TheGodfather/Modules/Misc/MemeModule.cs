@@ -1,105 +1,92 @@
-﻿using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
+﻿using Discord.Commands;
+using TheGodfather.Attributes;
 using TheGodfather.Modules.Misc.Common;
 using TheGodfather.Modules.Misc.Services;
 
 namespace TheGodfather.Modules.Misc;
 
-[Group("meme")][Module(ModuleType.Misc)][NotBlocked]
-[Aliases("memes", "mm")]
-[RequireGuild][Cooldown(3, 5, CooldownBucketType.Channel)]
-public sealed class MemeModule : TheGodfatherServiceModule<MemeService>
+[Group("meme")]
+[Alias("memes", "mm")]
+[RequireContext(ContextType.Guild)]
+[Cooldown(3, 5, CooldownBucketType.Channel)]
+public sealed class MemeModule : TheGodfatherModule
 {
-    #region meme
-    [GroupCommand][Priority(1)]
-    [RequirePermissions(Permissions.EmbedLinks)]
-    public async Task ExecuteGroupAsync(CommandContext ctx)
-    {
-        IReadOnlyList<Meme> memes = await this.Service.GetAllAsync(ctx.Guild.Id);
-        if (!memes.Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_memes_none);
+    private readonly MemeService memes;
 
-        Meme randomMeme = memes[new SecureRandom().Next(memes.Count)];
-        await ctx.RespondAsync(new DiscordEmbedBuilder {
-            Title = randomMeme.Name,
-            ImageUrl = randomMeme.Url,
-            Color = this.ModuleColor,
-            Url = randomMeme.Url
-        }.Build());
+
+    public MemeModule(LocalizationService localization, MemeService memes)
+        : base(localization, new Color(0x007FFF))
+    {
+        this.memes = memes;
     }
 
-    [GroupCommand][Priority(0)]
-    [RequirePermissions(Permissions.EmbedLinks)]
-    public async Task ExecuteGroupAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_meme_name)] string name)
+
+    [Command("")]
+    [Priority(1)]
+    public async Task ExecuteGroupAsync()
     {
-        name = name.ToLowerInvariant();
-        Meme? meme = await this.Service.GetAsync(ctx.Guild.Id, name);
+        IReadOnlyList<Meme> all = await this.memes.GetAllAsync(this.Context.Guild.Id);
+        if (!all.Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_memes_none);
+
+        Meme randomMeme = all[new SecureRandom().Next(all.Count)];
+        await this.PrintMemeAsync(randomMeme);
+    }
+
+    [Command("")]
+    [Priority(0)]
+    public async Task ExecuteGroupAsync([Remainder] string name)
+    {
+        Meme? meme = await this.memes.GetAsync(this.Context.Guild.Id, name.ToLowerInvariant());
         if (meme is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_meme_404);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_meme_404);
 
-        await ctx.RespondAsync(new DiscordEmbedBuilder {
-            Title = meme.Name,
-            ImageUrl = meme.Url,
-            Color = this.ModuleColor,
-            Url = meme.Url
-        }.Build());
+        await this.PrintMemeAsync(meme);
     }
-    #endregion
 
-    #region meme add
-    [Command("add")][Priority(1)]
-    [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
-    [RequireUserPermissions(Permissions.ManageGuild)]
-    public async Task AddMemeAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_meme_name)] string name,
-        [Description(TranslationKey.desc_meme_url)] Uri? url = null)
+    [Command("add")]
+    [Priority(1)]
+    [Alias("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
+    public async Task AddMemeAsync(string name, string? url = null)
     {
-        if (url is null)
-            if (!ctx.Message.Attachments.Any() || !Uri.TryCreate(ctx.Message.Attachments[0].Url, UriKind.Absolute, out url))
-                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_image_url);
+        Uri? imageUri = null;
+        if (!string.IsNullOrWhiteSpace(url))
+            Uri.TryCreate(url, UriKind.Absolute, out imageUri);
 
-        if (url.AbsoluteUri.Length > Meme.UrlLimit)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_url_limit(Meme.UrlLimit));
+        if (imageUri is null) {
+            IAttachment? attachment = this.Context.Message.Attachments.FirstOrDefault();
+            if (attachment is null || !Uri.TryCreate(attachment.Url, UriKind.Absolute, out imageUri))
+                throw new LocalizedCommandException(TranslationKey.cmd_err_image_url);
+        }
+
+        if (imageUri.AbsoluteUri.Length > Meme.UrlLimit)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_url_limit(Meme.UrlLimit));
 
         if (string.IsNullOrWhiteSpace(name))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_missing_name);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_missing_name);
 
         if (name.Length > Meme.NameLimit)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_name(Meme.NameLimit));
+            throw new LocalizedCommandException(TranslationKey.cmd_err_name(Meme.NameLimit));
 
-        if (!await url.ContentTypeHeaderIsImageAsync(null))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_image_url_fail(Meme.UrlLimit));
+        if (!await imageUri.ContentTypeHeaderIsImageAsync(null))
+            throw new LocalizedCommandException(TranslationKey.cmd_err_image_url_fail(Meme.UrlLimit));
 
-        await this.Service.AddAsync(new Meme {
-            GuildId = ctx.Guild.Id,
+        await this.memes.AddAsync(new Meme {
+            GuildId = this.Context.Guild.Id,
             Name = name.ToLowerInvariant(),
-            Url = url.AbsoluteUri
+            Url = imageUri.AbsoluteUri
         });
 
-        await ctx.InfoAsync(this.ModuleColor);
+        await this.InfoAsync(this.ModuleColor);
     }
 
-    [Command("add")][Priority(0)]
-    public Task AddMemeAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_meme_url)] Uri url,
-        [RemainingText][Description(TranslationKey.desc_meme_name)] string name)
-        => this.AddMemeAsync(ctx, name, url);
-    #endregion
-
-    #region meme create
     [Command("create")]
-    [Aliases("maker", "c", "make", "m")]
-    [RequirePermissions(Permissions.EmbedLinks)]
-    public Task CreateMemeAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_meme_template)] string template,
-        [Description(TranslationKey.desc_meme_text_top)] string topText,
-        [Description(TranslationKey.desc_meme_text_bot)] string bottomText)
+    [Alias("maker", "c", "make", "m")]
+    public Task CreateMemeAsync(string template, string topText, [Remainder] string bottomText)
     {
         string url = MemeGenService.GenerateMemeUrl(template, topText, bottomText);
-        return ctx.RespondWithLocalizedEmbedAsync(emb => {
+        return this.RespondWithLocalizedEmbedAsync(emb => {
             emb.WithTitle(template);
             emb.WithColor(this.ModuleColor);
             emb.WithUrl(url);
@@ -107,79 +94,76 @@ public sealed class MemeModule : TheGodfatherServiceModule<MemeService>
             emb.WithLocalizedFooter(TranslationKey.fmt_powered_by(MemeGenService.Provider), null);
         });
     }
-    #endregion
 
-    #region meme delete
     [Command("delete")]
-    [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
-    [RequireUserPermissions(Permissions.ManageGuild)]
-    public async Task DeleteMemeAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_meme_name)] string name)
+    [Alias("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
+    public async Task DeleteMemeAsync([Remainder] string name)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_missing_name);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_missing_name);
 
-        int removed = await this.Service.RemoveAsync(ctx.Guild.Id, name.ToLowerInvariant());
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_meme_del(removed));
+        int removed = await this.memes.RemoveAsync(this.Context.Guild.Id, name.ToLowerInvariant());
+        await this.InfoAsync(this.ModuleColor, TranslationKey.fmt_meme_del(removed));
     }
-    #endregion
 
-    #region meme deleteall
-    [Command("deleteall")][UsesInteractivity]
-    [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
-    [RequireUserPermissions(Permissions.Administrator)]
-    public async Task ClearMemesAsync(CommandContext ctx)
+    [Command("deleteall")]
+    [Alias("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
+    [RequireUserPermission(GuildPermission.Administrator)]
+    public async Task ClearMemesAsync()
     {
-        if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_meme_rem_all))
+        if (!await this.ConfirmAsync(TranslationKey.q_meme_rem_all))
             return;
 
-        await this.Service.ClearAsync(ctx.Guild.Id);
-        await ctx.InfoAsync(this.ModuleColor);
+        await this.memes.ClearAsync(this.Context.Guild.Id);
+        await this.InfoAsync(this.ModuleColor);
     }
-    #endregion
 
-    #region meme list
     [Command("list")]
-    [Aliases("print", "show", "view", "ls", "l", "p")]
-    public async Task ListAsync(CommandContext ctx)
+    [Alias("print", "show", "view", "ls", "l", "p")]
+    public async Task ListAsync()
     {
-        IReadOnlyList<Meme> memes = await this.Service.GetAllAsync(ctx.Guild.Id);
-        if (!memes.Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_memes_none);
+        IReadOnlyList<Meme> all = await this.memes.GetAllAsync(this.Context.Guild.Id);
+        if (!all.Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_memes_none);
 
-        await ctx.PaginateAsync(TranslationKey.str_memes, memes, meme => Formatter.MaskedUrl(meme.Name, meme.Uri), this.ModuleColor);
+        await this.RespondPagedAsync(TranslationKey.str_memes, all, meme => $"[{meme.Name}]({meme.Uri})");
     }
-    #endregion
 
-    #region meme templates
     [Command("templates")]
-    [Aliases("template", "ts", "t")]
-    public async Task TemplatesAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_meme_template)] string? template = null)
+    [Alias("template", "ts", "t")]
+    public async Task TemplatesAsync([Remainder] string? template = null)
     {
         if (string.IsNullOrWhiteSpace(template)) {
             IReadOnlyList<MemeTemplate> templates = await MemeGenService.GetMemeTemplatesAsync();
             if (templates is null)
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_meme_template_fail);
+                throw new LocalizedCommandException(TranslationKey.cmd_err_meme_template_fail);
 
-            await ctx.PaginateAsync(
+            await this.RespondPagedAsync(
                 TranslationKey.str_meme_templates,
                 templates.OrderBy(t => t.Id),
-                t => $"{Formatter.Bold(t.Name)}: {Formatter.MaskedUrl(t.Id, new Uri(t.Url))}",
-                this.ModuleColor
+                t => $"{Bold(t.Name)}: [{t.Id}]({t.Url})"
             );
-        } else {
-            MemeTemplate? t = await MemeGenService.GetMemeTemplateAsync(template);
-            if (t is null)
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_meme_template_404);
-
-            await ctx.RespondAsync(new DiscordEmbedBuilder {
-                Title = $"{t.Name}: {t.Id}",
-                ImageUrl = t.Url,
-                Color = this.ModuleColor,
-                Url = t.Url
-            }.Build());
+            return;
         }
+
+        MemeTemplate? selected = await MemeGenService.GetMemeTemplateAsync(template);
+        if (selected is null)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_meme_template_404);
+
+        await this.ReplyAsync(embed: new EmbedBuilder {
+            Title = $"{selected.Name}: {selected.Id}",
+            ImageUrl = selected.Url,
+            Color = this.ModuleColor,
+            Url = selected.Url
+        }.Build());
     }
-    #endregion
+
+    private Task PrintMemeAsync(Meme meme)
+        => this.ReplyAsync(embed: new EmbedBuilder {
+            Title = meme.Name,
+            ImageUrl = meme.Url,
+            Color = this.ModuleColor,
+            Url = meme.Url
+        }.Build());
 }

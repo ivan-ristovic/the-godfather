@@ -1,6 +1,5 @@
-﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Threading;
-using DSharpPlus;
 using Microsoft.EntityFrameworkCore;
 using TheGodfather.Services.Common;
 
@@ -8,20 +7,20 @@ namespace TheGodfather.Services;
 
 public sealed class SchedulingService : ITheGodfatherService, IDisposable
 {
-    private static void LoadCallback(object? _)
+    private static void LoadCallback(object? state)
     {
-        SchedulingService @this = _ as SchedulingService ?? throw new InvalidOperationException();
+        SchedulingService @this = state as SchedulingService ?? throw new InvalidOperationException();
 
         try {
             using TheGodfatherDbContext db = @this.dbb.CreateContext();
             DateTimeOffset threshold = DateTimeOffset.Now + @this.ReloadSpan;
-            var guildTasks = db.GuildTasks.AsQueryable()
+            Dictionary<int, GuildTask> guildTasks = db.GuildTasks.AsQueryable()
                 .Where(t => t.ExecutionTime <= threshold)
                 .AsEnumerable()
                 .ToDictionary(t => t.Id, t => t);
             RegisterTasks(guildTasks);
 
-            var reminders = db.Reminders.AsQueryable()
+            Dictionary<int, Reminder> reminders = db.Reminders.AsQueryable()
                 .Where(r => r.ExecutionTime <= threshold)
                 .AsEnumerable()
                 .ToDictionary(r => r.Id, t => t);
@@ -36,7 +35,7 @@ public sealed class SchedulingService : ITheGodfatherService, IDisposable
         void RegisterTasks(IReadOnlyDictionary<int, GuildTask> tasks)
         {
             int scheduled = 0, missed = 0;
-            foreach ((int _, GuildTask task) in tasks) {
+            foreach ((_, GuildTask task) in tasks) {
                 if (@this.async.Execute(@this.RegisterDbTaskAsync(task)))
                     scheduled++;
                 else
@@ -48,7 +47,7 @@ public sealed class SchedulingService : ITheGodfatherService, IDisposable
         void RegisterReminders(IReadOnlyDictionary<int, Reminder> reminders)
         {
             int scheduled = 0, missed = 0;
-            foreach ((int _, Reminder task) in reminders) {
+            foreach ((_, Reminder task) in reminders) {
                 if (@this.async.Execute(@this.RegisterDbTaskAsync(task)))
                     scheduled++;
                 else
@@ -126,17 +125,13 @@ public sealed class SchedulingService : ITheGodfatherService, IDisposable
     public async Task UnscheduleAsync(ScheduledTask task, bool force = false)
     {
         switch (task) {
-            case GuildTask _:
+            case GuildTask:
                 if (this.tasks.TryRemove(task.Id, out ScheduledTaskExecutor? taskExec))
                     taskExec.Dispose();
-                else
-                    Log.Warning("Failed to remove guild task from task collection: {GuildTaskId}", task.Id);
                 await using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                     int removed = await db.GuildTasks.SafeRemoveRangeAsync(new[] { new GuildTask { Id = task.Id } }, gt => new object[] { gt.Id });
                     if (removed > 0)
                         await db.SaveChangesAsync();
-                    else
-                        Log.Warning("Failed to remove guild task from db: {GuildTaskId}", task.Id);
                 }
                 break;
             case Reminder rem:
@@ -145,15 +140,11 @@ public sealed class SchedulingService : ITheGodfatherService, IDisposable
 
                 if (this.reminders.TryRemove(task.Id, out ScheduledTaskExecutor? remindExec))
                     remindExec.Dispose();
-                else
-                    Log.Warning("Failed to remove reminder from task collection: {ReminderId}", task.Id);
 
                 await using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
                     int removed = await db.Reminders.SafeRemoveRangeAsync(new[] { new Reminder { Id = task.Id } }, gt => new object[] { gt.Id });
                     if (removed > 0)
                         await db.SaveChangesAsync();
-                    else
-                        Log.Warning("Failed to remove reminder from db: {GuildTaskId}", task.Id);
                 }
                 break;
             default:
@@ -173,7 +164,7 @@ public sealed class SchedulingService : ITheGodfatherService, IDisposable
 
         foreach (Reminder reminder in toRemove)
             if (this.reminders.TryRemove(reminder.Id, out ScheduledTaskExecutor? texec))
-                await this.UnscheduleAsync(texec.Job);
+                await this.UnscheduleAsync(texec.Job, true);
     }
 
     public async Task UnscheduleRemindersForChannelAsync(ulong cid)
@@ -187,7 +178,7 @@ public sealed class SchedulingService : ITheGodfatherService, IDisposable
 
         foreach (Reminder reminder in toRemove)
             if (this.reminders.TryRemove(reminder.Id, out ScheduledTaskExecutor? texec))
-                await this.UnscheduleAsync(texec.Job);
+                await this.UnscheduleAsync(texec.Job, true);
     }
 
     public async Task<IReadOnlyList<Reminder>> GetRemindTasksForUserAsync(ulong uid)
@@ -234,19 +225,16 @@ public sealed class SchedulingService : ITheGodfatherService, IDisposable
     private bool RegisterExecutor(ScheduledTaskExecutor texec)
     {
         if (texec.Job is Reminder rem) {
-            Log.Debug("Attempting to register reminder {ReminderId} in channel {Channel} @ {ExecutionTime}", rem.Id, rem.ChannelId, rem.ExecutionTime);
             if (!this.reminders.TryAdd(texec.Id, texec)) {
                 if (!rem.IsRepeating)
-                    Log.Warning("Reminder {Id} already exists in the collection for user {UserId}", texec.Id, rem.UserId);
+                    Log.Warning("Reminder {Id} already exists for user {UserId}", texec.Id, rem.UserId);
                 return false;
             }
-        } else {
-            Log.Debug("Attempting to register guild task {ReminderId} @ {ExecutionTime}", texec.Id, texec.Job.ExecutionTime);
-            if (!this.tasks.TryAdd(texec.Id, texec)) {
-                Log.Warning("Guild task {Id} already exists in the collection for user {UserId}", texec.Id, texec.Job.UserId);
-                return false;
-            }
+        } else if (!this.tasks.TryAdd(texec.Id, texec)) {
+            Log.Warning("Guild task {Id} already exists for user {UserId}", texec.Id, texec.Job.UserId);
+            return false;
         }
+
         return true;
     }
 }

@@ -1,168 +1,140 @@
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Discord.Commands;
+using TheGodfather.Attributes;
 using TheGodfather.Modules.Misc.Services;
-using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Misc;
 
-[Group("rank")][Module(ModuleType.Misc)][NotBlocked]
-[Aliases("ranks", "ranking", "level", "xp")]
+[Group("rank")]
+[Alias("ranks", "ranking", "level", "xp")]
 [Cooldown(3, 5, CooldownBucketType.Channel)]
-public sealed class RanksModule : TheGodfatherServiceModule<GuildRanksService>
+public sealed class RanksModule : TheGodfatherModule
 {
-    #region rank
-    [GroupCommand][Priority(1)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_member)] DiscordMember? member = null)
-        => this.ExecuteGroupAsync(ctx, member as DiscordUser);
+    private readonly GuildRanksService guildRanks;
+    private readonly UserRanksService userRanks;
 
-    [GroupCommand][Priority(0)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_user)] DiscordUser? user = null)
+
+    public RanksModule(LocalizationService localization, GuildRanksService guildRanks, UserRanksService userRanks)
+        : base(localization, new Color(0x007FFF))
     {
-        user ??= ctx.User;
+        this.guildRanks = guildRanks;
+        this.userRanks = userRanks;
+    }
 
-        UserRanksService rs = ctx.Services.GetRequiredService<UserRanksService>();
-        return ctx.RespondWithLocalizedEmbedAsync(async emb => {
+
+    [Command("")]
+    public Task ExecuteGroupAsync(IUser? user = null)
+    {
+        user ??= this.Context.User;
+        return this.RespondWithLocalizedEmbedAsync(async emb => {
             emb.WithColor(this.ModuleColor);
-            emb.WithTitle(user.ToDiscriminatorString());
-            emb.WithThumbnail(user.AvatarUrl);
-            emb.AddLocalizedField(TranslationKey.str_xp, rs.GetUserXp(ctx.Guild.Id, user.Id), true);
-            if (ctx.Guild is not null) {
-                short rank = rs.CalculateRankForUser(ctx.Guild.Id, user.Id);
-                XpRank? rankInfo = ctx.Guild is not null ? await this.Service.GetAsync(ctx.Guild.Id, rank) : null;
+            emb.WithTitle(UserDiscriminatorString(user));
+            emb.WithThumbnail(user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl());
+            emb.AddLocalizedField(TranslationKey.str_xp, this.userRanks.GetUserXp(this.Context.Guild?.Id, user.Id), true);
+            if (this.Context.Guild is not null) {
+                short rank = this.userRanks.CalculateRankForUser(this.Context.Guild.Id, user.Id);
+                XpRank? rankInfo = await this.guildRanks.GetAsync(this.Context.Guild.Id, rank);
                 emb.AddLocalizedField(TranslationKey.str_rank, rank, true);
                 emb.AddLocalizedField(TranslationKey.str_xp_next, UserRanksService.CalculateXpNeededForRank((short)(rank + 1)), true);
                 if (rankInfo is not null)
-                    emb.AddLocalizedField(TranslationKey.str_rank_name, Formatter.Italic(rankInfo.Name), true);
+                    emb.AddLocalizedField(TranslationKey.str_rank_name, Format.Italics(rankInfo.Name), true);
                 else
-                    emb.AddLocalizedField(TranslationKey.str_rank, TranslationKey.str_rank_noname, inline: true);
+                    emb.AddLocalizedField(TranslationKey.str_rank, TranslationKey.str_rank_noname, true);
             }
         });
     }
-    #endregion
 
-    #region rank add
-    [Command("add")][Priority(0)]
-    [Aliases("register", "rename", "mv", "newname", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
-    [RequireUserPermissions(Permissions.ManageGuild)]
-    public async Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_rank)] short rank,
-        [RemainingText][Description(TranslationKey.desc_rank_name)] string name)
+    [Command("add")]
+    [Alias("register", "rename", "mv", "newname", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
+    [RequireContext(ContextType.Guild)]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
+    public async Task AddAsync(short rank, [Remainder] string name)
     {
         if (rank is < 0 or > 150)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_rank(0, 150));
+            throw new LocalizedCommandException(TranslationKey.cmd_err_rank(0, 150));
 
         if (string.IsNullOrWhiteSpace(name))
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_name_404);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_name_404);
 
         if (name.Length > XpRank.NameLimit)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_name(XpRank.NameLimit));
+            throw new LocalizedCommandException(TranslationKey.cmd_err_name(XpRank.NameLimit));
 
-        await this.Service.RemoveAsync(ctx.Guild.Id, rank);
-        await this.Service.AddAsync(new XpRank {
-            GuildId = ctx.Guild.Id,
+        await this.guildRanks.RemoveAsync(this.Context.Guild.Id, rank);
+        await this.guildRanks.AddAsync(new XpRank {
+            GuildId = this.Context.Guild.Id,
             Name = name,
             Rank = rank
         });
 
-        await ctx.InfoAsync(this.ModuleColor);
+        await this.InfoAsync(this.ModuleColor);
     }
-    #endregion
 
-    #region rank delete
     [Command("delete")]
-    [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
-    [RequireUserPermissions(Permissions.ManageGuild)]
-    public async Task DeleteAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_rank)] short rank)
+    [Alias("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
+    [RequireContext(ContextType.Guild)]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
+    public async Task DeleteAsync(short rank)
     {
-        await this.Service.RemoveAsync(ctx.Guild.Id, rank);
-        await ctx.InfoAsync(this.ModuleColor);
+        await this.guildRanks.RemoveAsync(this.Context.Guild.Id, rank);
+        await this.InfoAsync(this.ModuleColor);
     }
-    #endregion
 
-    #region rank list
     [Command("list")]
-    [Aliases("print", "show", "view", "ls", "l", "p")]
-    public async Task RankListAsync(CommandContext ctx)
+    [Alias("print", "show", "view", "ls", "l", "p")]
+    [RequireContext(ContextType.Guild)]
+    public async Task RankListAsync()
     {
-        IReadOnlyList<XpRank> ranks = await this.Service.GetAllAsync(ctx.Guild.Id);
+        IReadOnlyList<XpRank> ranks = await this.guildRanks.GetAllAsync(this.Context.Guild.Id);
         if (!ranks.Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_rank_none);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_rank_none);
 
-        await ctx.PaginateAsync(
+        await this.RespondPagedAsync(
             TranslationKey.str_ranks,
             ranks.OrderBy(r => r.Rank),
-            rank => $"{Formatter.InlineCode($"{rank.Rank:D2}")}" +
-                    $" | XP: {Formatter.InlineCode($"{UserRanksService.CalculateXpNeededForRank(rank.Rank):D5}")}" +
-                    $" | {Formatter.Bold(rank.Name)}",
-            this.ModuleColor
+            rank => $"{InlineCode($"{rank.Rank:D2}")} | XP: {InlineCode($"{UserRanksService.CalculateXpNeededForRank(rank.Rank):D5}")} | {Bold(rank.Name)}"
         );
     }
-    #endregion
 
-    #region rank top
     [Command("top")]
-    public Task TopAsync(CommandContext ctx)
-        => this.InternalTopAsync(ctx, false);
-    #endregion
+    [RequireContext(ContextType.Guild)]
+    public Task TopAsync()
+        => this.InternalTopAsync(false);
 
-    #region rank topglobal
     [Command("topglobal")]
-    [Aliases("bestglobally", "globallystrongest", "globaltop", "topg", "gtop", "globalbest", "bestglobal")]
-    public Task TopGlobalAsync(CommandContext ctx)
-        => this.InternalTopAsync(ctx, true);
-    #endregion
+    [Alias("bestglobally", "globallystrongest", "globaltop", "topg", "gtop", "globalbest", "bestglobal")]
+    [RequireContext(ContextType.Guild)]
+    public Task TopGlobalAsync()
+        => this.InternalTopAsync(true);
 
-
-    #region internals
-    private async Task InternalTopAsync(CommandContext ctx, bool global)
+    private async Task InternalTopAsync(bool global)
     {
-        var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild.Id);
-        emb.WithLocalizedTitle(global ? TranslationKey.str_rank_topg : TranslationKey.str_rank_top);
-        emb.WithColor(this.ModuleColor);
-        string unknown = this.Localization.GetString(ctx.Guild.Id, TranslationKey.str_404);
+        var embed = new LocalizedEmbedBuilder(this.Localization, this.Context.Guild.Id)
+            .WithLocalizedTitle(global ? TranslationKey.str_rank_topg : TranslationKey.str_rank_top)
+            .WithColor(this.ModuleColor);
+        string unknown = this.Localization.GetString(this.Context.Guild.Id, TranslationKey.str_404);
 
-        UserRanksService rs = ctx.Services.GetRequiredService<UserRanksService>();
-        IReadOnlyList<XpCount> top = await rs.GetTopRankedUsersAsync(global ? null : ctx.Guild?.Id);
-
+        IReadOnlyList<XpCount> top = await this.userRanks.GetTopRankedUsersAsync(global ? null : this.Context.Guild.Id);
         var ranks = new Dictionary<short, string>();
         var notFoundUsers = new List<ulong>();
         foreach (XpCount xpc in top) {
-            DiscordUser? user = null;
-            try {
-                user = await ctx.Client.GetUserAsync(xpc.UserId);
-            } catch (NotFoundException) {
+            IUser? user = this.Context.Client.GetUser(xpc.UserId);
+            if (user is null)
                 notFoundUsers.Add(xpc.UserId);
-            }
 
             short rank = UserRanksService.CalculateRankForXp(xpc.Xp);
-            if (ctx.Guild is not null && !ranks.ContainsKey(rank)) {
-                XpRank? gr = await this.Service.GetAsync(ctx.Guild.Id, rank);
+            if (!ranks.ContainsKey(rank)) {
+                XpRank? gr = await this.guildRanks.GetAsync(this.Context.Guild.Id, rank);
                 if (gr is not null)
                     ranks.Add(rank, gr.Name);
             }
 
-            if (ctx.Guild is not null && ranks.TryGetValue(rank, out string? name))
-                emb.AddField(user?.ToDiscriminatorString() ?? unknown, $"{name} ({rank}) ({xpc.Xp} XP)");
+            string title = user is null ? unknown : UserDiscriminatorString(user);
+            if (ranks.TryGetValue(rank, out string? name))
+                embed.AddField(title, $"{name} ({rank}) ({xpc.Xp} XP)");
             else
-                emb.AddField(user?.ToDiscriminatorString() ?? unknown, $"LVL {rank} ({xpc.Xp} XP)");
-
+                embed.AddField(title, $"LVL {rank} ({xpc.Xp} XP)");
         }
 
-        await ctx.RespondAsync(emb.Build());
-
-        try {
-            await rs.RemoveDeletedUsers(notFoundUsers);
-            LogExt.Debug(ctx, "Removed not found users from XP count table");
-        } catch (Exception e) {
-            LogExt.Warning(ctx, e, "Failed to remove not found users from XP count table");
-        }
+        await this.ReplyAsync(embed: embed.Build());
+        await this.userRanks.RemoveDeletedUsers(notFoundUsers);
     }
-    #endregion
 }

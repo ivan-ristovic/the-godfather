@@ -20,11 +20,11 @@ RUN set -xe; \
     apt-get install -y curl sudo libsqlite3-0 #libopus0 libsodium23 ffmpeg 
 
 COPY --from=build /app ./
-COPY docker-entrypoint.sh /usr/local/sbin
+COPY docker-entrypoint /usr/local/sbin
 RUN set -xe; \
-    chmod +x /usr/local/sbin/docker-entrypoint.sh; \
-    chown gf /usr/local/sbin/docker-entrypoint.sh
+    chmod +x /usr/local/sbin/docker-entrypoint; \
+    chown gf /usr/local/sbin/docker-entrypoint
 
 VOLUME [ "/app/data" ]
-ENTRYPOINT [ "/usr/local/sbin/docker-entrypoint.sh" ]
+ENTRYPOINT [ "/usr/local/sbin/docker-entrypoint" ]
 CMD dotnet TheGodfather.dll

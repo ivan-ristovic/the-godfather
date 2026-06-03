@@ -1,367 +1,156 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
+using Discord.Commands;
+using TheGodfather.Attributes;
 using TheGodfather.Modules.Owner.Services;
 
 namespace TheGodfather.Modules.Owner;
 
-public abstract class BlockedEntityModule<T> : TheGodfatherServiceModule<BlockingService> where T : SnowflakeObject
+public abstract class BlockedEntityModule : TheGodfatherModule
 {
-    public abstract Task<int> BlockAsync(IEnumerable<ulong> ids, string? reason);
-    public abstract Task<int> UnblockAsync(IEnumerable<ulong> ids);
-    public abstract Task<IReadOnlyList<(T Entity, string? Reason)>> ListBlockedAsync(CommandContext ctx);
+    protected BlockingService Blocking { get; }
 
-
-    #region group
-    public Task BaseExecuteGroupAsync(CommandContext ctx)
-        => this.BaseListAsync(ctx);
-
-    public Task BaseExecuteGroupAsync(CommandContext ctx, params T[] entities)
-        => this.BaseAddAsync(ctx, null, entities);
-
-    public Task BaseExecuteGroupAsync(CommandContext ctx, string? reason, params T[] entities)
-        => this.BaseAddAsync(ctx, reason, entities);
-
-    public Task BaseExecuteGroupAsync(CommandContext ctx, T entity, string reason)
-        => this.BaseAddAsync(ctx, reason, entity);
-    #endregion
-
-    #region add
-    public Task BaseAddAsync(CommandContext ctx, params T[] entities)
-        => this.BaseAddAsync(ctx, null, entities);
-
-    public async Task BaseAddAsync(CommandContext ctx, string? reason, params T[] entities)
+    protected BlockedEntityModule(LocalizationService localization, BlockingService blocking)
+        : base(localization, new Color(0xE74C3C))
     {
-        if (reason?.Length >= 60)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_rsn(BlockedEntity.ReasonLimit));
-
-        if (entities is null || !entities.Any())
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_block_none);
-
-        int blocked = await this.BlockAsync(entities.Select(c => c.Id), reason);
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_block_add(blocked));
-
-        if (typeof(T) == typeof(DiscordGuild))
-            foreach (T entity in entities)
-                try {
-                    DiscordGuild g = await ctx.Client.GetGuildAsync(entity.Id);
-                    await g.LeaveAsync();
-                } catch {
-                    LogExt.Debug(ctx, "Failed to find/leave guild: {Id}", entity.Id);
-                }
+        this.Blocking = blocking;
     }
 
-    public Task BaseAddAsync(CommandContext ctx, T entity, string reason)
-        => this.BaseAddAsync(ctx, reason, entity);
-    #endregion
-
-    #region delete
-    public async Task BaseDeleteAsync(CommandContext ctx, params T[] entities)
+    protected async Task AddAsync(Func<IEnumerable<ulong>, string?, Task<int>> block, IEnumerable<ulong> ids, string? reason)
     {
-        if (entities is null || !entities.Any())
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_block_none);
+        if (reason?.Length >= BlockedEntity.ReasonLimit)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_rsn(BlockedEntity.ReasonLimit));
 
-        int unblocked = await this.UnblockAsync(entities.Select(c => c.Id));
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_block_del(unblocked));
+        ulong[] values = ids.Distinct().ToArray();
+        if (!values.Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_block_none);
+
+        int blocked = await block(values, reason);
+        await this.InfoAsync(this.ModuleColor, TranslationKey.fmt_block_add(blocked));
     }
-    #endregion
 
-    #region list
-    public async Task BaseListAsync(CommandContext ctx)
+    protected async Task DeleteAsync(Func<IEnumerable<ulong>, Task<int>> unblock, IEnumerable<ulong> ids)
     {
-        IReadOnlyList<(T Entity, string? Reason)> blocked = await this.ListBlockedAsync(ctx);
+        ulong[] values = ids.Distinct().ToArray();
+        if (!values.Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_block_none);
+
+        int unblocked = await unblock(values);
+        await this.InfoAsync(this.ModuleColor, TranslationKey.fmt_block_del(unblocked));
+    }
+}
+
+[Group("blockedusers")]
+[Alias("bu", "blockedu", "blockuser", "busers", "buser", "busr")]
+[RequirePrivilegedUser]
+public sealed class BlockedUsersModule : BlockedEntityModule
+{
+    public BlockedUsersModule(LocalizationService localization, BlockingService blocking)
+        : base(localization, blocking) { }
+
+    [Command("")]
+    [Priority(1)]
+    public Task ExecuteGroupAsync(params IUser[] users)
+        => this.AddAsync(users);
+
+    [Command("")]
+    [Priority(0)]
+    public Task ExecuteGroupAsync()
+        => this.ListAsync();
+
+    [Command("add")]
+    [Alias("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
+    public Task AddAsync(params IUser[] users)
+        => this.AddAsync(this.Blocking.BlockUsersAsync, users.Select(u => u.Id), null);
+
+    [Command("delete")]
+    [Alias("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
+    public Task DeleteAsync(params IUser[] users)
+        => this.DeleteAsync(this.Blocking.UnblockUsersAsync, users.Select(u => u.Id));
+
+    [Command("list")]
+    [Alias("print", "show", "view", "ls", "l", "p")]
+    public async Task ListAsync()
+    {
+        IReadOnlyList<BlockedUser> blocked = await this.Blocking.GetBlockedUsersAsync();
         if (!blocked.Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_block_list_none);
-
-        await ctx.PaginateAsync(
-            TranslationKey.str_block_list,
-            blocked,
-#pragma warning disable CS8603 // Possible null reference return.
-            tup => tup.Reason is not null ? $"{tup.Entity} ({tup.Reason})" : tup.Entity.ToString(),
-#pragma warning restore CS8603 // Possible null reference return.
-            this.ModuleColor,
-            5
-        );
+            throw new LocalizedCommandException(TranslationKey.cmd_err_block_list_none);
+        await this.RespondPagedAsync(TranslationKey.str_block_list, blocked, b => $"{MentionUtils.MentionUser(b.Id)} {b.Reason}");
     }
-    #endregion
 }
 
-
-[Group("blockedusers")][Module(ModuleType.Owner)][Hidden]
-[Aliases("bu", "blockedu", "blockuser", "busers", "buser", "busr")]
+[Group("blockedchannels")]
+[Alias("bc", "blockedc", "blockchannel", "bchannels", "bchannel", "bchn")]
 [RequirePrivilegedUser]
-public sealed class BlockedUsersModule : BlockedEntityModule<DiscordUser>
+public sealed class BlockedChannelsModule : BlockedEntityModule
 {
-    #region blockedusers
-    [GroupCommand][Priority(3)]
-    public Task ExecuteGroupAsync(CommandContext ctx)
-        => this.BaseListAsync(ctx);
+    public BlockedChannelsModule(LocalizationService localization, BlockingService blocking)
+        : base(localization, blocking) { }
 
-    [GroupCommand][Priority(2)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_block_add)] params DiscordUser[] entities)
-        => this.BaseAddAsync(ctx, null, entities);
+    [Command("")]
+    [Priority(1)]
+    public Task ExecuteGroupAsync(params IChannel[] channels)
+        => this.AddAsync(channels);
 
-    [GroupCommand][Priority(1)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_rsn)] string? reason,
-        [Description(TranslationKey.desc_block_add)] params DiscordUser[] entities)
-        => this.BaseAddAsync(ctx, reason, entities);
+    [Command("")]
+    [Priority(0)]
+    public Task ExecuteGroupAsync()
+        => this.ListAsync();
 
-    [GroupCommand][Priority(0)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_block_add)] DiscordUser entity,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string reason)
-        => this.BaseAddAsync(ctx, reason, entity);
-    #endregion
+    [Command("add")]
+    [Alias("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
+    public Task AddAsync(params IChannel[] channels)
+        => this.AddAsync(this.Blocking.BlockChannelsAsync, channels.Select(c => c.Id), null);
 
-    #region blockedusers add
-    [Command("add")][Priority(2)]
-    [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_block_add)] params DiscordUser[] entities)
-        => this.BaseAddAsync(ctx, null, entities);
-
-    [Command("add")][Priority(1)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_rsn)] string? reason,
-        [Description(TranslationKey.desc_block_add)] params DiscordUser[] entities)
-        => this.BaseAddAsync(ctx, reason, entities);
-
-    [Command("add")][Priority(0)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_block_add)] DiscordUser entity,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string reason)
-        => this.BaseAddAsync(ctx, reason, entity);
-    #endregion
-
-    #region blockedusers delete
     [Command("delete")]
-    [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
-    public Task DeleteAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_block_del)] params DiscordUser[] entities)
-        => this.BaseDeleteAsync(ctx, entities);
-    #endregion
+    [Alias("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
+    public Task DeleteAsync(params IChannel[] channels)
+        => this.DeleteAsync(this.Blocking.UnblockChannelsAsync, channels.Select(c => c.Id));
 
-    #region blockedusers list
     [Command("list")]
-    [Aliases("print", "show", "view", "ls", "l", "p")]
-    public Task ListAsync(CommandContext ctx)
-        => this.BaseListAsync(ctx);
-    #endregion
-
-
-    #region overrides
-    public override Task<int> BlockAsync(IEnumerable<ulong> ids, string? reason)
-        => this.Service.BlockUsersAsync(ids, reason);
-
-    public override async Task<IReadOnlyList<(DiscordUser Entity, string? Reason)>> ListBlockedAsync(CommandContext ctx)
+    [Alias("print", "show", "view", "ls", "l", "p")]
+    public async Task ListAsync()
     {
-        var validBlocked = new List<(DiscordUser, string?)>();
-        var toRemove = new List<ulong>();
-
-        foreach (BlockedUser blocked in await this.Service.GetBlockedUsersAsync())
-            try {
-                DiscordUser usr = await ctx.Client.GetUserAsync(blocked.Id);
-                validBlocked.Add((usr, blocked.Reason));
-            } catch (NotFoundException) {
-                LogExt.Warning(ctx, "Found 404 blocked user {UserId}", blocked.Id);
-                toRemove.Add(blocked.Id);
-            } catch (UnauthorizedException) {
-                LogExt.Warning(ctx, "Found 403 blocked user {UserId}", blocked.Id);
-            }
-
-        await this.Service.UnblockUsersAsync(toRemove);
-        return validBlocked.AsReadOnly();
+        IReadOnlyList<BlockedChannel> blocked = await this.Blocking.GetBlockedChannelsAsync();
+        if (!blocked.Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_block_list_none);
+        await this.RespondPagedAsync(TranslationKey.str_block_list, blocked, b => $"<#{b.Id}> {b.Reason}");
     }
-
-    public override Task<int> UnblockAsync(IEnumerable<ulong> ids)
-        => this.Service.UnblockUsersAsync(ids);
-    #endregion
-
 }
 
-[Group("blockedchannels")][Module(ModuleType.Owner)][Hidden]
-[Aliases("bc", "blockedc", "blockchannel", "bchannels", "bchannel", "bchn")]
+[Group("blockedguilds")]
+[Alias("bg", "blockedg", "blockguild", "bguilds", "bguild", "bgld")]
 [RequirePrivilegedUser]
-public sealed class BlockedChannelsModule : BlockedEntityModule<DiscordChannel>
+public sealed class BlockedGuildsModule : BlockedEntityModule
 {
-    #region blockedchannels
-    [GroupCommand][Priority(3)]
-    public Task ExecuteGroupAsync(CommandContext ctx)
-        => this.BaseListAsync(ctx);
+    public BlockedGuildsModule(LocalizationService localization, BlockingService blocking)
+        : base(localization, blocking) { }
 
-    [GroupCommand][Priority(2)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_block_add)] params DiscordChannel[] entities)
-        => this.BaseAddAsync(ctx, null, entities);
+    [Command("")]
+    [Priority(1)]
+    public Task ExecuteGroupAsync(params ulong[] ids)
+        => this.AddAsync(ids);
 
-    [GroupCommand][Priority(1)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_rsn)] string? reason,
-        [Description(TranslationKey.desc_block_add)] params DiscordChannel[] entities)
-        => this.BaseAddAsync(ctx, reason, entities);
+    [Command("")]
+    [Priority(0)]
+    public Task ExecuteGroupAsync()
+        => this.ListAsync();
 
-    [GroupCommand][Priority(0)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_block_add)] DiscordChannel entity,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string reason)
-        => this.BaseAddAsync(ctx, reason, entity);
-    #endregion
+    [Command("add")]
+    [Alias("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
+    public Task AddAsync(params ulong[] ids)
+        => this.AddAsync(this.Blocking.BlockGuildsAsync, ids, null);
 
-    #region blockedchannels add
-    [Command("add")][Priority(2)]
-    [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_block_add)] params DiscordChannel[] entities)
-        => this.BaseAddAsync(ctx, null, entities);
-
-    [Command("add")][Priority(1)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_rsn)] string? reason,
-        [Description(TranslationKey.desc_block_add)] params DiscordChannel[] entities)
-        => this.BaseAddAsync(ctx, reason, entities);
-
-    [Command("add")][Priority(0)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_block_add)] DiscordChannel entity,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string reason)
-        => this.BaseAddAsync(ctx, reason, entity);
-    #endregion
-
-    #region blockedchannels delete
     [Command("delete")]
-    [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
-    public Task DeleteAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_block_del)] params DiscordChannel[] entities)
-        => this.BaseDeleteAsync(ctx, entities);
-    #endregion
+    [Alias("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
+    public Task DeleteAsync(params ulong[] ids)
+        => this.DeleteAsync(this.Blocking.UnblockGuildsAsync, ids);
 
-    #region blockedchannels list
     [Command("list")]
-    [Aliases("print", "show", "view", "ls", "l", "p")]
-    public Task ListAsync(CommandContext ctx)
-        => this.BaseListAsync(ctx);
-    #endregion
-
-
-    #region overrides
-    public override Task<int> BlockAsync(IEnumerable<ulong> ids, string? reason)
-        => this.Service.BlockChannelsAsync(ids, reason);
-
-    public override async Task<IReadOnlyList<(DiscordChannel Entity, string? Reason)>> ListBlockedAsync(CommandContext ctx)
+    [Alias("print", "show", "view", "ls", "l", "p")]
+    public async Task ListAsync()
     {
-        var validBlocked = new List<(DiscordChannel, string?)>();
-        var toRemove = new List<ulong>();
-
-        foreach (BlockedChannel blocked in await this.Service.GetBlockedChannelsAsync())
-            try {
-                DiscordChannel chn = await ctx.Client.GetChannelAsync(blocked.Id);
-                validBlocked.Add((chn, blocked.Reason));
-            } catch (NotFoundException) {
-                LogExt.Warning(ctx, "Found 404 blocked channel {ChannelId}", blocked.Id);
-                toRemove.Add(blocked.Id);
-            } catch (UnauthorizedException) {
-                LogExt.Warning(ctx, "Found 403 blocked channel {ChannelId}", blocked.Id);
-            }
-
-        await this.Service.UnblockChannelsAsync(toRemove);
-        return validBlocked;
+        IReadOnlyList<BlockedGuild> blocked = await this.Blocking.GetBlockedGuildsAsync();
+        if (!blocked.Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_block_list_none);
+        await this.RespondPagedAsync(TranslationKey.str_block_list, blocked, b => $"{b.Id} {b.Reason}");
     }
-
-    public override Task<int> UnblockAsync(IEnumerable<ulong> ids)
-        => this.Service.UnblockChannelsAsync(ids);
-    #endregion
-}
-
-[Group("blockedguilds")][Module(ModuleType.Owner)][Hidden]
-[Aliases("bg", "blockedg", "blockguild", "bguilds", "bguild", "bgld")]
-[RequirePrivilegedUser]
-public sealed class BlockedGuildsModule : BlockedEntityModule<DiscordGuild>
-{
-    #region blockedguilds
-    [GroupCommand][Priority(3)]
-    public Task ExecuteGroupAsync(CommandContext ctx)
-        => this.BaseListAsync(ctx);
-
-    [GroupCommand][Priority(2)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_block_add)] params DiscordGuild[] entities)
-        => this.BaseAddAsync(ctx, null, entities);
-
-    [GroupCommand][Priority(1)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_rsn)] string? reason,
-        [Description(TranslationKey.desc_block_add)] params DiscordGuild[] entities)
-        => this.BaseAddAsync(ctx, reason, entities);
-
-    [GroupCommand][Priority(0)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_block_add)] DiscordGuild entity,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string reason)
-        => this.BaseAddAsync(ctx, reason, entity);
-    #endregion
-
-    #region blockedguilds add
-    [Command("add")][Priority(2)]
-    [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_block_add)] params DiscordGuild[] entities)
-        => this.BaseAddAsync(ctx, null, entities);
-
-    [Command("add")][Priority(1)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_rsn)] string? reason,
-        [Description(TranslationKey.desc_block_add)] params DiscordGuild[] entities)
-        => this.BaseAddAsync(ctx, reason, entities);
-
-    [Command("add")][Priority(0)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_block_add)] DiscordGuild entity,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string reason)
-        => this.BaseAddAsync(ctx, reason, entity);
-    #endregion
-
-    #region blockedguilds delete
-    [Command("delete")]
-    [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
-    public Task DeleteAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_block_del)] params DiscordGuild[] entities)
-        => this.BaseDeleteAsync(ctx, entities);
-    #endregion
-
-    #region blockedguilds list
-    [Command("list")]
-    [Aliases("print", "show", "view", "ls", "l", "p")]
-    public Task ListAsync(CommandContext ctx)
-        => this.BaseListAsync(ctx);
-    #endregion
-
-
-    #region overrides
-    public override Task<int> BlockAsync(IEnumerable<ulong> ids, string? reason)
-        => this.Service.BlockGuildsAsync(ids, reason);
-
-    public override async Task<IReadOnlyList<(DiscordGuild Entity, string? Reason)>> ListBlockedAsync(CommandContext ctx)
-    {
-        var validBlocked = new List<(DiscordGuild, string?)>();
-        var toRemove = new List<ulong>();
-
-        foreach (BlockedGuild blocked in await this.Service.GetBlockedGuildsAsync())
-            try {
-                DiscordGuild guild = await ctx.Client.GetGuildAsync(blocked.Id);
-                validBlocked.Add((guild, blocked.Reason));
-            } catch (NotFoundException) {
-                LogExt.Warning(ctx, "Found 404 blocked guild {ChannelId}", blocked.Id);
-                toRemove.Add(blocked.Id);
-            }
-
-        await this.Service.UnblockGuildsAsync(toRemove);
-        return validBlocked;
-    }
-
-    public override Task<int> UnblockAsync(IEnumerable<ulong> ids)
-        => this.Service.UnblockGuildsAsync(ids);
-    #endregion
 }

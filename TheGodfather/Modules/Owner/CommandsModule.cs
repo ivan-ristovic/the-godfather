@@ -1,69 +1,75 @@
-﻿using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using TheGodfather.Modules.Owner.Services;
+using Discord.Commands;
+using TheGodfather.Attributes;
 
 namespace TheGodfather.Modules.Owner;
 
-[Group("commands")][Module(ModuleType.Owner)][Hidden]
-[Aliases("cmds", "cmd")]
+[Group("commands")]
+[Alias("cmds", "cmd")]
 [RequireOwner]
-public sealed class CommandsModule : TheGodfatherServiceModule<CommandService>
+public sealed class CommandsModule : TheGodfatherModule
 {
-    #region commands
-    [GroupCommand]
-    public Task ExecuteGroupAsync(CommandContext ctx)
-        => this.ListAsync(ctx);
-    #endregion
+    private readonly CommandService commands;
+    private readonly DynamicCommandService dynamicCommands;
 
-    #region commands add
+    public CommandsModule(LocalizationService localization, CommandService commands, DynamicCommandService dynamicCommands)
+        : base(localization, new Color(0xE74C3C))
+    {
+        this.commands = commands;
+        this.dynamicCommands = dynamicCommands;
+    }
+
+    [Command("")]
+    public Task ExecuteGroupAsync()
+        => this.ListAsync();
+
     [Command("add")]
-    [Aliases("register", "reg", "new", "a", "+", "+=", "<<", "<", "<-", "<=")]
-    public Task AddAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_code)] string code)
+    [Alias("register", "reg", "new", "a", "+", "+=", "<<", "<", "<-", "<=")]
+    public async Task AddAsync([Remainder] string definition)
     {
-        if (string.IsNullOrWhiteSpace(code))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_cmd_add_cb);
+        (string? name, string? response) = ParseDefinition(definition);
+        if (string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(response))
+            throw new LocalizedCommandException(TranslationKey.cmd_err_cmd_add_cb);
 
-        try {
-            Type? t = CSharpCompilationService.CompileCommand(code);
-            if (t is null)
-                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_cmd_add_cb);
-
-            ctx.CommandsNext.RegisterCommands(t);
-            return ctx.InfoAsync(this.ModuleColor);
-        } catch (Exception ex) {
-            return ctx.FailAsync(TranslationKey.fmt_compile_fail(ex.GetType(), ex.Message));
-        }
+        if (!this.dynamicCommands.Add(name, response))
+            await this.FailAsync(TranslationKey.cmd_err_trig_exists(name));
+        else
+            await this.InfoAsync(this.ModuleColor);
     }
-    #endregion
 
-    #region commands delete
     [Command("delete")]
-    [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
-    public Task DeleteAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_cmd)] string command)
-    {
-        Command? cmd = ctx.CommandsNext.FindCommand(command, out _);
-        if (cmd is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_name_404(command));
-        ctx.CommandsNext.UnregisterCommands(cmd);
-        bool success = this.Service.RemoveCommand(cmd.QualifiedName);
-        return success ? ctx.InfoAsync(this.ModuleColor) : ctx.FailAsync(TranslationKey.cmd_err_cmd_del(cmd.QualifiedName));
-    }
-    #endregion
+    [Alias("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
+    public Task DeleteAsync([Remainder] string command)
+        => this.dynamicCommands.Remove(command)
+            ? this.InfoAsync(this.ModuleColor)
+            : this.FailAsync(TranslationKey.cmd_name_404(command));
 
-    #region commands list
     [Command("list")]
-    [Aliases("print", "show", "view", "ls", "l", "p")]
-    public Task ListAsync(CommandContext ctx)
+    [Alias("print", "show", "view", "ls", "l", "p")]
+    public Task ListAsync()
     {
-        return ctx.PaginateAsync(
-            TranslationKey.str_cmds,
-            ctx.CommandsNext.GetRegisteredCommands().OrderBy(cmd => cmd.QualifiedName),
-            cmd => Formatter.InlineCode(cmd.QualifiedName),
-            this.ModuleColor
-        );
+        IEnumerable<string> builtIn = this.commands.Commands
+            .OrderBy(cmd => cmd.Name)
+            .Select(cmd => InlineCode(string.Join(" ", cmd.Aliases.FirstOrDefault() ?? cmd.Name)));
+        IEnumerable<string> dynamic = this.dynamicCommands.GetAll().Keys.Select(cmd => $"{InlineCode(cmd)} *");
+        return this.RespondPagedAsync(TranslationKey.str_cmds, builtIn.Concat(dynamic), line => line);
     }
-    #endregion
+
+    private static (string? Name, string? Response) ParseDefinition(string definition)
+    {
+        definition = StripCodeFence(definition);
+        string[] split = definition.Split("=>", 2, StringSplitOptions.TrimEntries);
+        return split.Length == 2 ? (split[0], split[1]) : (null, null);
+    }
+
+    private static string StripCodeFence(string value)
+    {
+        value = value.Trim();
+        if (!value.StartsWith("```", StringComparison.Ordinal) || !value.EndsWith("```", StringComparison.Ordinal))
+            return value;
+
+        value = value[3..^3].Trim();
+        return value.StartsWith("cmd", StringComparison.OrdinalIgnoreCase)
+            ? value[3..].Trim()
+            : value;
+    }
 }

@@ -1,137 +1,103 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using Imgur.API.Enums;
-using Imgur.API.Models;
-using Imgur.API.Models.Impl;
+﻿using Discord.Commands;
+using TheGodfather.Attributes;
+using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Search;
 
-[Group("imgur")][Module(ModuleType.Searches)][NotBlocked]
-[Aliases("img", "im", "i")]
+[Group("imgur")]
+[Alias("img", "im", "i")]
 [Cooldown(3, 5, CooldownBucketType.Channel)]
-public sealed class ImgurModule : TheGodfatherServiceModule<ImgurService>
+public sealed class ImgurModule : TheGodfatherModule
 {
-    #region imgur
-    [GroupCommand][Priority(1)]
-    public async Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_res_num)] int amount,
-        [RemainingText][Description(TranslationKey.desc_sub)] string sub)
+    private readonly ImgurService imgur;
+
+
+    public ImgurModule(LocalizationService localization, ImgurService imgur)
+        : base(localization, new Color(0x1abc9c))
+    {
+        this.imgur = imgur;
+    }
+
+
+    [Command("")]
+    [Priority(1)]
+    public Task ExecuteGroupAsync(int amount, [Remainder] string sub)
+        => this.SearchSubAsync(sub, amount, SubredditGallerySortOrder.Top, TimeWindow.Day);
+
+    [Command("")]
+    [Priority(0)]
+    public Task ExecuteGroupAsync(string sub, int amount = 1)
+        => this.SearchSubAsync(sub, amount, SubredditGallerySortOrder.Top, TimeWindow.Day);
+
+    [Command("latest")]
+    [Priority(1)]
+    [Alias("l", "new", "newest")]
+    public Task LatestAsync(int amount, [Remainder] string sub)
+        => this.SearchSubAsync(sub, amount, SubredditGallerySortOrder.Time, TimeWindow.Day);
+
+    [Command("latest")]
+    [Priority(0)]
+    public Task LatestAsync(string sub, int amount = 1)
+        => this.LatestAsync(amount, sub);
+
+    [Command("top")]
+    [Priority(3)]
+    [Alias("t")]
+    public Task TopAsync(TimeWindow timespan, int amount, [Remainder] string sub)
+        => this.SearchSubAsync(sub, amount, SubredditGallerySortOrder.Top, timespan);
+
+    [Command("top")]
+    [Priority(2)]
+    public Task TopAsync(TimeWindow timespan, string sub, int amount = 1)
+        => this.TopAsync(timespan, amount, sub);
+
+    [Command("top")]
+    [Priority(1)]
+    public Task TopAsync(int amount, TimeWindow timespan, [Remainder] string sub)
+        => this.TopAsync(timespan, amount, sub);
+
+    [Command("top")]
+    [Priority(0)]
+    public Task TopAsync(int amount, [Remainder] string sub)
+        => this.TopAsync(TimeWindow.Day, amount, sub);
+
+    private async Task SearchSubAsync(string sub, int amount, SubredditGallerySortOrder sort, TimeWindow timeWindow)
     {
         if (string.IsNullOrWhiteSpace(sub))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_sub_none);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_none);
 
-        IEnumerable<IGalleryItem>? res = await this.Service.GetItemsFromSubAsync(
-            sub,
-            amount,
-            SubredditGallerySortOrder.Top,
-            TimeWindow.Day
-        );
-
-        await this.PrintImagesAsync(ctx, res);
+        IEnumerable<ImgurGalleryItem>? res = await this.imgur.GetItemsFromSubAsync(sub, amount, sort, timeWindow);
+        await this.PrintImagesAsync(res);
     }
 
-    [GroupCommand][Priority(0)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub)] string sub,
-        [Description(TranslationKey.desc_res_num)] int n = 1)
-        => this.ExecuteGroupAsync(ctx, n, sub);
-    #endregion
-
-    #region imgur latest
-    [Command("latest")][Priority(1)]
-    [Aliases("l", "new", "newest")]
-    public async Task LatestAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_res_num)] int amount,
-        [RemainingText][Description(TranslationKey.desc_sub)] string sub)
+    private async Task PrintImagesAsync(IEnumerable<ImgurGalleryItem>? res)
     {
-        if (string.IsNullOrWhiteSpace(sub)) 
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_sub_none);
+        if (res is null || !res.Any()) {
+            await this.FailAsync(TranslationKey.cmd_err_res_none);
+            return;
+        }
 
-        IEnumerable<IGalleryItem>? res = await this.Service.GetItemsFromSubAsync(sub, amount, SubredditGallerySortOrder.Time, TimeWindow.Day);
-        await this.PrintImagesAsync(ctx, res);
-    }
-
-    [Command("latest")][Priority(0)]
-    public Task LatestAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub)] string sub,
-        [Description(TranslationKey.desc_res_num)] int n)
-        => this.LatestAsync(ctx, n, sub);
-    #endregion
-
-    #region imgur top
-    [Command("top")][Priority(3)]
-    [Aliases("t")]
-    public async Task TopAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_timewindow)] TimeWindow timespan,
-        [Description(TranslationKey.desc_res_num)] int amount,
-        [RemainingText][Description(TranslationKey.desc_sub)] string sub)
-    {
-        if (string.IsNullOrWhiteSpace(sub)) 
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_sub_none);
-
-        IEnumerable<IGalleryItem>? res = await this.Service.GetItemsFromSubAsync(sub, amount, SubredditGallerySortOrder.Time, timespan);
-        await this.PrintImagesAsync(ctx, res);
-    }
-
-    [Command("top")][Priority(2)]
-    public Task TopAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_timewindow)] TimeWindow timespan,
-        [Description(TranslationKey.desc_sub)] string sub,
-        [Description(TranslationKey.desc_res_num)] int amount = 1)
-        => this.TopAsync(ctx, timespan, amount, sub);
-
-    [Command("top")][Priority(1)]
-    public Task TopAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_res_num)] int amount,
-        [Description(TranslationKey.desc_timewindow)] TimeWindow timespan,
-        [RemainingText][Description(TranslationKey.desc_sub)] string sub)
-        => this.TopAsync(ctx, timespan, amount, sub);
-
-    [Command("top")][Priority(0)]
-    public Task TopAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_res_num)] int amount,
-        [RemainingText][Description(TranslationKey.desc_sub)] string sub)
-        => this.TopAsync(ctx, TimeWindow.Day, amount, sub);
-
-    #endregion
-
-
-    #region internals
-    private Task PrintImagesAsync(CommandContext ctx, IEnumerable<IGalleryItem>? res)
-    {
-        if (res is null || !res.Any()) 
-            return ctx.FailAsync(TranslationKey.cmd_err_res_none);
-
-        return ctx.PaginateAsync(res.Take(20), (emb, r) => {
+        await this.RespondPagedAsync(res.Take(20), (emb, item) => {
             emb.WithColor(this.ModuleColor);
-            if (r is GalleryImage img) {
-                if ((img.Nsfw ?? false) && !ctx.Channel.IsNsfwOrNsfwName())
-                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_nsfw);
-                emb.WithTitle(img.Title);
-                emb.WithDescription(img.Description, false);
-                emb.WithImageUrl(img.Link);
-                emb.WithLocalizedTimestamp(img.DateTime);
-                emb.AddLocalizedField(TranslationKey.str_views, img.Views, true);
-                emb.AddLocalizedField(TranslationKey.str_score, img.Score, true, false);
-                emb.AddLocalizedField(TranslationKey.str_votes, $"{img.Points ?? 0} pts | {img.Ups ?? 0} ⬆️ {img.Downs ?? 0} ⬇️", true);
-                emb.AddLocalizedField(TranslationKey.str_comments, img.CommentCount, true, false);
-            } else if (r is GalleryAlbum album) {
-                if ((album.Nsfw ?? false) & !ctx.Channel.IsNsfwOrNsfwName())
-                    throw new CommandFailedException(ctx, TranslationKey.cmd_err_nsfw);
-                emb.WithTitle(album.Title);
-                emb.WithDescription(album.Description, false);
-                emb.WithImageUrl(album.Link);
-                emb.WithLocalizedTimestamp(album.DateTime);
-                emb.AddLocalizedField(TranslationKey.str_views, album.Views, true);
-                emb.AddLocalizedField(TranslationKey.str_score, album.Score, true, false);
-                emb.AddLocalizedField(TranslationKey.str_votes, $"{album.Points ?? 0} pts | {album.Ups ?? 0} ⬆️ {album.Downs ?? 0} ⬇️", true);
-                emb.AddLocalizedField(TranslationKey.str_comments, album.CommentCount, true, false);
-            } else {
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_imgur);
-            }
+            if (item is not ImgurGalleryImage and not ImgurGalleryAlbum)
+                throw new LocalizedCommandException(TranslationKey.cmd_err_imgur);
+
+            if ((item.Nsfw ?? false) && !this.IsNsfwChannel())
+                throw new LocalizedCommandException(TranslationKey.cmd_err_nsfw);
+
+            if (!string.IsNullOrWhiteSpace(item.Title))
+                emb.WithTitle(item.Title);
+            emb.WithDescription(item.Description, false);
+            if (!string.IsNullOrWhiteSpace(item.Link))
+                emb.WithImageUrl(item.Link);
+            emb.WithLocalizedTimestamp(item.DateTime);
+            emb.AddLocalizedField(TranslationKey.str_views, item.Views, true);
+            emb.AddLocalizedField(TranslationKey.str_score, item.Score, true, false);
+            emb.AddLocalizedField(TranslationKey.str_votes, $"{item.Points ?? 0} pts | {item.Ups ?? 0} up {item.Downs ?? 0} down", true);
+            emb.AddLocalizedField(TranslationKey.str_comments, item.CommentCount, true, false);
+
             return emb;
         });
     }
-    #endregion
 }

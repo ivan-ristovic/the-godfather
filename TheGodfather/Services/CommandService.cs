@@ -2,12 +2,13 @@
 using System.Collections.Immutable;
 using System.IO;
 using Newtonsoft.Json;
+using TheGodfather.Attributes;
 using TheGodfather.Common.Collections;
 using TheGodfather.Modules.Administration.Services;
 
 namespace TheGodfather.Services;
 
-public sealed class CommandService : ITheGodfatherService
+public sealed class CommandInfoService : ITheGodfatherService
 {
     public bool IsDisabled => false;
 
@@ -18,7 +19,7 @@ public sealed class CommandService : ITheGodfatherService
     private bool isDataLoaded;
 
 
-    public CommandService(GuildConfigService gcs, LocalizationService lcs, bool loadData = true)
+    public CommandInfoService(GuildConfigService gcs, LocalizationService lcs, bool loadData = true)
     {
         this.lcs = lcs;
         this.gcs = gcs;
@@ -31,6 +32,7 @@ public sealed class CommandService : ITheGodfatherService
 
     public void LoadData(string root)
     {
+        root = ContentPathResolver.Resolve(root);
         var cmds = new Dictionary<string, CommandInfo>();
         var mods = new Dictionary<ModuleType, ConcurrentHashSet<string>>();
 

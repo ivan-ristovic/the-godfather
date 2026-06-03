@@ -1,177 +1,184 @@
-﻿using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Discord.Commands;
+using TheGodfather.Attributes;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Exceptions;
-using TheGodfather.Modules.Search.Extensions;
 using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Search;
 
-[Group("reddit")][Module(ModuleType.Searches)][NotBlocked]
-[Aliases("r")]
+[Group("reddit")]
+[Alias("r")]
 [Cooldown(3, 5, CooldownBucketType.Channel)]
-public sealed class RedditModule : TheGodfatherServiceModule<RedditService>
+public sealed class RedditModule : TheGodfatherModule
 {
-    #region reddit
-    [GroupCommand]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub)] string sub = "all")
-        => this.InternalSearchAsync(ctx, sub, RedditCategory.Hot);
-    #endregion
+    private readonly RedditService reddit;
+    private readonly RssFeedsService rss;
 
-    #region reddit controversial
+
+    public RedditModule(LocalizationService localization, RedditService reddit, RssFeedsService rss)
+        : base(localization, new Color(0x1abc9c))
+    {
+        this.reddit = reddit;
+        this.rss = rss;
+    }
+
+
+    [Command("")]
+    public Task ExecuteGroupAsync(string sub = "all")
+        => this.InternalSearchAsync(sub, RedditCategory.Hot);
+
     [Command("controversial")]
-    [Description("Get newest controversial posts for a subreddit.")]
-    [Aliases("c")]
-    public Task ControversialAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub)] string sub)
-        => this.InternalSearchAsync(ctx, sub, RedditCategory.Controversial);
-    #endregion
+    [Alias("c")]
+    public Task ControversialAsync(string sub)
+        => this.InternalSearchAsync(sub, RedditCategory.Controversial);
 
-    #region reddit gilded
     [Command("gilded")]
-    [Aliases("g")]
-    public Task GildedAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub)] string sub)
-        => this.InternalSearchAsync(ctx, sub, RedditCategory.Gilded);
-    #endregion
+    [Alias("g")]
+    public Task GildedAsync(string sub)
+        => this.InternalSearchAsync(sub, RedditCategory.Gilded);
 
-    #region reddit hot
     [Command("hot")]
-    [Aliases("h")]
-    public Task HotAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub)] string sub)
-        => this.InternalSearchAsync(ctx, sub, RedditCategory.Hot);
-    #endregion
+    [Alias("h")]
+    public Task HotAsync(string sub)
+        => this.InternalSearchAsync(sub, RedditCategory.Hot);
 
-    #region reddit new
     [Command("new")]
-    [Aliases("n", "newest", "latest")]
-    public Task NewAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub)] string sub)
-        => this.InternalSearchAsync(ctx, sub, RedditCategory.New);
-    #endregion
+    [Alias("n", "newest", "latest")]
+    public Task NewAsync(string sub)
+        => this.InternalSearchAsync(sub, RedditCategory.New);
 
-    #region reddit rising
     [Command("rising")]
-    [Aliases("r")]
-    public Task RisingAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub)] string sub)
-        => this.InternalSearchAsync(ctx, sub, RedditCategory.Rising);
-    #endregion
+    [Alias("r")]
+    public Task RisingAsync(string sub)
+        => this.InternalSearchAsync(sub, RedditCategory.Rising);
 
-    #region reddit top
     [Command("top")]
-    [Aliases("t")]
-    public Task TopAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub)] string sub)
-        => this.InternalSearchAsync(ctx, sub, RedditCategory.Top);
-    #endregion
-        
-    #region reddit subscribe
-    [Command("subscribe")][Priority(1)]
-    [Aliases("sub", "follow")]
-    [RequireGuild][RequireUserPermissions(Permissions.ManageGuild)]
-    public async Task SubscribeAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_chn)] DiscordChannel chn,
-        [Description(TranslationKey.desc_sub)] string sub)
-    {
-        if (chn.IsTextOrNewsChannel())
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
+    [Alias("t")]
+    public Task TopAsync(string sub)
+        => this.InternalSearchAsync(sub, RedditCategory.Top);
 
-        if (string.IsNullOrWhiteSpace(sub))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_sub_none);
+    [Command("subscribe")]
+    [Priority(1)]
+    [Alias("sub", "follow")]
+    [RequireContext(ContextType.Guild)]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
+    public Task SubscribeAsync(ITextChannel channel, string sub)
+        => this.SubscribeInternalAsync(channel, sub);
 
-        string? url = this.Service.GetFeedUrlForSubreddit(sub, RedditCategory.New, out string? rsub);
-        if (url is null || rsub is null) {
-            if (rsub is null)
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_format);
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_404(rsub));
-        }
+    [Command("subscribe")]
+    [Priority(0)]
+    [Alias("sub", "follow")]
+    [RequireContext(ContextType.Guild)]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
+    public Task SubscribeAsync(string sub)
+        => this.SubscribeInternalAsync((ITextChannel)this.Context.Channel, sub);
 
-        if (await ctx.Services.GetRequiredService<RssFeedsService>().SubscribeAsync(ctx.Guild.Id, ctx.Channel.Id, url, rsub))
-            await ctx.InfoAsync(this.ModuleColor);
-        else
-            await ctx.FailAsync(TranslationKey.cmd_err_sub(url));
-    }
-
-    public Task SubscribeAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub)] string sub,
-        [Description(TranslationKey.desc_chn)] DiscordChannel? chn = null)
-        => this.SubscribeAsync(ctx, chn ?? ctx.Channel, sub);
-    #endregion
-
-    #region reddit unsubscribe
     [Command("unsubscribe")]
-    [Aliases("unfollow", "unsub")]
-    [RequireGuild][RequireUserPermissions(Permissions.ManageGuild)]
-    public async Task UnsubscribeAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub)] string sub)
+    [Alias("unfollow", "unsub")]
+    [RequireContext(ContextType.Guild)]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
+    public async Task UnsubscribeAsync(string sub)
     {
         if (string.IsNullOrWhiteSpace(sub))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_sub_none);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_none);
 
-        string? url = this.Service.GetFeedUrlForSubreddit(sub, RedditCategory.New, out string? rsub);
-        if (url is null || rsub is null) {
-            if (rsub is null)
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_format);
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_404(rsub));
-        }
+        string? url = this.reddit.GetFeedUrlForSubreddit(sub, RedditCategory.New, out string? normalizedSub);
+        if (url is null || normalizedSub is null)
+            throw new LocalizedCommandException(normalizedSub is null ? TranslationKey.cmd_err_sub_format : TranslationKey.cmd_err_sub_404(normalizedSub));
 
-        RssFeedsService rss = ctx.Services.GetRequiredService<RssFeedsService>();
-        RssFeed? feed = await rss.GetByUrlAsync(url);
+        RssFeed? feed = await this.rss.GetByUrlAsync(url);
         if (feed is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_not(rsub));
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_not(normalizedSub));
 
-        RssSubscription? s = await rss.Subscriptions.GetAsync((ctx.Guild.Id, ctx.Channel.Id), feed.Id);
-        if (s is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_not(rsub));
+        RssSubscription? subscription = await this.rss.Subscriptions.GetAsync((this.Context.Guild.Id, this.Context.Channel.Id), feed.Id);
+        if (subscription is null)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_not(normalizedSub));
 
-        await rss.Subscriptions.RemoveAsync((ctx.Guild.Id, ctx.Channel.Id), feed.Id);
-        await ctx.InfoAsync(this.ModuleColor);
+        await this.rss.Subscriptions.RemoveAsync((this.Context.Guild.Id, this.Context.Channel.Id), feed.Id);
+        await this.InfoAsync(this.ModuleColor);
     }
-    #endregion
-        
 
-    #region internals
-    private async Task<IReadOnlyList<RedditPost>> InternalRetrieveResultsAsync(CommandContext ctx, string sub, RedditCategory category)
+    private async Task SubscribeInternalAsync(ITextChannel channel, string sub)
     {
         if (string.IsNullOrWhiteSpace(sub))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_sub_none);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_none);
+
+        string? url = this.reddit.GetFeedUrlForSubreddit(sub, RedditCategory.New, out string? normalizedSub);
+        if (url is null || normalizedSub is null)
+            throw new LocalizedCommandException(normalizedSub is null ? TranslationKey.cmd_err_sub_format : TranslationKey.cmd_err_sub_404(normalizedSub));
+
+        if (await this.rss.SubscribeAsync(this.Context.Guild.Id, channel.Id, url, normalizedSub))
+            await this.InfoAsync(this.ModuleColor);
+        else
+            await this.FailAsync(TranslationKey.cmd_err_sub(url));
+    }
+
+    private async Task<IReadOnlyList<RedditPost>> InternalRetrieveResultsAsync(string sub, RedditCategory category)
+    {
+        if (string.IsNullOrWhiteSpace(sub))
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_none);
 
         IEnumerable<RedditPost>? res;
         try {
-            res = await this.Service.GetPostsAsync(sub, category);
+            res = await this.reddit.GetPostsAsync(sub, category);
         } catch (SearchServiceException<RedditError> e) {
             if (e.Details.ErrorCode == 404)
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_404(sub));
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_fail_det(sub, e.Details.ErrorMessage));
+                throw new LocalizedCommandException(TranslationKey.cmd_err_sub_404(sub));
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_fail_det(sub, e.Details.ErrorMessage));
         }
 
         if (res is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_format);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_format);
 
         return res.ToList().AsReadOnly();
     }
 
-    private async Task InternalSearchAsync(CommandContext ctx, string sub, RedditCategory category)
+    private async Task InternalSearchAsync(string sub, RedditCategory category)
     {
-        IReadOnlyList<RedditPost> res = await this.InternalRetrieveResultsAsync(ctx, sub, category);
+        IReadOnlyList<RedditPost> res = await this.InternalRetrieveResultsAsync(sub, category);
 
-        if (!ctx.Channel.IsNsfwOrNsfwName() && res.Any(p => p.IsNsfw)) {
-            await ctx.ImpInfoAsync(Emojis.Information, TranslationKey.cmd_err_sfw_only);
-            res = res.Where(p => !p.IsNsfw).ToList().AsReadOnly();
+        if (!this.IsNsfwChannel() && res.Any(post => post.IsNsfw)) {
+            await this.ImpInfoAsync(this.ModuleColor, Emojis.Information, TranslationKey.cmd_err_sfw_only);
+            res = res.Where(post => !post.IsNsfw).ToList().AsReadOnly();
         }
 
         if (!res.Any()) {
-            await ctx.FailAsync(TranslationKey.cmd_err_res_none);
+            await this.FailAsync(TranslationKey.cmd_err_res_none);
             return;
         }
 
-        await ctx.PaginateAsync(res, (emb, r) => emb.WithColor(this.ModuleColor).WithRedditPost(r), this.ModuleColor);
+        await this.RespondPagedAsync(res, (emb, post) => this.AddRedditPost(emb, post));
     }
-    #endregion
+
+    private LocalizedEmbedBuilder AddRedditPost(LocalizedEmbedBuilder emb, RedditPost post)
+    {
+        string title = post.Title;
+        if (post.IsLocked)
+            title = $"[LOCKED] {title}";
+        else if (post.IsArchived)
+            title = $"[ARCHIVED] {title}";
+        else if (post.IsNsfw)
+            title = $"[NSFW] {title}";
+        else if (post.IsPinned)
+            title = $"[PINNED] {title}";
+        else if (post.IsSpoiler)
+            title = $"[SPOILER] {title}";
+
+        emb.WithTitle(title);
+        emb.WithDescription(Format.Sanitize(post.MarkdownText), false);
+
+        if (string.Equals(post.PostType, "image", StringComparison.InvariantCultureIgnoreCase) && Uri.TryCreate(post.Url, UriKind.Absolute, out Uri? imageUri))
+            emb.WithImageUrl(imageUri.ToString());
+        else if (Uri.TryCreate(post.ThumbnailUrl, UriKind.Absolute, out Uri? thumbnailUri))
+            emb.WithThumbnail(thumbnailUri.ToString());
+        emb.WithUrl(post.Url);
+        emb.AddLocalizedField(TranslationKey.str_type, post.PostType, true, false);
+        emb.AddLocalizedField(TranslationKey.str_author, post.Author, true);
+        emb.AddLocalizedField(TranslationKey.str_comments, post.CommentCount, true);
+        emb.AddLocalizedField(TranslationKey.str_upvotes, post.UpvoteCount, true);
+        emb.AddLocalizedField(TranslationKey.str_upvote_ratio, post.UpvoteRatio, true);
+        if (post.AwardCount > 0)
+            emb.AddLocalizedField(TranslationKey.str_awards, post.AwardCount, true);
+        return emb;
+    }
 }

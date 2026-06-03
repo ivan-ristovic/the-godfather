@@ -23,7 +23,7 @@ public sealed class ChickenBoughtUpgradeService : DbAbstractionServiceBase<Chick
         => entity.Id;
 
     public override object[] EntityPrimaryKeySelector((ulong gid, ulong uid) grid, int id)
-        => new object[] { (long)grid.gid, (long)grid.uid, id };
+        => new object[] { id, (long)grid.gid, (long)grid.uid };
 
     public override IQueryable<ChickenBoughtUpgrade> GroupSelector(IQueryable<ChickenBoughtUpgrade> entities, (ulong gid, ulong uid) grid)
         => entities.Where(bu => bu.GuildIdDb == (long)grid.gid && bu.UserIdDb == (long)grid.uid);

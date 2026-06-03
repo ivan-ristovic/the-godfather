@@ -1,44 +1,45 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
+﻿using Discord.Commands;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Search;
 
-[Group("wikipedia")][Module(ModuleType.Searches)][NotBlocked]
-[Aliases("wiki")]
-[Cooldown(3, 5, CooldownBucketType.Channel)]
+[Group("wikipedia")]
+[Alias("wiki")]
 public sealed class WikiModule : TheGodfatherModule
 {
-    #region wikipedia
-    [GroupCommand]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_query)] string query)
-        => this.SearchAsync(ctx, query);
-    #endregion
-
-    #region wiki search
-    [Command("search")]
-    [Aliases("s", "find")]
-    public async Task SearchAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_query)] string query)
+    public WikiModule(LocalizationService localization)
+        : base(localization, new Color(0x1abc9c))
     {
-        if (string.IsNullOrWhiteSpace(query))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_query);
+    }
 
-        WikiSearchResponse? res = await WikiService.SearchAsync(query);
-        if (res is null || !res.Any()) {
-            await ctx.FailAsync(TranslationKey.cmd_err_res_none);
+
+    [Command("")]
+    public Task ExecuteGroupAsync([Remainder] string query)
+        => this.SearchAsync(query);
+
+    [Command("search")]
+    [Alias("s", "find")]
+    public async Task SearchAsync([Remainder] string query)
+    {
+        if (string.IsNullOrWhiteSpace(query)) {
+            await this.FailAsync(TranslationKey.cmd_err_query);
             return;
         }
 
-        await ctx.PaginateAsync(res, (emb, r) => {
-            emb.WithTitle(r.Title);
-            emb.WithDescription(r.Snippet);
-            emb.WithUrl(r.Url);
+        WikiSearchResponse? response = await WikiService.SearchAsync(query);
+        WikiSearchResult? result = response?.FirstOrDefault();
+        if (result is null) {
+            await this.FailAsync(TranslationKey.cmd_err_res_none);
+            return;
+        }
+
+        await this.RespondWithLocalizedEmbedAsync(emb => {
+            emb.WithTitle(result.Title);
+            emb.WithDescription(result.Snippet);
+            emb.WithUrl(result.Url);
+            emb.WithColor(this.ModuleColor);
             emb.WithLocalizedFooter(TranslationKey.fmt_powered_by("Wikipedia API"), WikiService.WikipediaIconUrl);
-            return emb;
-        }, this.ModuleColor);
+        });
     }
-    #endregion
 }

@@ -1,191 +1,152 @@
-﻿using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using TheGodfather.EventListeners.Common;
+using Discord.Commands;
+using TheGodfather.Attributes;
 using TheGodfather.Modules.Administration.Extensions;
-using TheGodfather.Modules.Administration.Services;
 
 namespace TheGodfather.Modules.Administration;
 
-[Group("actionhistory")][Module(ModuleType.Administration)][NotBlocked]
-[Aliases("history", "ah")]
-[RequireGuild][RequireUserPermissions(Permissions.ViewAuditLog)]
+[Group("actionhistory")]
+[Alias("history", "ah")]
+[RequireContext(ContextType.Guild)]
+[RequireUserPermission(GuildPermission.ViewAuditLog)]
 [Cooldown(3, 5, CooldownBucketType.Guild)]
-public sealed class ActionHistoryModule : TheGodfatherServiceModule<ActionHistoryService>
+public sealed class ActionHistoryModule : TheGodfatherModule
 {
-    #region actionhistory
-    [GroupCommand][Priority(1)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_user)] DiscordUser user)
-        => this.ListAsync(ctx, user);
+    private readonly ActionHistoryService history;
 
-    [GroupCommand][Priority(0)]
-    public Task ExecuteGroupAsync(CommandContext ctx)
-        => this.ListAsync(ctx);
-    #endregion
 
-    #region actionhistory add
+    public ActionHistoryModule(LocalizationService localization, ActionHistoryService history)
+        : base(localization, new Color(0x3498DB))
+    {
+        this.history = history;
+    }
+
+
+    [Command("")]
+    [Priority(1)]
+    public Task ExecuteGroupAsync(IUser user)
+        => this.ListAsync(user);
+
+    [Command("")]
+    [Priority(0)]
+    public Task ExecuteGroupAsync()
+        => this.ListAsync();
+
     [Command("add")]
-    [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
-    public async Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_user)] DiscordUser user,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string notes)
+    [Alias("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
+    public async Task AddAsync(IUser user, [Remainder] string notes)
     {
         if (string.IsNullOrWhiteSpace(notes))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.rsn_none);
+            throw new LocalizedCommandException(TranslationKey.rsn_none);
 
         if (notes.Length > ActionHistoryEntry.NoteLimit)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_ah_note(ActionHistoryEntry.NoteLimit));
+            throw new LocalizedCommandException(TranslationKey.cmd_err_ah_note(ActionHistoryEntry.NoteLimit));
 
-        await this.Service.LimitedAddAsync(new ActionHistoryEntry {
+        await this.history.LimitedAddAsync(new ActionHistoryEntry {
             Type = ActionHistoryEntry.Action.CustomNote,
-            GuildId = ctx.Guild.Id,
+            GuildId = this.Context.Guild.Id,
             Notes = notes,
             Time = DateTimeOffset.Now,
             UserId = user.Id
         });
-        await ctx.GuildLogAsync(emb => {
-            emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, TranslationKey.evt_ah_add);
-            emb.WithDescription(user.ToDiscriminatorString());
-            emb.AddLocalizedField(TranslationKey.str_notes, notes, unknown: false);
-        });
-        await ctx.InfoAsync(this.ModuleColor);
+
+        await this.InfoAsync(this.ModuleColor);
     }
-    #endregion
 
-    #region actionhistory delete
-    [Group("delete")]
-    [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-    public class ActionHistoryDeleteModule : TheGodfatherServiceModule<ActionHistoryService>
+    [Command("delete")]
+    [Alias("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
+    public Task DeleteUsersAsync(params IUser[] users)
+        => this.DeleteUsersInternalAsync(users);
+
+    [Command("delete users")]
+    [Alias("delete members", "delete member", "delete mem", "delete user", "delete usr", "delete m", "delete u")]
+    public Task DeleteUsersInternalAsync(params IUser[] users)
+        => this.DeleteUsersCoreAsync(users);
+
+    [Command("delete before")]
+    [Alias("delete due", "delete b")]
+    public Task DeleteBeforeAsync([Remainder] string when)
+        => this.DeleteByDateAsync(when, before: true);
+
+    [Command("delete after")]
+    [Alias("delete aft", "delete a")]
+    public Task DeleteAfterAsync([Remainder] string when)
+        => this.DeleteByDateAsync(when, before: false);
+
+    [Command("deleteall")]
+    [Alias("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
+    public async Task DeleteAllAsync()
     {
-        #region actionhistory delete
-        [GroupCommand]
-        public Task DeleteAsync(CommandContext ctx,
-            [RemainingText][Description(TranslationKey.desc_users)] params DiscordUser[] users)
-            => this.DeleteUsersAsync(ctx, users);
-        #endregion
-
-        #region actionhistory delete users
-        [Command("users")]
-        [Aliases("members", "member", "mem", "user", "usr", "m", "u")]
-        public async Task DeleteUsersAsync(CommandContext ctx,
-            [Description(TranslationKey.desc_users)] params DiscordUser[] users)
-        {
-            foreach (DiscordUser user in users.Distinct())
-                await this.Service.ClearAsync((ctx.Guild.Id, user.Id));
-
-            await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_ah_del_all);
-        }
-        #endregion
-
-        #region actionhistory delete before
-        [Command("before")]
-        [Aliases("due", "b")]
-        public async Task DeleteBeforeAsync(CommandContext ctx,
-            [Description(TranslationKey.desc_datetime)] DateTimeOffset when)
-        {
-            int removed = await this.Service.RemoveBeforeAsync(ctx.Guild.Id, when);
-
-            await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, TranslationKey.evt_ah_del);
-                emb.AddLocalizedField(TranslationKey.str_count, removed);
-            });
-
-            await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_ah_del(removed));
-        }
-        #endregion
-
-        #region actionhistory delete after
-        [Command("after")]
-        [Aliases("aft", "a")]
-        public async Task DeleteAfterAsync(CommandContext ctx,
-            [Description(TranslationKey.desc_datetime)] DateTimeOffset when)
-        {
-            int removed = await this.Service.RemoveAfterAsync(ctx.Guild.Id, when);
-
-            await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, TranslationKey.evt_ah_del);
-                emb.AddLocalizedField(TranslationKey.str_count, removed);
-            });
-
-            await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_ah_del(removed));
-        }
-        #endregion
-    }
-    #endregion
-
-    #region actionhistory deleteall
-    [Command("deleteall")][UsesInteractivity]
-    [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
-    public async Task DeleteAllAsync(CommandContext ctx)
-    {
-        if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_ah_rem_all))
+        if (!await this.ConfirmAsync(TranslationKey.q_ah_rem_all))
             return;
 
-        await this.Service.ClearAsync(ctx.Guild.Id);
-        await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, TranslationKey.evt_ah_del_all));
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_ah_del_all);
+        await this.history.ClearAsync(this.Context.Guild.Id);
+        await this.InfoAsync(this.ModuleColor, TranslationKey.evt_ah_del_all);
     }
-    #endregion
 
-    #region actionhistory list
-    [Command("list")][Priority(1)]
-    [Aliases("print", "show", "view", "ls", "l", "p")]
-    public async Task ListAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_user)] DiscordUser user)
+    [Command("list")]
+    [Priority(1)]
+    [Alias("print", "show", "view", "ls", "l", "p")]
+    public async Task ListAsync(IUser user)
     {
-        IReadOnlyList<ActionHistoryEntry> history = await this.Service.GetAllAsync((ctx.Guild.Id, user.Id));
-        if (!history.Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_ah_none);
+        IReadOnlyList<ActionHistoryEntry> entries = await this.history.GetAllAsync((this.Context.Guild.Id, user.Id));
+        if (!entries.Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_ah_none);
 
-        await ctx.RespondWithLocalizedEmbedAsync(emb => {
-            emb.WithTitle(user.ToDiscriminatorString());
+        await this.RespondWithLocalizedEmbedAsync(emb => {
+            emb.WithTitle(UserDiscriminatorString(user));
             emb.WithColor(this.ModuleColor);
-            IEnumerable<ActionHistoryEntry> orderedHistory = history
-                    .OrderByDescending(e => e.Type)
-                    .ThenByDescending(e => e.Time)
-                    .Take(DiscordLimits.EmbedFieldLimit)
-                ;
-            foreach (ActionHistoryEntry e in orderedHistory) {
-                TranslationKey title = e.Type.ToLocalizedKey();
+            foreach (ActionHistoryEntry entry in entries.OrderByDescending(e => e.Type).ThenByDescending(e => e.Time).Take(DiscordLimits.EmbedFieldLimit)) {
+                TranslationKey title = entry.Type.ToLocalizedKey();
                 string content = this.Localization.GetString(
-                    ctx.Guild.Id, 
-                    TranslationKey.fmt_ah_emb(
-                        this.Localization.GetLocalizedTimeString(ctx.Guild.Id, e.Time),
-                        e.Notes
-                    )
+                    this.Context.Guild.Id,
+                    TranslationKey.fmt_ah_emb(this.Localization.GetLocalizedTimeString(this.Context.Guild.Id, entry.Time), entry.Notes)
                 );
                 emb.AddLocalizedField(title, content);
             }
-            emb.WithThumbnail(user.AvatarUrl);
+            emb.WithThumbnail(user.GetAvatarUrl() ?? user.GetDefaultAvatarUrl());
         });
     }
 
-    [Command("list")][Priority(0)]
-    public async Task ListAsync(CommandContext ctx)
+    [Command("list")]
+    [Priority(0)]
+    public async Task ListAsync()
     {
-        IReadOnlyList<ActionHistoryEntry> history = await this.Service.GetAllAsync(ctx.Guild.Id);
-        if (!history.Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_ah_none_match);
+        IReadOnlyList<ActionHistoryEntry> entries = await this.history.GetAllAsync(this.Context.Guild.Id);
+        if (!entries.Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_ah_none_match);
 
-        var users = new Dictionary<ulong, DiscordUser>();
-        foreach (ActionHistoryEntry e in history) {
-            if (users.ContainsKey(e.UserId))
-                continue;
-            DiscordUser? user = await ctx.Client.GetUserAsync(e.UserId);
-            if (user is not null)
-                users.Add(e.UserId, user);
+        await this.RespondPagedAsync(
+            entries.OrderByDescending(e => e.Type).ThenByDescending(e => e.Time),
+            (emb, entry) => {
+                IUser? user = this.Context.Client.GetUser(entry.UserId);
+                emb.WithLocalizedTitle(entry.Type.ToLocalizedKey());
+                emb.WithDescription(user is null ? entry.UserId.ToString() : UserDiscriminatorString(user));
+                emb.AddLocalizedField(TranslationKey.str_notes, entry.Notes, unknown: false);
+                emb.WithLocalizedTimestamp(entry.Time, user?.GetAvatarUrl() ?? user?.GetDefaultAvatarUrl());
+                return emb;
+            }
+        );
+    }
+
+
+    private async Task DeleteUsersCoreAsync(params IUser[] users)
+    {
+        foreach (IUser user in users.DistinctBy(u => u.Id))
+            await this.history.ClearAsync((this.Context.Guild.Id, user.Id));
+
+        await this.InfoAsync(this.ModuleColor, TranslationKey.str_ah_del_all);
+    }
+
+    private async Task DeleteByDateAsync(string when, bool before)
+    {
+        if (!DateTimeOffset.TryParse(when, this.Localization.GetGuildCulture(this.Context.Guild.Id), DateTimeStyles.AssumeLocal, out DateTimeOffset parsed)) {
+            await this.FailAsync("Invalid date/time.");
+            return;
         }
 
-        await ctx.PaginateAsync(history.OrderByDescending(e => e.Type).ThenByDescending(e => e.Time), (emb, e) => {
-            emb.WithLocalizedTitle(e.Type.ToLocalizedKey());
-            DiscordUser? user = users.GetValueOrDefault(e.UserId);
-            emb.WithDescription(user?.ToDiscriminatorString() ?? e.UserId.ToString());
-            emb.AddLocalizedField(TranslationKey.str_notes, e.Notes, unknown: false);
-            emb.WithLocalizedTimestamp(e.Time, user?.AvatarUrl);
-            return emb;
-        }, this.ModuleColor);
+        int removed = before
+            ? await this.history.RemoveBeforeAsync(this.Context.Guild.Id, parsed)
+            : await this.history.RemoveAfterAsync(this.Context.Guild.Id, parsed);
+        await this.InfoAsync(this.ModuleColor, TranslationKey.str_ah_del(removed));
     }
-    #endregion
 }

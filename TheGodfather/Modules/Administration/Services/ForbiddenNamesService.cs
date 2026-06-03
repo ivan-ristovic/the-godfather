@@ -1,11 +1,11 @@
-﻿using System.Collections.Immutable;
+using System.Collections.Immutable;
 using System.Text.RegularExpressions;
 
 namespace TheGodfather.Modules.Administration.Services;
 
-public sealed class ForbiddenNamesService : ProtectionServiceBase, ITheGodfatherService
+public sealed class ForbiddenNamesService : ITheGodfatherService
 {
-    private static readonly ImmutableArray<ulong> _ids = new ulong[] {
+    private static readonly ImmutableArray<ulong> _protectedIds = new ulong[] {
         125649888611401728,
         201315884709576705,
         379378609942560770,
@@ -14,26 +14,26 @@ public sealed class ForbiddenNamesService : ProtectionServiceBase, ITheGodfather
         621356153163285419
     }.ToImmutableArray();
 
-    public override bool TryAddGuildToWatch(ulong gid) => true;
-    public override bool TryRemoveGuildFromWatch(ulong gid) => true;
+    public bool IsDisabled => false;
+
+    private readonly DbContextBuilder dbb;
 
 
-    public ForbiddenNamesService(DbContextBuilder dbb, LoggingService ls, SchedulingService ss, GuildConfigService gcs)
-        : base(dbb, ls, ss, gcs, "_gf: Forbidden name") { }
+    public ForbiddenNamesService(DbContextBuilder dbb)
+    {
+        this.dbb = dbb;
+    }
 
 
     public bool IsSafePattern(Regex regex)
-        => _ids.All(u => !regex.IsMatch(u.ToString()));
+        => _protectedIds.All(id => !regex.IsMatch(id.ToString()));
 
     public bool IsNameForbidden(ulong gid, string name, out ForbiddenName? match)
     {
-        match = null;
-        using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-            match = this.InternalGetForbiddenNamesForGuild(db, gid)
-                    .AsEnumerable()
-                    .FirstOrDefault(fn => fn.Regex.IsMatch(name))
-                ;
-        }
+        using TheGodfatherDbContext db = this.dbb.CreateContext();
+        match = this.InternalGetForbiddenNamesForGuild(db, gid)
+            .AsEnumerable()
+            .FirstOrDefault(fn => fn.Regex.IsMatch(name));
         return match is not null;
     }
 
@@ -44,11 +44,9 @@ public sealed class ForbiddenNamesService : ProtectionServiceBase, ITheGodfather
     }
 
     public Task<bool> AddForbiddenNameAsync(ulong gid, string regexString, Punishment.Action? action = null)
-    {
-        return regexString.TryParseRegex(out Regex? regex)
+        => regexString.TryParseRegex(out Regex? regex)
             ? this.AddForbiddenNameAsync(gid, regex, action)
             : throw new ArgumentException($"Invalid regex string: {regexString}", nameof(regexString));
-    }
 
     public async Task<bool> AddForbiddenNameAsync(ulong gid, Regex? regex, Punishment.Action? action = null)
     {
@@ -57,32 +55,31 @@ public sealed class ForbiddenNamesService : ProtectionServiceBase, ITheGodfather
 
         string regexString = regex.ToString();
 
-        await using (TheGodfatherDbContext db = this.dbb.CreateContext()) {
-            IEnumerable<ForbiddenName> fnames = this.InternalGetForbiddenNamesForGuild(db, gid).AsEnumerable();
-            if (fnames.Any(fname => string.Compare(fname.RegexString, regexString, true) == 0))
-                return false;
-            var fname = new ForbiddenName {
-                GuildId = gid,
-                RegexString = regexString,
-                RegexLazy = regex,
-                ActionOverride = action
-            };
-            db.ForbiddenNames.Add(fname);
-            await db.SaveChangesAsync();
-            return true;
-        }
+        await using TheGodfatherDbContext db = this.dbb.CreateContext();
+        IEnumerable<ForbiddenName> fnames = this.InternalGetForbiddenNamesForGuild(db, gid).AsEnumerable();
+        if (fnames.Any(fname => string.Equals(fname.RegexString, regexString, StringComparison.OrdinalIgnoreCase)))
+            return false;
+
+        db.ForbiddenNames.Add(new ForbiddenName {
+            GuildId = gid,
+            RegexString = regexString,
+            RegexLazy = regex,
+            ActionOverride = action
+        });
+        await db.SaveChangesAsync();
+        return true;
     }
 
     public async Task<bool> AddForbiddenNamesAsync(ulong gid, IEnumerable<string> regexStrings, Punishment.Action? action = null)
     {
-        bool[] res = await Task.WhenAll(regexStrings.Select(s => s.ToRegex()).Select(r => this.AddForbiddenNameAsync(gid, r, action)));
-        return res.All(r => r);
+        bool[] results = await Task.WhenAll(regexStrings.Select(s => s.ToRegex()).Select(r => this.AddForbiddenNameAsync(gid, r, action)));
+        return results.All(r => r);
     }
 
     public async Task<bool> AddForbiddenNamesAsync(ulong gid, IEnumerable<Regex> regexes, Punishment.Action? action = null)
     {
-        bool[] res = await Task.WhenAll(regexes.Select(r => this.AddForbiddenNameAsync(gid, r, action)));
-        return res.All(r => r);
+        bool[] results = await Task.WhenAll(regexes.Select(r => this.AddForbiddenNameAsync(gid, r, action)));
+        return results.All(r => r);
     }
 
     public Task<int> RemoveForbiddenNamesAsync(ulong gid)
@@ -92,7 +89,7 @@ public sealed class ForbiddenNamesService : ProtectionServiceBase, ITheGodfather
         => this.InternalRemoveByPredicateAsync(gid, fn => ids.Contains(fn.Id));
 
     public Task<int> RemoveForbiddenNamesAsync(ulong gid, IEnumerable<string> regexStrings)
-        => this.InternalRemoveByPredicateAsync(gid, fn => regexStrings.Any(rstr => string.Compare(rstr, fn.RegexString, true) == 0));
+        => this.InternalRemoveByPredicateAsync(gid, fn => regexStrings.Any(r => string.Equals(r, fn.RegexString, StringComparison.OrdinalIgnoreCase)));
 
     public Task<int> RemoveForbiddenNamesMatchingAsync(ulong gid, string match)
         => this.InternalRemoveByPredicateAsync(gid, fn => fn.Regex.IsMatch(match));
@@ -104,7 +101,7 @@ public sealed class ForbiddenNamesService : ProtectionServiceBase, ITheGodfather
     private async Task<int> InternalRemoveByPredicateAsync(ulong gid, Func<ForbiddenName, bool> predicate)
     {
         await using TheGodfatherDbContext db = this.dbb.CreateContext();
-        var fnames = this.InternalGetForbiddenNamesForGuild(db, gid)
+        List<ForbiddenName> fnames = this.InternalGetForbiddenNamesForGuild(db, gid)
             .AsEnumerable()
             .Where(predicate)
             .ToList();

@@ -44,13 +44,13 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                     AssertGuildReactionCount(i, this.erCount[i]);
                 IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[1]);
                 Assert.That(
-                    ers.Single(er => er.Response == Emojis.Cake.GetDiscordName() && er.Triggers.Single() == "abc"),
+                    ers.Single(er => er.Response == Emojis.Cake && er.Triggers.Single() == "abc"),
                     Is.Not.Null);
                 Assert.That(
-                    ers.Single(er => er.Response == Emojis.ArrowUp.GetDiscordName() && er.Triggers.Single() == "abc"),
+                    ers.Single(er => er.Response == Emojis.ArrowUp && er.Triggers.Single() == "abc"),
                     Is.Not.Null);
                 Assert.That(
-                    ers.Single(er => er.Response == Emojis.ArrowDown.GetDiscordName() && er.Triggers.Single() == "abc"),
+                    ers.Single(er => er.Response == Emojis.ArrowDown && er.Triggers.Single() == "abc"),
                     Is.Not.Null);
             }
         );
@@ -111,7 +111,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 this.UpdateEmojiReactionCount(db);
                 this.Service.LoadData();
                 Assert.That(
-                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information.GetDiscordName(),
+                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information,
                         new[] {"test"}, false),
                     Is.EqualTo(1)
                 );
@@ -128,7 +128,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                     .AsEnumerable();
                 Assert.That(
                     x.Single(er =>
-                        er.Response == Emojis.Information.GetDiscordName() && er.DbTriggers.Single().Trigger == "test"),
+                        er.Response == Emojis.Information && er.DbTriggers.Single().Trigger == "test"),
                     Is.Not.Null
                 );
                 return Task.CompletedTask;
@@ -140,12 +140,12 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 this.UpdateEmojiReactionCount(db);
                 this.Service.LoadData();
                 Assert.That(
-                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information.GetDiscordName(),
+                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information,
                         new[] {"test"}, false),
                     Is.EqualTo(1)
                 );
                 Assert.That(
-                    await this.Service.AddEmojiReactionAsync(MockData.Ids[1], Emojis.Information.GetDiscordName(),
+                    await this.Service.AddEmojiReactionAsync(MockData.Ids[1], Emojis.Information,
                         new[] {"testing"}, false),
                     Is.EqualTo(1)
                 );
@@ -166,7 +166,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                         .AsQueryable()
                         .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
                         .AsEnumerable()
-                        .Single(er => er.Response == Emojis.Information.GetDiscordName()
+                        .Single(er => er.Response == Emojis.Information
                                       && er.DbTriggers.Single().Trigger == "test"),
                     Is.Not.Null
                 );
@@ -175,7 +175,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                         .AsQueryable()
                         .Where(er => er.GuildIdDb == (long)MockData.Ids[1])
                         .AsEnumerable()
-                        .Single(er => er.Response == Emojis.Information.GetDiscordName()
+                        .Single(er => er.Response == Emojis.Information
                                       && er.DbTriggers.Single().Trigger == "testing"),
                     Is.Not.Null
                 );
@@ -188,17 +188,17 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 this.UpdateEmojiReactionCount(db);
                 this.Service.LoadData();
                 Assert.That(
-                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information.GetDiscordName(),
+                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information,
                         new[] {"test"}, false),
                     Is.EqualTo(1)
                 );
                 Assert.That(
-                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.AlarmClock.GetDiscordName(),
+                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.AlarmClock,
                         new[] {"regex(es)? (much)+"}, false),
                     Is.EqualTo(1)
                 );
                 Assert.That(
-                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information.GetDiscordName(),
+                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information,
                         new[] {"testing"}, false),
                     Is.EqualTo(1)
                 );
@@ -207,7 +207,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 Assert.That(db.EmojiReactions, Has.Exactly(2).Items);
                 IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                 Assert.That(ers, Has.Exactly(2).Items);
-                EmojiReaction info = ers.Single(e => e.Response == Emojis.Information.GetDiscordName());
+                EmojiReaction info = ers.Single(e => e.Response == Emojis.Information);
                 Assert.That(info.Triggers, Has.Exactly(2).Items);
                 Assert.That(info.IsMatch("This is a tEst."));
                 Assert.That(info.IsMatch("This is a -tEsting."));
@@ -221,7 +221,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                         .AsQueryable()
                         .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
                         .AsEnumerable()
-                        .Single(er => er.Response == Emojis.Information.GetDiscordName()
+                        .Single(er => er.Response == Emojis.Information
                                       && er.DbTriggers.Count == 2
                         ),
                     Is.Not.Null
@@ -235,7 +235,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 this.UpdateEmojiReactionCount(db);
                 this.Service.LoadData();
                 Assert.That(
-                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information.GetDiscordName(),
+                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information,
                         new[] {"test(ing)? regex(es)?"}, true),
                     Is.EqualTo(1)
                 );
@@ -244,7 +244,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 Assert.That(db.EmojiReactions, Has.Exactly(1).Items);
                 IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                 Assert.That(ers, Has.Exactly(1).Items);
-                EmojiReaction info = ers.Single(e => e.Response == Emojis.Information.GetDiscordName());
+                EmojiReaction info = ers.Single(e => e.Response == Emojis.Information);
                 Assert.That(info.Triggers, Has.Exactly(1).Items);
                 Assert.That(info.IsMatch("This is a tEsting regexes example which passes"));
                 Assert.That(info.IsMatch("This is another tEst regex example which passes"));
@@ -259,7 +259,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                         .AsQueryable()
                         .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
                         .AsEnumerable()
-                        .Single(er => er.Response == Emojis.Information.GetDiscordName()
+                        .Single(er => er.Response == Emojis.Information
                                       && er.DbTriggers.Count == 1
                         ),
                     Is.Not.Null
@@ -277,12 +277,12 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 this.UpdateEmojiReactionCount(db);
                 this.Service.LoadData();
                 Assert.That(
-                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information.GetDiscordName(),
+                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information,
                         new[] {"test(ing)? regex(es)?"}, true),
                     Is.EqualTo(1)
                 );
                 Assert.That(
-                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information.GetDiscordName(),
+                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Information,
                         new[] {"another test"}, false),
                     Is.EqualTo(1)
                 );
@@ -291,7 +291,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value) + 1).Items);
                 IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                 Assert.That(ers, Has.Exactly(this.erCount[0] + 1).Items);
-                EmojiReaction info = ers.Single(e => e.Response == Emojis.Information.GetDiscordName());
+                EmojiReaction info = ers.Single(e => e.Response == Emojis.Information);
                 Assert.That(info.Triggers, Has.Exactly(2).Items);
                 Assert.That(info.IsMatch("This is a tEsting regexes example which passes"));
                 Assert.That(info.IsMatch("This is another tEst example which passes"));
@@ -307,7 +307,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                         .AsQueryable()
                         .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
                         .AsEnumerable()
-                        .Single(er => er.Response == Emojis.Information.GetDiscordName()
+                        .Single(er => er.Response == Emojis.Information
                                       && er.DbTriggers.Count == 2
                         ),
                     Is.Not.Null
@@ -327,7 +327,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 Assert.That(
                     await this.Service.AddEmojiReactionAsync(
                         MockData.Ids[0],
-                        Emojis.Information.GetDiscordName(),
+                        Emojis.Information,
                         new[] {"test(ing)? regex(es)?", "another test"},
                         true
                     ),
@@ -338,7 +338,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value) + 1).Items);
                 IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                 Assert.That(ers, Has.Exactly(this.erCount[0] + 1).Items);
-                EmojiReaction info = ers.Single(e => e.Response == Emojis.Information.GetDiscordName());
+                EmojiReaction info = ers.Single(e => e.Response == Emojis.Information);
                 Assert.That(info.Triggers, Has.Exactly(2).Items);
                 Assert.That(info.IsMatch("This is a tEsting regexes example which passes"));
                 Assert.That(info.IsMatch("This is another tEst regex example which passes"));
@@ -353,7 +353,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                         .AsQueryable()
                         .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
                         .AsEnumerable()
-                        .Single(er => er.Response == Emojis.Information.GetDiscordName()
+                        .Single(er => er.Response == Emojis.Information
                                       && er.DbTriggers.Count == 2
                         ),
                     Is.Not.Null
@@ -371,12 +371,12 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 this.UpdateEmojiReactionCount(db);
                 this.Service.LoadData();
                 Assert.That(
-                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken.GetDiscordName(),
+                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken,
                         new[] {"test(ing)? regex(es)?"}, true),
                     Is.EqualTo(1)
                 );
                 Assert.That(
-                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken.GetDiscordName(),
+                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken,
                         new[] {"another test"}, true),
                     Is.EqualTo(1)
                 );
@@ -385,7 +385,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value)).Items);
                 IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                 Assert.That(ers, Has.Exactly(this.erCount[0]).Items);
-                EmojiReaction info = ers.Single(e => e.Response == Emojis.Chicken.GetDiscordName());
+                EmojiReaction info = ers.Single(e => e.Response == Emojis.Chicken);
                 Assert.That(info.Triggers, Has.Exactly(3).Items);
                 Assert.That(info.IsMatch("This is old abc abc test which passes"));
                 Assert.That(info.IsMatch("This is a tEsting regexes example which passes"));
@@ -401,7 +401,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                         .AsQueryable()
                         .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
                         .AsEnumerable()
-                        .Single(er => er.Response == Emojis.Chicken.GetDiscordName()
+                        .Single(er => er.Response == Emojis.Chicken
                                       && er.DbTriggers.Count == 3
                         ),
                     Is.Not.Null
@@ -414,12 +414,12 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
             async _ => {
                 this.Service.LoadData();
                 Assert.That(
-                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken.GetDiscordName(),
+                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken,
                         new[] {"test(ing)? regex(es)?"}, true),
                     Is.EqualTo(1)
                 );
                 Assert.That(
-                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken.GetDiscordName(),
+                    await this.Service.AddEmojiReactionAsync(MockData.Ids[0], Emojis.Chicken,
                         new[] {"test(ing)? regex(es)?"}, false),
                     Is.EqualTo(0)
                 );
@@ -444,20 +444,20 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 this.UpdateEmojiReactionCount(db);
                 this.Service.LoadData();
                 Assert.That(
-                    await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], Emojis.Information.GetDiscordName()),
+                    await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], Emojis.Information),
                     Is.Zero);
             },
             db => {
                 Assert.That(db.EmojiReactions, Has.Exactly(this.erCount.Sum(kvp => kvp.Value)).Items);
                 IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                 Assert.That(ers, Has.Exactly(this.erCount[0]).Items);
-                Assert.That(ers.Any(er => er.Response == Emojis.Information.GetDiscordName()), Is.False);
+                Assert.That(ers.Any(er => er.Response == Emojis.Information), Is.False);
                 Assert.That(
                     db.EmojiReactions
                         .AsQueryable()
                         .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
                         .AsEnumerable()
-                        .Any(er => er.Response == Emojis.Information.GetDiscordName()),
+                        .Any(er => er.Response == Emojis.Information),
                     Is.False
                 );
                 return Task.CompletedTask;
@@ -473,7 +473,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 this.UpdateEmojiReactionCount(db);
                 this.Service.LoadData();
                 Assert.That(
-                    await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], Emojis.Chicken.GetDiscordName()),
+                    await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], Emojis.Chicken),
                     Is.EqualTo(1));
             },
             db => {
@@ -483,24 +483,24 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[1]), Has.Exactly(this.erCount[1]).Items);
                 Assert.That(
                     this.Service.GetGuildEmojiReactions(MockData.Ids[0])
-                        .Any(er => er.Response == Emojis.Chicken.GetDiscordName()), Is.False);
+                        .Any(er => er.Response == Emojis.Chicken), Is.False);
                 Assert.That(
                     db.EmojiReactions
                         .AsQueryable()
                         .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
                         .AsEnumerable()
-                        .Any(er => er.Response == Emojis.Chicken.GetDiscordName()),
+                        .Any(er => er.Response == Emojis.Chicken),
                     Is.False
                 );
                 Assert.That(
                     this.Service.GetGuildEmojiReactions(MockData.Ids[2])
-                        .Single(er => er.Response == Emojis.Chicken.GetDiscordName()), Is.Not.Null);
+                        .Single(er => er.Response == Emojis.Chicken), Is.Not.Null);
                 Assert.That(
                     db.EmojiReactions
                         .AsQueryable()
                         .Where(er => er.GuildIdDb == (long)MockData.Ids[2])
                         .AsEnumerable()
-                        .Single(er => er.Response == Emojis.Chicken.GetDiscordName()),
+                        .Single(er => er.Response == Emojis.Chicken),
                     Is.Not.Null
                 );
                 return Task.CompletedTask;
@@ -511,7 +511,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
             async _ => {
                 this.Service.LoadData();
                 Assert.That(
-                    await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], Emojis.Chicken.GetDiscordName()),
+                    await this.Service.RemoveEmojiReactionsAsync(MockData.Ids[0], Emojis.Chicken),
                     Is.Zero);
             },
             db => {
@@ -537,7 +537,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                 int removed = await this.Service.RemoveEmojiReactionTriggersAsync(
                     MockData.Ids[0],
-                    ers.Where(er => er.Response == Emojis.Cloud.GetDiscordName()),
+                    ers.Where(er => er.Response == Emojis.Cloud),
                     new[] {"cde"});
                 Assert.That(removed, Is.Zero);
             },
@@ -547,7 +547,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                     .AsQueryable()
                     .Where(er => er.GuildIdDb == (long)MockData.Ids[0])
                     .AsEnumerable()
-                    .Single(er => er.Response == Emojis.Cloud.GetDiscordName());
+                    .Single(er => er.Response == Emojis.Cloud);
                 Assert.That(dber.DbTriggers.Single().Trigger, Is.EqualTo("abc"));
                 Assert.That(this.Service.GetGuildEmojiReactions(MockData.Ids[0]), Has.Exactly(5).Items);
                 return Task.CompletedTask;
@@ -565,7 +565,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                 int removed = await this.Service.RemoveEmojiReactionTriggersAsync(
                     MockData.Ids[0],
-                    ers.Where(er => er.Response == Emojis.Joystick.GetDiscordName()),
+                    ers.Where(er => er.Response == Emojis.Joystick),
                     new[] {"not"});
                 Assert.That(removed, Is.EqualTo(1));
             },
@@ -587,7 +587,7 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
                 IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(MockData.Ids[0]);
                 int removed = await this.Service.RemoveEmojiReactionTriggersAsync(
                     MockData.Ids[0],
-                    ers.Where(er => er.Response == Emojis.Joystick.GetDiscordName()),
+                    ers.Where(er => er.Response == Emojis.Joystick),
                     new[] {"NO MATCHES"});
                 Assert.That(removed, Is.Zero);
             },
@@ -651,49 +651,49 @@ public sealed class EmojiReactionsServiceTests : ReactionsServiceTestsBase
     {
         db.EmojiReactions.Add(new EmojiReaction {
             GuildId = MockData.Ids[0],
-            Response = Emojis.Joystick.GetDiscordName(),
+            Response = Emojis.Joystick,
             DbTriggers = new HashSet<EmojiReactionTrigger> {new() {Trigger = "not"}}
         });
         db.EmojiReactions.Add(new EmojiReaction {
             GuildId = MockData.Ids[0],
-            Response = Emojis.Headphones.GetDiscordName(),
+            Response = Emojis.Headphones,
             DbTriggers = new HashSet<EmojiReactionTrigger> {new() {Trigger = "ab+c"}}
         });
         db.EmojiReactions.Add(new EmojiReaction {
             GuildId = MockData.Ids[0],
-            Response = Emojis.Chicken.GetDiscordName(),
+            Response = Emojis.Chicken,
             DbTriggers = new HashSet<EmojiReactionTrigger> {new() {Trigger = "abc"}}
         });
         db.EmojiReactions.Add(new EmojiReaction {
             GuildId = MockData.Ids[0],
-            Response = Emojis.Gun.GetDiscordName(),
+            Response = Emojis.Gun,
             DbTriggers = new HashSet<EmojiReactionTrigger> {new() {Trigger = "abc"}}
         });
         db.EmojiReactions.Add(new EmojiReaction {
             GuildId = MockData.Ids[0],
-            Response = Emojis.Cloud.GetDiscordName(),
+            Response = Emojis.Cloud,
             DbTriggers = new HashSet<EmojiReactionTrigger> {new() {Trigger = "abc"}, new() {Trigger = "cde"}}
         });
 
         db.EmojiReactions.Add(new EmojiReaction {
             GuildId = MockData.Ids[1],
-            Response = Emojis.Cake.GetDiscordName(),
+            Response = Emojis.Cake,
             DbTriggers = new HashSet<EmojiReactionTrigger> {new() {Trigger = "abc"}}
         });
         db.EmojiReactions.Add(new EmojiReaction {
             GuildId = MockData.Ids[1],
-            Response = Emojis.ArrowUp.GetDiscordName(),
+            Response = Emojis.ArrowUp,
             DbTriggers = new HashSet<EmojiReactionTrigger> {new() {Trigger = "abc"}}
         });
         db.EmojiReactions.Add(new EmojiReaction {
             GuildId = MockData.Ids[1],
-            Response = Emojis.ArrowDown.GetDiscordName(),
+            Response = Emojis.ArrowDown,
             DbTriggers = new HashSet<EmojiReactionTrigger> {new() {Trigger = "abc"}}
         });
 
         db.EmojiReactions.Add(new EmojiReaction {
             GuildId = MockData.Ids[2],
-            Response = Emojis.Chicken.GetDiscordName(),
+            Response = Emojis.Chicken,
             DbTriggers = new HashSet<EmojiReactionTrigger> {new() {Trigger = "abc"}}
         });
     }

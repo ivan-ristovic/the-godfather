@@ -1,67 +1,66 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
+﻿using Discord.Commands;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Search;
 
-[Group("xkcd")][Module(ModuleType.Searches)][NotBlocked]
-[Aliases("x")]
-[Cooldown(3, 5, CooldownBucketType.Channel)]
+[Group("xkcd")]
+[Alias("x")]
 public sealed class XkcdModule : TheGodfatherModule
 {
-    #region xkcd
-    [GroupCommand][Priority(1)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_id)] int id)
-        => this.ByIdAsync(ctx, id);
-
-    [GroupCommand][Priority(0)]
-    public Task ExecuteGroupAsync(CommandContext ctx)
-        => this.RandomAsync(ctx);
-    #endregion
-
-    #region xkcd id
-    [Command("id")]
-    public async Task ByIdAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_id)] int? id = null)
+    public XkcdModule(LocalizationService localization)
+        : base(localization, new Color(0x1abc9c))
     {
-        if (id < 0 || id > XkcdService.TotalComics)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_xkcd_404);
+    }
+
+
+    [Command("")]
+    public Task ExecuteGroupAsync()
+        => this.RandomAsync();
+
+    [Command("")]
+    public Task ExecuteGroupAsync(int id)
+        => this.ByIdAsync(id);
+
+    [Command("id")]
+    public async Task ByIdAsync(int? id = null)
+    {
+        if (id < 0 || id > XkcdService.TotalComics) {
+            await this.FailAsync(TranslationKey.cmd_err_xkcd_404);
+            return;
+        }
 
         XkcdComic? comic = await XkcdService.GetComicAsync(id);
-        if (comic is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_xkcd_fatal);
+        if (comic is null) {
+            await this.FailAsync(TranslationKey.cmd_err_xkcd_fatal);
+            return;
+        }
 
-        await this.PrintComicAsync(ctx, comic);
+        await this.PrintComicAsync(comic);
     }
-    #endregion
 
-    #region xkcd latest
     [Command("latest")]
-    [Aliases("fresh", "newest", "l")]
-    public Task LatestAsync(CommandContext ctx)
-        => this.ByIdAsync(ctx);
-    #endregion
+    [Alias("fresh", "newest", "l")]
+    public Task LatestAsync()
+        => this.ByIdAsync();
 
-    #region xkcd random
     [Command("random")]
-    [Aliases("rnd", "r", "rand")]
-    public async Task RandomAsync(CommandContext ctx)
+    [Alias("rnd", "r", "rand")]
+    public async Task RandomAsync()
     {
         XkcdComic? comic = await XkcdService.GetRandomComicAsync();
-        if (comic is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_xkcd_fatal);
+        if (comic is null) {
+            await this.FailAsync(TranslationKey.cmd_err_xkcd_fatal);
+            return;
+        }
 
-        await this.PrintComicAsync(ctx, comic);
+        await this.PrintComicAsync(comic);
     }
-    #endregion
 
 
-    #region internals
-    private Task PrintComicAsync(CommandContext ctx, XkcdComic comic)
+    private Task PrintComicAsync(XkcdComic comic)
     {
-        return ctx.RespondWithLocalizedEmbedAsync(emb => {
+        return this.RespondWithLocalizedEmbedAsync(emb => {
             emb.WithTitle($"xkcd #{comic.Id} - {comic.Title}");
             emb.WithImageUrl(comic.ImageUrl);
             string? url = XkcdService.CreateUrlForComic(comic.Id);
@@ -71,5 +70,4 @@ public sealed class XkcdModule : TheGodfatherModule
             emb.WithLocalizedFooter(TranslationKey.fmt_xkcd(comic.Month, comic.Year), null);
         });
     }
-    #endregion
 }

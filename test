@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+dotnet test TheGodfather.Tests/TheGodfather.Tests.csproj "$@"

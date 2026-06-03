@@ -13,9 +13,6 @@ public sealed class BotConfig
     [JsonProperty("db-config")]
     public DbConfig DatabaseConfig { get; set; } = new();
 
-    [JsonProperty("lava-config")]
-    public LavalinkConfig LavalinkConfig { get; set; } = new();
-
     [JsonProperty("db_sync_interval")]
     public int DatabaseSyncInterval { get; set; } = 600;
 

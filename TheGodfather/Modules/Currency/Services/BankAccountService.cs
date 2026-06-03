@@ -92,16 +92,32 @@ public sealed class BankAccountService : DbAbstractionServiceBase<BankAccount, u
         try {
             await db.Database.BeginTransactionAsync();
 
-            if (!await this.TryDecreaseBankAccountAsync(gid, src, amount, save: false))
+            BankAccount? source = await db.BankAccounts.FindAsync((long)gid, (long)src);
+            if (source is null || source.Balance < amount) {
+                await db.Database.RollbackTransactionAsync();
                 return false;
-            await this.IncreaseBankAccountAsync(gid, dst, amount, save: false);
+            }
 
+            source.Balance -= amount;
+            db.BankAccounts.Update(source);
+
+            BankAccount? destination = await db.BankAccounts.FindAsync((long)gid, (long)dst);
+            if (destination is null) {
+                destination = new BankAccount {
+                    GuildId = gid,
+                    UserId = dst
+                };
+                db.BankAccounts.Add(destination);
+            }
+
+            destination.Balance += amount;
+
+            await db.SaveChangesAsync();
             await db.Database.CommitTransactionAsync();
         } catch {
             await db.Database.RollbackTransactionAsync();
             throw;
         }
-        await db.SaveChangesAsync();
         return true;
     }
 

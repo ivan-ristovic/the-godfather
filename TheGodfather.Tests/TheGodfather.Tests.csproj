@@ -9,52 +9,63 @@
         <Platforms>AnyCPU;x86</Platforms>
 
         <LangVersion>latestmajor</LangVersion>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     </PropertyGroup>
 
     <ItemGroup>
-        <Compile Remove="Database\**" />
-        <Compile Remove="Modules\Games\**" />
-        <Compile Remove="Modules\Search\**" />
-        <EmbeddedResource Remove="Database\**" />
-        <EmbeddedResource Remove="Modules\Games\**" />
-        <EmbeddedResource Remove="Modules\Search\**" />
-        <None Remove="Database\**" />
-        <None Remove="Modules\Games\**" />
-        <None Remove="Modules\Search\**" />
+        <Compile Include="GlobalUsings.Tests.cs" />
+        <Compile Include="ITheGodfatherServiceTest.cs" />
+        <Compile Include="MockData.cs" />
+        <Compile Include="TestDbProvider.cs" />
+        <Compile Include="Common\SecureRandomTests.cs" />
+        <Compile Include="Common\TypeReaders\LegacyTypeReaderTests.cs" />
+        <Compile Include="Modules\Administration\Services\ActionHistoryServiceTests.cs" />
+        <Compile Include="Modules\Administration\Services\BackupServiceTests.cs" />
+        <Compile Include="Modules\Administration\Services\CommandRulesServiceTests.cs" />
+        <Compile Include="Modules\Administration\Services\FilteringServiceTests.cs" />
+        <Compile Include="Modules\Administration\Services\ForbiddenNamesServiceTests.cs" />
+        <Compile Include="Modules\Administration\Services\GuildConfigServiceTests.cs" />
+        <Compile Include="Modules\Administration\Services\LinkfilterServiceTests.cs" />
+        <Compile Include="Modules\Administration\Services\ProtectionServicesTests.cs" />
+        <Compile Include="Modules\Administration\Services\RoleServicesTests.cs" />
+        <Compile Include="Modules\Administration\ConfigModuleCommandSurfaceTests.cs" />
+        <Compile Include="Modules\Chickens\Services\ChickenServiceTests.cs" />
+        <Compile Include="Modules\Currency\Services\BankAccountServiceTests.cs" />
+        <Compile Include="Modules\Currency\Services\ShopAndWorkServiceTests.cs" />
+        <Compile Include="Modules\Games\Services\GameStatsServiceTests.cs" />
+        <Compile Include="Modules\Games\Services\QuizServiceTests.cs" />
+        <Compile Include="Modules\Misc\Services\MiscDbServicesTests.cs" />
+        <Compile Include="Modules\Misc\Services\MemeGenServiceTests.cs" />
+        <Compile Include="Modules\Misc\Services\RandomServiceTests.cs" />
+        <Compile Include="Modules\Misc\Services\UserRanksServiceTests.cs" />
+        <Compile Include="Modules\Owner\Services\BlockingServiceTests.cs" />
+        <Compile Include="Modules\Owner\Services\PrivilegedUserServiceTests.cs" />
+        <Compile Include="Modules\Reactions\Services\EmojiReactionsServiceTests.cs" />
+        <Compile Include="Modules\Reactions\Services\ReactionsServiceTestsBase.cs" />
+        <Compile Include="Modules\Reactions\Services\TextReactionsServiceTests.cs" />
+        <Compile Include="Modules\Search\Services\RssFeedsServiceTests.cs" />
+        <Compile Include="Modules\Search\Services\SearchServiceAvailabilityTests.cs" />
+        <Compile Include="Services\AsyncExecutionServiceTests.cs" />
+        <Compile Include="Services\BotActivityServiceTests.cs" />
+        <Compile Include="Services\CommandServiceTests.cs" />
+        <Compile Include="Services\CoreServiceTests.cs" />
+        <Compile Include="Services\DbAbstractionServiceTests.cs" />
+        <Compile Include="Services\DynamicCommandServiceTests.cs" />
+        <Compile Include="Services\GuildConfigServiceTests.cs" />
+        <Compile Include="Services\InteractivityServiceTests.cs" />
+        <Compile Include="Services\LocalizationServiceTests.cs" />
+        <Compile Include="Services\SchedulingServiceTests.cs" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="DSharpPlus" Version="4.5.1" />
-        <PackageReference Include="DSharpPlus.CommandsNext" Version="4.5.1" />
-        <PackageReference Include="DSharpPlus.Interactivity" Version="4.5.1" />
-        <PackageReference Include="DSharpPlus.Lavalink" Version="4.5.1" />
-        <PackageReference Include="DSharpPlus.VoiceNext" Version="4.5.1" />
-        <PackageReference Include="GiphyDotNet" Version="2.4.0" />
-        <PackageReference Include="Google.Apis.YouTube.v3" Version="1.73.0.3981" />
-        <PackageReference Include="Humanizer.Core" Version="3.0.1" />
-        <PackageReference Include="Imgur.API" Version="4.0.1" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="10.0.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="10.0.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0" />
-        <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.0" />
-        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.0.1" />
-        <PackageReference Include="NETStandard.Library" Version="2.0.3" />
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.6.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
-        <PackageReference Include="Npgsql" Version="10.0.0" />
-        <PackageReference Include="NUnit" Version="4.4.0" />
-        <PackageReference Include="NUnit3TestAdapter" Version="6.0.0">
+        <PackageReference Include="NUnit" Version="4.6.1" />
+        <PackageReference Include="NUnit3TestAdapter" Version="6.2.0">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Serilog" Version="4.3.0" />
-        <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
-        <PackageReference Include="Serilog.Sinks.Console" Version="6.1.1" />
-        <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
-        <PackageReference Include="SteamWebAPI2" Version="4.4.1" />
-        <PackageReference Include="System.Drawing.Common" Version="10.0.0" />
-        <PackageReference Include="System.ServiceModel.Syndication" Version="10.0.0" />
-        <PackageReference Include="TexasHoldemGameEngine" Version="2.0.0" />
-        <PackageReference Include="YoutubeExplode" Version="6.5.6" />
     </ItemGroup>
 
     <ItemGroup>
@@ -62,36 +73,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Update="Services\TranslationsTestData\ThrowsIO\Commands\cmds_Misc.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="Services\TranslationsTestData\ThrowsIO\Commands\cmds_Music.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="Services\TranslationsTestData\ThrowsIO\en-GB.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="Services\TranslationsTestData\ThrowsIO\Lt-sr-SP.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="Services\TranslationsTestData\Valid\Commands\cmds_Misc.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="Services\TranslationsTestData\Valid\Commands\cmds_Music.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="Services\TranslationsTestData\Valid\Commands\desc_en-GB.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="Services\TranslationsTestData\Valid\Commands\desc_Lt-sr-SP.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="Services\TranslationsTestData\Valid\en-GB.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
-        <None Update="Services\TranslationsTestData\Valid\Lt-sr-SP.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </None>
+        <None Include="..\TheGodfather\Translations\**\*.*" Link="Translations\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+        <None Include="Services\TranslationsTestData\**\*.*" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

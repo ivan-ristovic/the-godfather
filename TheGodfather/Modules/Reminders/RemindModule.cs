@@ -1,261 +1,199 @@
-﻿using System.Globalization;
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.CommandsNext.Exceptions;
-using DSharpPlus.Entities;
-using Microsoft.Extensions.DependencyInjection;
-using TheGodfather.Modules.Owner.Services;
+using Discord.Commands;
+using TheGodfather.Attributes;
 
 namespace TheGodfather.Modules.Reminders;
 
-[Group("remind")][Module(ModuleType.Reminders)][NotBlocked]
-[Aliases("reminders", "reminder", "todo", "todolist", "note", "td")]
-[Cooldown(3, 5, CooldownBucketType.Channel)]
-public partial class RemindModule : TheGodfatherServiceModule<SchedulingService>
+[Group("remind")]
+[Alias("reminder", "reminders", "rem")]
+[Cooldown(3, 5, CooldownBucketType.User)]
+public sealed class RemindModule : TheGodfatherModule
 {
-    #region remind
-    [GroupCommand][Priority(4)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_remind_t)] TimeSpan timespan,
-        [Description(TranslationKey.desc_remind_chn)] DiscordChannel channel,
-        [RemainingText][Description(TranslationKey.desc_remind_text)] string message)
-        => this.AddReminderAsync(ctx, timespan, channel, message);
+    private readonly SchedulingService scheduler;
 
-    [GroupCommand][Priority(3)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_remind_chn)] DiscordChannel channel,
-        [Description(TranslationKey.desc_remind_t)] TimeSpan timespan,
-        [RemainingText][Description(TranslationKey.desc_remind_text)] string message)
-        => this.AddReminderAsync(ctx, timespan, channel, message);
 
-    [GroupCommand][Priority(2)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_remind_t)] TimeSpan timespan,
-        [RemainingText][Description(TranslationKey.desc_remind_text)] string message)
-        => this.AddReminderAsync(ctx, timespan, null, message);
-
-    [GroupCommand][Priority(1)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_chn_list)] DiscordChannel channel)
-        => this.ListAsync(ctx, channel);
-
-    [GroupCommand][Priority(0)]
-    public Task ExecuteGroupAsync(CommandContext ctx)
-        => this.ListAsync(ctx);
-    #endregion
-
-    #region remind deleteall
-    [Command("deleteall")][Priority(1)][UsesInteractivity]
-    [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
-    public async Task DeleteAllAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_remind_chn_rem)] DiscordChannel channel)
+    public RemindModule(LocalizationService localization, SchedulingService scheduler)
+        : base(localization, new Color(0x1ABC9C))
     {
-        this.ThrowIfDM(ctx, channel);
+        this.scheduler = scheduler;
+    }
 
-        if (!ctx.Channel.PermissionsFor(ctx.Member).HasPermission(Permissions.ManageGuild))
-            throw new ChecksFailedException(ctx.Command!, ctx, new[] { new RequireUserPermissionsAttribute(Permissions.ManageGuild) });
 
-        if (channel.Type != ChannelType.Text)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
+    [Command("")]
+    public Task ExecuteGroupAsync()
+        => this.ListAsync();
 
-        if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_remind_rem_all_chn(channel.Mention)))
+    [Command("in")]
+    public Task InAsync(string duration, [Remainder] string message)
+        => this.ScheduleAsync(duration, message, this.Context.Channel.Id);
+
+    [Command("here in")]
+    public Task HereInAsync(string duration, [Remainder] string message)
+        => this.ScheduleAsync(duration, message, this.Context.Channel.Id);
+
+    [Command("at")]
+    public Task AtAsync(string when, [Remainder] string message)
+        => this.ScheduleAtAsync(when, message, this.Context.Channel.Id);
+
+    [Command("here at")]
+    public Task HereAtAsync(string when, [Remainder] string message)
+        => this.ScheduleAtAsync(when, message, this.Context.Channel.Id);
+
+    [Command("dm in")]
+    [Alias("direct in")]
+    public Task DmInAsync(string duration, [Remainder] string message)
+        => this.ScheduleAsync(duration, message, 0);
+
+    [Command("dm at")]
+    [Alias("direct at")]
+    public Task DmAtAsync(string when, [Remainder] string message)
+        => this.ScheduleAtAsync(when, message, 0);
+
+    [Command("tomorrow")]
+    [Alias("before tomorrow")]
+    public Task TomorrowAsync([Remainder] string message)
+        => this.ScheduleAtAsync(DateTimeOffset.Now.Date.AddDays(1).AddHours(9), message, this.Context.Channel.Id);
+
+    [Command("day")]
+    [Alias("before day")]
+    public Task DayAsync([Remainder] string message)
+        => this.ScheduleAtAsync(DateTimeOffset.Now.AddDays(1), message, this.Context.Channel.Id);
+
+    [Command("week")]
+    [Alias("before week")]
+    public Task WeekAsync([Remainder] string message)
+        => this.ScheduleAtAsync(DateTimeOffset.Now.AddDays(7), message, this.Context.Channel.Id);
+
+    [Command("delete")]
+    [Priority(1)]
+    [Alias("remove", "rm", "del", "d")]
+    public async Task DeleteAsync(int id)
+    {
+        Reminder? reminder = (await this.scheduler.GetRemindTasksForUserAsync(this.Context.User.Id)).FirstOrDefault(r => r.Id == id);
+        if (reminder is null) {
+            await this.FailAsync("Reminder not found.");
             return;
-
-        await this.Service.UnscheduleRemindersForChannelAsync(ctx.Channel.Id);
-        await ctx.InfoAsync(this.ModuleColor);
-    }
-
-    [Command("deleteall")][Priority(0)]
-    public async Task DeleteAllAsync(CommandContext ctx)
-    {
-        if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_remind_rem_all))
-            return;
-
-        await this.Service.UnscheduleRemindersForUserAsync(ctx.User.Id);
-        await ctx.InfoAsync(this.ModuleColor);
-    }
-    #endregion
-
-    #region remind delete
-    [Command("delete")][Priority(1)]
-    [Aliases("-", "remove", "rm", "del", "-=", ">", ">>", "unschedule")]
-    public async Task DeleteAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_remind_chn_rem)] DiscordChannel channel,
-        [Description(TranslationKey.desc_ids)] params int[] ids)
-    {
-        if (ids is null || !ids.Any())
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_ids_none);
-
-        if (channel.Guild != ctx.Guild || (ctx.Member is not null && !ctx.Member.PermissionsIn(channel).HasPermission(Permissions.Administrator)))
-            throw new CommandFailedException(ctx, TranslationKey.cmd_chk_perms_usr(Permissions.Administrator));
-
-        IReadOnlyList<Reminder> reminders = await this.Service.GetRemindTasksForChannelAsync(channel.Id);
-        if (!reminders.Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_remind_none);
-
-        await Task.WhenAll(reminders.Where(r => r.ChannelId == channel.Id).Select(r => this.Service.UnscheduleAsync(r, true)));
-        await ctx.InfoAsync(this.ModuleColor);
-    }
-
-    [Command("delete")][Priority(0)]
-    public async Task DeleteAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_ids)] params int[] ids)
-    {
-        if (ids is null || !ids.Any())
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_ids_none);
-
-        IReadOnlyList<Reminder> reminders = await this.Service.GetRemindTasksForUserAsync(ctx.User.Id);
-        if (!reminders.Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_remind_none);
-
-        await Task.WhenAll(reminders.Where(r => r.ChannelId == 0).Select(r => this.Service.UnscheduleAsync(r, true)));
-        await ctx.InfoAsync(this.ModuleColor);
-    }
-    #endregion
-
-    #region remind list
-    [Command("list")][Priority(1)]
-    [Aliases("print", "show", "view", "ls", "l", "p")]
-    public async Task ListAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_chn_list)] DiscordChannel channel)
-    {
-        this.ThrowIfDM(ctx, channel);
-
-        if (channel.Type != ChannelType.Text)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
-
-        IReadOnlyList<Reminder> reminders = await this.Service.GetRemindTasksForUserAsync(ctx.User.Id);
-        IEnumerable<Reminder> orderedReminders = reminders
-                .Where(r => r.ChannelId == channel.Id)
-                .OrderBy(r => r.TimeUntilExecution).ThenBy(r => r.Id)
-            ;
-
-        await this.PaginateRemindersAsync(ctx, orderedReminders, channel);
-    }
-
-    [Command("list")][Priority(0)]
-    public async Task ListAsync(CommandContext ctx)
-    {
-        IEnumerable<Reminder> reminders = await this.Service.GetRemindTasksForUserAsync(ctx.User.Id);
-        IEnumerable<Reminder> orderedReminders = reminders
-                .Where(r => r.ChannelId == 0)
-                .OrderBy(r => r.TimeUntilExecution).ThenBy(r => r.Id)
-            ;
-
-        await this.PaginateRemindersAsync(ctx, orderedReminders);
-    }
-    #endregion
-
-    #region remind repeat
-    [Command("repeat")][Priority(2)]
-    [Aliases("newrep", "+r", "ar", "+=r", "<r", "<<r")]
-    public Task RepeatAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_remind_dt)] TimeSpan timespan,
-        [Description(TranslationKey.desc_remind_chn)] DiscordChannel channel,
-        [RemainingText][Description(TranslationKey.desc_remind_text)] string message)
-        => this.AddReminderAsync(ctx, timespan, channel, message, true);
-
-    [Command("repeat")][Priority(1)]
-    public Task RepeatAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_remind_chn)] DiscordChannel channel,
-        [Description(TranslationKey.desc_remind_dt)] TimeSpan timespan,
-        [RemainingText][Description(TranslationKey.desc_remind_text)] string message)
-        => this.AddReminderAsync(ctx, timespan, channel, message, true);
-
-    [Command("repeat")][Priority(0)]
-    public Task RepeatAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_remind_dt)] TimeSpan timespan,
-        [RemainingText][Description(TranslationKey.desc_remind_text)] string message)
-        => this.AddReminderAsync(ctx, timespan, null, message, true);
-    #endregion
-
-
-    #region internals
-    private async Task AddReminderAsync(CommandContext ctx, TimeSpan timespan, DiscordChannel? channel,
-        string message, bool repeat = false)
-    {
-        this.ThrowIfDM(ctx, channel);
-
-        if (channel is not null) {
-            if (channel.Type != ChannelType.Text)
-                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
-            if (!channel.PermissionsFor(ctx.Member).HasFlag(Permissions.SendMessages))
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_remind_perms(channel.Mention));
-            if (!channel.PermissionsFor(ctx.Guild.CurrentMember).HasFlag(Permissions.SendMessages))
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_remind_permsb(channel.Mention));
         }
 
+        await this.scheduler.UnscheduleAsync(reminder, true);
+        await this.InfoAsync(this.ModuleColor);
+    }
+
+    [Command("delete")]
+    [Priority(0)]
+    public async Task DeleteAsync()
+    {
+        IReadOnlyList<Reminder> reminders = await this.scheduler.GetRemindTasksForUserAsync(this.Context.User.Id);
+        if (!reminders.Any()) {
+            await this.FailAsync("No reminders found.");
+            return;
+        }
+        await this.scheduler.UnscheduleAsync(reminders.OrderBy(r => r.ExecutionTime).First(), true);
+        await this.InfoAsync(this.ModuleColor);
+    }
+
+    [Command("deleteall")]
+    [Alias("removeall", "clear")]
+    public async Task DeleteAllAsync()
+    {
+        if (!await this.ConfirmAsync(TranslationKey.q_remind_rem_all))
+            return;
+
+        await this.scheduler.UnscheduleRemindersForUserAsync(this.Context.User.Id);
+        await this.InfoAsync(this.ModuleColor);
+    }
+
+    [Command("list")]
+    [Priority(1)]
+    [Alias("print", "show", "view", "ls", "l", "p")]
+    public Task ListAsync()
+        => this.ListUserAsync(this.Context.User);
+
+    [Command("list")]
+    [Priority(0)]
+    public async Task ListUserAsync(IUser user)
+    {
+        IReadOnlyList<Reminder> reminders = await this.scheduler.GetRemindTasksForUserAsync(user.Id);
+        if (!reminders.Any()) {
+            await this.FailAsync("No reminders found.");
+            return;
+        }
+
+        await this.RespondPagedAsync(
+            TranslationKey.str_remind_chn,
+            reminders.OrderBy(r => r.ExecutionTime),
+            r => $"{InlineCode(r.Id)} | {this.Localization.GetLocalizedTimeString(this.Context.Guild?.Id, r.ExecutionTime)} | {r.Message}"
+        );
+    }
+
+    [Command("repeat")]
+    public async Task RepeatAsync(int id, string interval)
+    {
+        Reminder? reminder = (await this.scheduler.GetRemindTasksForUserAsync(this.Context.User.Id)).FirstOrDefault(r => r.Id == id);
+        if (reminder is null || !TryParseDuration(interval, out TimeSpan repeat)) {
+            await this.FailAsync("Reminder or interval not found.");
+            return;
+        }
+
+        await this.scheduler.UnscheduleAsync(reminder, true);
+        reminder.Id = 0;
+        reminder.IsRepeating = true;
+        reminder.RepeatIntervalDb = repeat;
+        await this.scheduler.ScheduleAsync(reminder);
+        await this.InfoAsync(this.ModuleColor);
+    }
+
+
+    private Task ScheduleAsync(string duration, string message, ulong channelId)
+    {
+        if (!TryParseDuration(duration, out TimeSpan span))
+            return this.FailAsync("Invalid duration. Use a TimeSpan or a value like 30m, 2h, 7d.");
+        return this.ScheduleAtAsync(DateTimeOffset.Now + span, message, channelId);
+    }
+
+    private Task ScheduleAtAsync(string when, string message, ulong channelId)
+    {
+        if (!DateTimeOffset.TryParse(when, this.Localization.GetGuildCulture(this.Context.Guild?.Id), DateTimeStyles.AssumeLocal, out DateTimeOffset parsed))
+            return this.FailAsync("Invalid date/time.");
+        return this.ScheduleAtAsync(parsed, message, channelId);
+    }
+
+    private async Task ScheduleAtAsync(DateTimeOffset when, string message, ulong channelId)
+    {
         if (string.IsNullOrWhiteSpace(message) || message.Length > Reminder.MessageLimit)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_remind_msg(Reminder.MessageLimit));
+            throw new LocalizedCommandException(TranslationKey.cmd_err_remind_msg(Reminder.MessageLimit));
 
-        bool bypassLimits = ctx.Client.IsOwnedBy(ctx.User) || await ctx.Services.GetRequiredService<PrivilegedUserService>().ContainsAsync(ctx.User.Id);
-        if (timespan < TimeSpan.Zero || (!bypassLimits && (timespan.TotalMinutes < 1 || timespan.TotalDays > 31)))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_timespan_m_d(1, 31));
-
-        if (channel is null && await ctx.Client.CreateDmChannelAsync(ctx.User.Id) is null)
-            throw new CommandFailedException(ctx, TranslationKey.err_dm_fail);
-
-        if (!bypassLimits) {
-            IReadOnlyList<Reminder> reminders = await this.Service.GetRemindTasksForUserAsync(ctx.User.Id);
-            if (reminders.Count >= 20)
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_remind_max(20));
+        if (when <= DateTimeOffset.Now) {
+            await this.FailAsync("Reminder time must be in the future.");
+            return;
         }
 
-        DateTimeOffset when = DateTimeOffset.Now + timespan;
-
-        var tinfo = new Reminder {
-            ChannelId = channel?.Id ?? 0,
+        await this.scheduler.ScheduleAsync(new Reminder {
+            UserId = this.Context.User.Id,
+            ChannelId = channelId,
             ExecutionTime = when,
-            IsRepeating = repeat,
-            RepeatIntervalDb = repeat ? timespan : null,
-            UserId = ctx.User.Id,
-            Message = message,
-        };
-        await this.Service.ScheduleAsync(tinfo);
+            Message = message
+        });
 
-        string rel = timespan.Humanize(4, this.Localization.GetGuildCulture(ctx.Guild?.Id), minUnit: TimeUnit.Minute);
-        if (repeat) {
-            if (channel is not null)
-                await ctx.InfoAsync(this.ModuleColor, Emojis.AlarmClock, TranslationKey.fmt_remind_rep_c(channel.Mention, rel, message));
-            else
-                await ctx.InfoAsync(this.ModuleColor, Emojis.AlarmClock, TranslationKey.fmt_remind_rep(rel, message));
-        } else {
-            string abs = this.Localization.GetLocalizedTimeString(ctx.Guild?.Id, when);
-            if (channel is not null)
-                await ctx.InfoAsync(this.ModuleColor, Emojis.AlarmClock, TranslationKey.fmt_remind_c(channel.Mention, rel, abs, message));
-            else
-                await ctx.InfoAsync(this.ModuleColor, Emojis.AlarmClock, TranslationKey.fmt_remind(rel, abs, message));
+        await this.InfoAsync(this.ModuleColor, $"I will remind you at {this.Localization.GetLocalizedTimeString(this.Context.Guild?.Id, when)} to:\n\n{message}");
+    }
+
+    private static bool TryParseDuration(string value, out TimeSpan span)
+    {
+        if (TimeSpan.TryParse(value, CultureInfo.InvariantCulture, out span))
+            return span > TimeSpan.Zero;
+
+        if (value.Length < 2 || !double.TryParse(value[..^1], NumberStyles.Float, CultureInfo.InvariantCulture, out double amount)) {
+            span = TimeSpan.Zero;
+            return false;
         }
+
+        span = value[^1] switch {
+            's' or 'S' => TimeSpan.FromSeconds(amount),
+            'm' or 'M' => TimeSpan.FromMinutes(amount),
+            'h' or 'H' => TimeSpan.FromHours(amount),
+            'd' or 'D' => TimeSpan.FromDays(amount),
+            _ => TimeSpan.Zero
+        };
+        return span > TimeSpan.Zero;
     }
-
-    private void ThrowIfDM(CommandContext ctx, DiscordChannel? chn)
-    {
-        if (chn is not null && ctx.Guild is null)
-            throw new ChecksFailedException(ctx.Command!, ctx, new[] { new RequireGuildAttribute() });
-    }
-
-    private Task PaginateRemindersAsync(CommandContext ctx, IEnumerable<Reminder> reminders, DiscordChannel? chn = null)
-    {
-        reminders = reminders.ToList();
-        if (!reminders.Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_remind_none);
-
-        CultureInfo culture = this.Localization.GetGuildCulture(ctx.Guild?.Id);
-        return ctx.PaginateAsync(reminders, (emb, r) => {
-            emb.WithLocalizedTitle(chn is null ? TranslationKey.str_remind_chn : TranslationKey.fmt_remind_chn(chn.Name));
-            emb.WithDescription(r.Message);
-            emb.AddLocalizedField(TranslationKey.str_id, r.Id, true);
-            if (r.IsRepeating)
-                emb.AddLocalizedField(TranslationKey.str_repeating, r.RepeatInterval.Humanize(culture: culture), true);
-
-            if (r.TimeUntilExecution < TimeSpan.FromDays(1))
-                emb.AddLocalizedField(TranslationKey.str_executes_in, r.TimeUntilExecution.Humanize(3, culture, minUnit: TimeUnit.Second), true);
-            else
-                emb.AddLocalizedTimestampField(TranslationKey.str_exec_time, r.ExecutionTime, true);
-
-            return emb;
-        }, this.ModuleColor);
-    }
-    #endregion
 }

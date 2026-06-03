@@ -1,284 +1,128 @@
-﻿using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
-using TheGodfather.EventListeners.Common;
-
-namespace TheGodfather.Services.Common;
+﻿namespace TheGodfather.Services.Common;
 
 public sealed class LocalizedEmbedBuilder
 {
-    public int FieldCount => this.emb.Fields?.Count ?? 0;
+    public int FieldCount => this.embed.Fields.Count;
 
-    private readonly DiscordEmbedBuilder emb;
     private readonly LocalizationService lcs;
-    private readonly ulong gid;
+    private readonly ulong? gid;
+    private readonly EmbedBuilder embed;
 
 
     public LocalizedEmbedBuilder(LocalizationService lcs, ulong? gid)
     {
         this.lcs = lcs;
-        this.gid = gid ?? 0;
-        this.emb = new DiscordEmbedBuilder();
+        this.gid = gid;
+        this.embed = new EmbedBuilder();
     }
 
 
-    public LocalizedEmbedBuilder WithTitle(string title)
+    public LocalizedEmbedBuilder WithColor(Color color)
     {
-        this.emb.WithTitle(this.TruncateToFitEmbedTitle(title));
+        this.embed.Color = color;
         return this;
     }
 
-    public LocalizedEmbedBuilder WithAuthor(string author, string? url = null, string? iconUrl = null)
+    public LocalizedEmbedBuilder WithTitle(string title)
     {
-        this.emb.WithAuthor(author, url, iconUrl);
+        this.embed.Title = title.Truncate(DiscordLimits.EmbedTitleLimit - 3, "...");
         return this;
     }
 
     public LocalizedEmbedBuilder WithLocalizedTitle(TranslationKey title)
     {
-        string localizedTitle = this.lcs.GetString(this.gid, title);
-        this.WithTitle(localizedTitle);
-        return this;
-    }
-
-    public LocalizedEmbedBuilder WithLocalizedTitle(DiscordEventType type, TranslationKey title)
-    {
-        this.WithColor(type.ToDiscordColor());
-        return this.WithLocalizedTitle(title);
-    }
-
-    public LocalizedEmbedBuilder WithLocalizedTitle(DiscordEventType type, TranslationKey title, object? desc)
-    {
-        this.WithLocalizedTitle(type, title);
-        if (desc is not null)
-            this.WithDescription(desc);
-        return this;
-    }
-
-    public LocalizedEmbedBuilder WithLocalizedHeading(DiscordEventType type, TranslationKey title, TranslationKey desc)
-    {
-        this.WithLocalizedTitle(type, title);
-        this.WithLocalizedDescription(desc);
-        return this;
+        return this.WithTitle(this.lcs.GetString(this.gid, title));
     }
 
     public LocalizedEmbedBuilder WithLocalizedDescription(TranslationKey desc)
     {
-        string localizedDesc = this.lcs.GetString(this.gid, desc);
-        this.emb.WithDescription(this.TruncateToFitEmbedDescription(localizedDesc));
+        return this.WithDescription(this.lcs.GetString(this.gid, desc));
+    }
+
+    public LocalizedEmbedBuilder WithDescription(object? desc)
+    {
+        this.embed.Description = desc?.ToString()?.Truncate(DiscordLimits.EmbedDescriptionLimit - 3, "...");
         return this;
     }
 
-    public LocalizedEmbedBuilder WithDescription(object? obj, bool unknown = true)
+    public LocalizedEmbedBuilder WithDescription(object? desc, bool unknown)
     {
-        string? objStr = obj?.ToString();
-        if (unknown) {
-            string localized404 = this.lcs.GetString(this.gid, TranslationKey.NotFound);
-            string desc = string.IsNullOrWhiteSpace(objStr) ? localized404 : objStr;
-            this.emb.WithDescription(this.TruncateToFitEmbedDescription(desc));
-        } else {
-            if (!string.IsNullOrWhiteSpace(objStr))
-                this.emb.WithDescription(this.TruncateToFitEmbedDescription(objStr));
-        }
-        return this;
-    }
+        if (!unknown && string.IsNullOrWhiteSpace(desc?.ToString()))
+            return this;
 
-    public LocalizedEmbedBuilder WithColor(DiscordColor color)
-    {
-        this.emb.WithColor(color);
-        return this;
-    }
-
-    public LocalizedEmbedBuilder WithLocalizedTimestamp(DateTimeOffset? timestamp = null, string? iconUrl = null)
-    {
-        string localizedTime = this.lcs.GetLocalizedTimeString(this.gid, timestamp);
-        this.emb.WithFooter(localizedTime, iconUrl);
-        return this;
-    }
-
-    public LocalizedEmbedBuilder WithThumbnail(string url)
-    {
-        this.emb.WithThumbnail(url);
-        return this;
-    }
-
-    public LocalizedEmbedBuilder WithThumbnail(Uri uri)
-    {
-        this.emb.WithThumbnail(uri);
-        return this;
-    }
-
-    public LocalizedEmbedBuilder WithLocalizedFooter(TranslationKey footer, string? iconUrl)
-    {
-        string localizedText = this.TruncateToFitFooterText(this.lcs.GetString(this.gid, footer));
-        this.emb.WithFooter(localizedText, iconUrl);
-        return this;
-    }
-
-    public LocalizedEmbedBuilder WithFooter(string text, string? iconUrl)
-    {
-        this.emb.WithFooter(this.TruncateToFitFooterText(text), iconUrl);
-        return this;
+        return this.WithDescription(desc);
     }
 
     public LocalizedEmbedBuilder WithUrl(string url)
     {
-        this.emb.WithUrl(url);
-        return this;
-    }
-
-    public LocalizedEmbedBuilder WithUrl(Uri url)
-    {
-        this.emb.WithUrl(url);
+        this.embed.Url = url;
         return this;
     }
 
     public LocalizedEmbedBuilder WithImageUrl(string url)
     {
-        this.emb.WithImageUrl(url);
+        this.embed.ImageUrl = url;
         return this;
     }
 
-    public LocalizedEmbedBuilder WithImageUrl(Uri url)
+    public LocalizedEmbedBuilder WithFooter(string text, string? iconUrl = null)
     {
-        this.emb.WithImageUrl(url);
+        this.embed.Footer = new EmbedFooterBuilder {
+            Text = text.Truncate(DiscordLimits.EmbedFooterLimit - 3, "..."),
+            IconUrl = iconUrl
+        };
         return this;
     }
 
-    public LocalizedEmbedBuilder AddField(string title, string content, bool inline = false)
+    public LocalizedEmbedBuilder WithLocalizedFooter(TranslationKey footer, string? iconUrl)
     {
-        this.emb.AddField(this.TruncateToFitFieldName(title), this.TruncateToFitFieldValue(content), inline);
+        return this.WithFooter(this.lcs.GetString(this.gid, footer), iconUrl);
+    }
+
+    public LocalizedEmbedBuilder AddField(string title, object? content, bool inline = false)
+    {
+        string value = content?.ToString() ?? this.lcs.GetString(this.gid, TranslationKey.NotFound);
+        this.embed.AddField(
+            title.Truncate(DiscordLimits.EmbedFieldNameLimit - 3, "..."),
+            value.Truncate(DiscordLimits.EmbedFieldValueLimit - 3, "..."),
+            inline
+        );
         return this;
     }
 
-    public LocalizedEmbedBuilder AddLocalizedField(TranslationKey title, object? obj, bool inline = false, bool unknown = true)
+    public LocalizedEmbedBuilder AddLocalizedField(TranslationKey title, object? content, bool inline = false, bool unknown = true)
     {
-        string? objStr = obj?.ToString();
-        string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title));
-        if (unknown) {
-            string localized404 = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, TranslationKey.NotFound));
-            this.emb.AddField(localizedTitle, string.IsNullOrWhiteSpace(objStr) ? localized404 : objStr, inline);
-        } else {
-            if (!string.IsNullOrWhiteSpace(objStr))
-                this.emb.AddField(localizedTitle, objStr, inline);
-        }
-        return this;
+        string? contentString = content?.ToString();
+        if (!unknown && string.IsNullOrWhiteSpace(contentString))
+            return this;
+
+        string value = string.IsNullOrWhiteSpace(contentString)
+            ? this.lcs.GetString(this.gid, TranslationKey.NotFound)
+            : contentString;
+        return this.AddField(this.lcs.GetString(this.gid, title), value, inline);
     }
 
     public LocalizedEmbedBuilder AddLocalizedField(TranslationKey title, TranslationKey content, bool inline = false)
     {
-        string localizedTitle = this.TruncateToFitFieldName(this.lcs.GetString(this.gid, title));
-        string localizedContent = this.TruncateToFitFieldValue(this.lcs.GetString(this.gid, content));
-        this.emb.AddField(localizedTitle, localizedContent, inline);
-        return this;
+        return this.AddLocalizedField(title, this.lcs.GetString(this.gid, content), inline);
     }
 
-    public LocalizedEmbedBuilder AddInsufficientAuditLogPermissionsField()
-        => this.AddLocalizedField(TranslationKey.str_err, TranslationKey.err_audit_log_no_perms);
-
-    public LocalizedEmbedBuilder AddInvocationFields(CommandContext ctx)
-        => this.AddInvocationFields(ctx.User, ctx.Channel);
-
-    public LocalizedEmbedBuilder AddInvocationFields(DiscordUser user, DiscordChannel? channel = null)
+    public LocalizedEmbedBuilder WithLocalizedTimestamp(DateTimeOffset? timestamp = null, string? iconUrl = null)
     {
-        this.AddLocalizedField(TranslationKey.evt_usr_responsible, user.Mention, true);
-        if (channel is not null)
-            this.AddLocalizedField(TranslationKey.evt_invoke_loc, channel.Mention, true);
-        return this;
+        return this.WithFooter(this.lcs.GetLocalizedTimeString(this.gid, timestamp), iconUrl);
     }
 
     public LocalizedEmbedBuilder AddLocalizedTimestampField(TranslationKey title, DateTimeOffset? timestamp, bool inline = false)
     {
-        if (timestamp is not null)
-            this.AddLocalizedField(title, this.lcs.GetLocalizedTimeString(this.gid, timestamp), inline);
+        return this.AddLocalizedField(title, this.lcs.GetLocalizedTimeString(this.gid, timestamp, unknown: true), inline);
+    }
+
+    public LocalizedEmbedBuilder WithThumbnail(string url)
+    {
+        this.embed.ThumbnailUrl = url;
         return this;
     }
 
-    public LocalizedEmbedBuilder AddReason(string? reason)
-        => reason is null ? this : this.AddLocalizedField(TranslationKey.str_rsn, reason);
-
-    public LocalizedEmbedBuilder AddFieldsFromAuditLogEntry<T>(T? entry, Action<LocalizedEmbedBuilder, T>? action = null, bool errReport = true) where T : DiscordAuditLogEntry
-    {
-        if (entry is null) {
-            if (errReport)
-                this.AddInsufficientAuditLogPermissionsField();
-        } else {
-            if (action is not null)
-                action(this, entry);
-            this.AddInvocationFields(entry.UserResponsible);
-            this.AddReason(entry.Reason);
-            this.WithLocalizedTimestamp(entry.CreationTimestamp, entry.UserResponsible?.AvatarUrl);
-        }
-        return this;
-    }
-
-    public LocalizedEmbedBuilder AddLocalizedPropertyChangeField<T>(TranslationKey title, PropertyChange<T>? propertyChange, bool inline = true)
-    {
-        if (propertyChange is not null)
-            if (!Equals(propertyChange.Before, propertyChange.After)) {
-                if (propertyChange.After is bool aft) {
-                    this.AddLocalizedField(title, aft ? TranslationKey.str_true : TranslationKey.str_false, inline);
-                } else {
-                    string localized404 = this.lcs.GetString(this.gid, TranslationKey.NotFound);
-                    string beforeStr = this.TruncateToFitHalfFieldValue(propertyChange.Before?.ToString() ?? localized404);
-                    string afterStr = this.TruncateToFitHalfFieldValue(propertyChange.After?.ToString() ?? localized404);
-                    string localizedContent = this.lcs.GetString(this.gid, TranslationKey.fmt_from_to(beforeStr, afterStr));
-                    this.AddLocalizedField(title, Formatter.InlineCode(localizedContent), inline, false);
-                }
-            }
-
-        return this;
-    }
-
-    public LocalizedEmbedBuilder AddLocalizedPropertyChangeField(TranslationKey title, object? before, object? after, bool inline = true)
-    {
-        if (!Equals(before, after)) {
-            if (after is bool aft) {
-                this.AddLocalizedField(title, aft ? TranslationKey.str_true : TranslationKey.str_false, inline);
-            } else {
-                string localized404 = this.lcs.GetString(this.gid, TranslationKey.NotFound);
-                string beforeStr = this.TruncateToFitHalfFieldValue(before?.ToString() ?? localized404);
-                string afterStr = this.TruncateToFitHalfFieldValue(after?.ToString() ?? localized404);
-                string localizedContent = this.lcs.GetString(this.gid, TranslationKey.fmt_from_to(beforeStr, afterStr));
-                this.AddLocalizedField(title, Formatter.InlineCode(localizedContent), inline, false);
-            }
-        }
-        return this;
-    }
-
-    public DiscordEmbed Build()
-    {
-        if (this.emb.Fields.Count > DiscordLimits.EmbedFieldLimit)
-            throw new InvalidOperationException("Too many embed fields");
-        int sum = this.emb.Title?.Length ?? 0
-                + this.emb.Description?.Length ?? 0
-                + this.emb.Fields?.Sum(f => f.Name.Length + f.Value.Length) ?? 0
-                + this.emb.Footer?.Text?.Length ?? 0
-            ;
-        if (sum > DiscordLimits.EmbedTotalCharLimit)
-            throw new InvalidOperationException("Embed char limit exceeded");
-        return this.emb.Build();
-    }
-
-    public DiscordEmbedBuilder GetBuilder()
-        => this.emb;
-
-
-    private string TruncateToFitEmbedTitle(string s)
-        => s.Truncate(DiscordLimits.EmbedTitleLimit - 3, "...");
-
-    private string TruncateToFitEmbedDescription(string s)
-        => s.Truncate(DiscordLimits.EmbedDescriptionLimit - 3, "...");
-
-    private string TruncateToFitFieldName(string s)
-        => s.Truncate(DiscordLimits.EmbedFieldNameLimit - 3, "...");
-
-    private string TruncateToFitFieldValue(string s)
-        => s.Truncate(DiscordLimits.EmbedFieldValueLimit - 3, "...");
-
-    private string TruncateToFitHalfFieldValue(string s)
-        => s.Truncate(DiscordLimits.EmbedFieldValueLimit / 2 - 3, "...");
-
-    private string TruncateToFitFooterText(string s)
-        => s.Truncate(DiscordLimits.EmbedFooterLimit - 3, "...");
+    public Embed Build()
+        => this.embed.Build();
 }

@@ -15,7 +15,7 @@ public sealed class ForbiddenNamesServiceTests : ITheGodfatherServiceTest<Forbid
 
     public ForbiddenNamesServiceTests()
     {
-        this.Service = new ForbiddenNamesService(TestDbProvider.Database, null!, null!, null!);
+        this.Service = new ForbiddenNamesService(TestDbProvider.Database);
         this.fnamesCount = new Dictionary<int, int>(
             Enumerable.Range(0, MockData.Ids.Count)
                 .Zip(Enumerable.Repeat(0, MockData.Ids.Count), (i, c) => new KeyValuePair<int, int>(i, c))
@@ -25,7 +25,7 @@ public sealed class ForbiddenNamesServiceTests : ITheGodfatherServiceTest<Forbid
 
     [SetUp]
     public void InitializeService() =>
-        this.Service = new ForbiddenNamesService(TestDbProvider.Database, null!, null!, null!);
+        this.Service = new ForbiddenNamesService(TestDbProvider.Database);
 
 
     [Test]

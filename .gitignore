@@ -292,4 +292,6 @@ __pycache__/
 *.mp3
 /Database/data.sql
 /TheGodfather/Resources/config.json
+/data-discordnet/
+/TheGodfather/data-discordnet/
 *.db

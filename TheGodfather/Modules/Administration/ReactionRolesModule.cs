@@ -1,292 +1,215 @@
-﻿using System.Text;
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using TheGodfather.EventListeners.Common;
-using TheGodfather.Modules.Administration.Extensions;
-using TheGodfather.Modules.Administration.Services;
+using System.Text.RegularExpressions;
+using Discord.Commands;
+using TheGodfather.Attributes;
 
 namespace TheGodfather.Modules.Administration;
 
-[Group("reactionroles")][Module(ModuleType.Administration)][NotBlocked]
-[Aliases("rr", "reactionrole", "reactroles", "reactionrl", "reactrole", "reactr", "reactrl", "rrole")]
-[RequireGuild][RequireUserPermissions(Permissions.ManageGuild)][RequireBotPermissions(Permissions.ManageRoles)]
+[Group("reactionroles")]
+[Alias("rr", "reactionrole", "reactroles", "reactionrl", "reactrole", "reactr", "reactrl", "rrole")]
+[RequireContext(ContextType.Guild)]
+[RequireUserPermission(GuildPermission.ManageGuild)]
+[RequireBotPermission(GuildPermission.ManageRoles)]
 [Cooldown(3, 5, CooldownBucketType.Guild)]
-public sealed class ReactionRolesModule : TheGodfatherServiceModule<ReactionRoleService>
+public sealed class ReactionRolesModule : TheGodfatherModule
 {
-    #region reactionroles
-    [GroupCommand][Priority(2)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_rr_msg)] DiscordMessage msg,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
-        [Description(TranslationKey.desc_role_grant)] DiscordRole role)
-        => this.AddAsync(ctx, emoji, role, msg);
+    private static readonly Regex _messageLinkRegex = new(@"discord(?:app)?\.com/channels/\d+/(\d+)/(\d+)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
-    [GroupCommand][Priority(1)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_rr_msg)] DiscordMessage msg,
-        [Description(TranslationKey.desc_role_grant)] DiscordRole role,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji)
-        => this.AddAsync(ctx, emoji, role, msg);
+    private readonly ReactionRoleService reactionRoles;
 
-    [GroupCommand][Priority(2)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
-        [Description(TranslationKey.desc_rr_msg)] DiscordMessage msg,
-        [Description(TranslationKey.desc_role_grant)] DiscordRole role)
-        => this.AddAsync(ctx, emoji, role, msg);
 
-    [GroupCommand][Priority(1)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_role_grant)] DiscordRole role,
-        [Description(TranslationKey.desc_rr_msg)] DiscordMessage msg,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji)
-        => this.AddAsync(ctx, emoji, role, msg);
-
-    [GroupCommand][Priority(2)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
-        [Description(TranslationKey.desc_role_grant)] DiscordRole role,
-        [Description(TranslationKey.desc_rr_msg)] DiscordMessage? msg = null)
-        => this.AddAsync(ctx, emoji, role, msg);
-
-    [GroupCommand][Priority(1)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_role_grant)] DiscordRole role,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
-        [Description(TranslationKey.desc_rr_msg)] DiscordMessage? msg = null)
-        => this.AddAsync(ctx, emoji, role, msg);
-
-    [GroupCommand][Priority(0)]
-    public Task ExecuteGroupAsync(CommandContext ctx)
-        => this.ListAsync(ctx);
-    #endregion
-
-    #region reactionroles add
-    [Command("add")][Priority(5)]
-    [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_rr_msg)] DiscordMessage msg,
-        [Description(TranslationKey.desc_role_grant)] DiscordRole role,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji)
-        => this.AddAsync(ctx, emoji, role, msg);
-
-    [Command("add")][Priority(4)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_rr_msg)] DiscordMessage msg,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
-        [Description(TranslationKey.desc_role_grant)] DiscordRole role)
-        => this.AddAsync(ctx, emoji, role, msg);
-
-    [Command("add")][Priority(3)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_role_grant)] DiscordRole role,
-        [Description(TranslationKey.desc_rr_msg)] DiscordMessage msg,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji)
-        => this.AddAsync(ctx, emoji, role, msg);
-
-    [Command("add")][Priority(2)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
-        [Description(TranslationKey.desc_rr_msg)] DiscordMessage msg,
-        [Description(TranslationKey.desc_role_grant)] DiscordRole role)
-        => this.AddAsync(ctx, emoji, role, msg);
-
-    [Command("add")][Priority(1)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_role_grant)] DiscordRole role,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
-        [Description(TranslationKey.desc_rr_msg)] DiscordMessage? msg = null)
-        => this.AddAsync(ctx, emoji, role, msg);
-
-    [Command("add")][Priority(0)]
-    public async Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
-        [Description(TranslationKey.desc_role_grant)] DiscordRole role,
-        [Description(TranslationKey.desc_rr_msg)] DiscordMessage? msg = null)
+    public ReactionRolesModule(LocalizationService localization, ReactionRoleService reactionRoles)
+        : base(localization, new Color(0x3498DB))
     {
-        if (emoji is DiscordGuildEmoji gemoji && gemoji.Guild.Id != ctx.Guild.Id)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_rr_emoji_404);
+        this.reactionRoles = reactionRoles;
+    }
 
-        ReactionRole? rr = await this.Service.GetAsync(ctx.Guild.Id, emoji.GetDiscordName(), msg?.ChannelId ?? 0, msg?.Id ?? 0);
-        if (rr is not null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_rr);
 
-        if (msg is null)
-            await this.Service.RemoveByEmojiAsync(ctx.Guild.Id, new[] { emoji.GetDiscordName() });
+    [Command("")]
+    [Priority(1)]
+    public Task ExecuteGroupAsync(string emoji, IRole role, string? message = null)
+        => this.AddAsync(emoji, role, message);
 
-        await this.Service.AddAsync(new ReactionRole {
-            GuildId = ctx.Guild.Id,
-            Emoji = emoji.GetDiscordName(),
-            ChannelId = msg?.ChannelId ?? 0,
-            MessageId = msg?.Id ?? 0,
+    [Command("")]
+    [Priority(0)]
+    public Task ExecuteGroupAsync()
+        => this.ListAsync();
+
+    [Command("add")]
+    [Priority(1)]
+    [Alias("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
+    public Task AddAsync(IRole role, string emoji, string? message = null)
+        => this.AddAsync(emoji, role, message);
+
+    [Command("add")]
+    [Priority(0)]
+    public async Task AddAsync(string emoji, IRole role, string? message = null)
+    {
+        string emojiName = NormalizeEmoji(emoji);
+        (ulong ChannelId, ulong MessageId, IUserMessage? Message) messageRef = await this.ResolveMessageReferenceAsync(message);
+
+        ReactionRole? existing = await this.reactionRoles.GetAsync(this.Context.Guild.Id, emojiName, messageRef.ChannelId, messageRef.MessageId);
+        if (existing is not null)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_rr);
+
+        if (messageRef.MessageId == 0)
+            await this.reactionRoles.RemoveByEmojiAsync(this.Context.Guild.Id, new[] { emojiName });
+
+        await this.reactionRoles.AddAsync(new ReactionRole {
+            GuildId = this.Context.Guild.Id,
+            Emoji = emojiName,
+            ChannelId = messageRef.ChannelId,
+            MessageId = messageRef.MessageId,
             RoleId = role.Id
         });
 
-        await ctx.GuildLogAsync(emb => {
-            emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, TranslationKey.evt_rr_change);
-            emb.AddLocalizedField(TranslationKey.str_rr_role, role.Mention, true);
-            emb.AddLocalizedField(TranslationKey.str_rr_emoji, emoji, true);
-            if (msg is not null)
-                emb.AddLocalizedField(TranslationKey.str_rr_msg, Formatter.MaskedUrl(msg.Id.ToString(), msg.JumpLink), true);
-        });
+        if (messageRef.Message is not null && TryParseEmote(emojiName, out IEmote? emote))
+            await messageRef.Message.AddReactionAsync(emote);
 
-        if (msg is not null)
-            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_add_m(role.Mention, emoji, Formatter.MaskedUrl(msg.Id.ToString(), msg.JumpLink)));
-        else
-            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_add(role.Mention, emoji));
+        string messageText = messageRef.MessageId == 0
+            ? string.Empty
+            : $" on {Format.Url(messageRef.MessageId.ToString(), BuildJumpLink(messageRef.ChannelId, messageRef.MessageId))}";
+        await this.InfoAsync(this.ModuleColor, $"{role.Mention} assigned by {emojiName}{messageText}.");
     }
-    #endregion
 
-    #region reactionroles delete
-    [Command("delete")][Priority(3)]
-    [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
-    public async Task RemoveAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_roles_del)] params DiscordRole[] roles)
+    [Command("delete")]
+    [Priority(2)]
+    [Alias("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
+    public async Task RemoveAsync(params IRole[] roles)
     {
-        if (!roles.Any()) {
-            await this.RemoveAllAsync(ctx);
+        if (roles is null || !roles.Any()) {
+            await this.RemoveAllAsync();
             return;
         }
 
-        IReadOnlyList<ReactionRole> lrs = await this.Service.GetAllAsync(ctx.Guild.Id);
-        int removed = await this.Service.RemoveAsync(lrs.Where(lr => roles.SelectIds().Contains(lr.RoleId)));
-
-        await ctx.GuildLogAsync(emb => {
-            emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_rr_change);
-            emb.AddLocalizedField(TranslationKey.str_roles_rem, removed);
-        });
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_rem(removed));
+        IReadOnlyList<ReactionRole> all = await this.reactionRoles.GetAllAsync(this.Context.Guild.Id);
+        int removed = await this.reactionRoles.RemoveAsync(all.Where(rr => roles.Any(role => role.Id == rr.RoleId)));
+        await this.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_rem(removed));
     }
 
-    [Command("delete")][Priority(2)]
-    public async Task RemoveAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_emojis)] params DiscordEmoji[] emojis)
+    [Command("delete emoji")]
+    [Alias("remove emoji", "delete e", "remove e")]
+    public async Task RemoveEmojiAsync(params string[] emojis)
     {
         if (emojis is null || !emojis.Any()) {
-            await this.RemoveAllAsync(ctx);
+            await this.RemoveAllAsync();
             return;
         }
 
-        int removed = await this.Service.RemoveByEmojiAsync(ctx.Guild.Id, emojis.Select(e => e.GetDiscordName()));
-
-        await ctx.GuildLogAsync(emb => {
-            emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_rr_change);
-            emb.AddLocalizedField(TranslationKey.str_roles_rem, removed);
-        });
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_rem(removed));
+        int removed = await this.reactionRoles.RemoveByEmojiAsync(this.Context.Guild.Id, emojis.Select(NormalizeEmoji));
+        await this.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_rem(removed));
     }
 
-    [Command("delete")][Priority(1)]
-    public async Task RemoveAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_msg)] params DiscordMessage[] msgs)
-    {
-        if (msgs is null || !msgs.Any()) {
-            await this.RemoveAllAsync(ctx);
-            return;
-        }
-
-        int removed = await this.Service.RemoveByMessageAsync(ctx.Guild.Id, msgs.Select(m => (m.ChannelId, m.Id)));
-
-        await ctx.GuildLogAsync(emb => {
-            emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_rr_change);
-            emb.AddLocalizedField(TranslationKey.str_roles_rem, removed);
-        });
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_rem(removed));
-    }
-
-    [Command("delete")][Priority(0)]
-    public async Task RemoveAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_chn)] params DiscordChannel[] channels)
+    [Command("delete channel")]
+    [Alias("remove channel", "delete chn", "remove chn")]
+    public async Task RemoveChannelAsync(params ITextChannel[] channels)
     {
         if (channels is null || !channels.Any()) {
-            await this.RemoveAllAsync(ctx);
+            await this.RemoveAllAsync();
             return;
         }
 
-        int removed = await this.Service.RemoveByChannelAsync(ctx.Guild.Id, channels.SelectIds());
-
-        await ctx.GuildLogAsync(emb => {
-            emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_rr_change);
-            emb.AddLocalizedField(TranslationKey.str_roles_rem, removed);
-        });
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_rem(removed));
+        int removed = await this.reactionRoles.RemoveByChannelAsync(this.Context.Guild.Id, channels.Select(c => c.Id));
+        await this.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_rem(removed));
     }
-    #endregion
 
-    #region reactionroles deleteall
-    [Command("deleteall")][UsesInteractivity]
-    [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
-    public async Task RemoveAllAsync(CommandContext ctx)
+    [Command("delete message")]
+    [Alias("remove message", "delete msg", "remove msg")]
+    public async Task RemoveMessageAsync(params string[] messageRefs)
     {
-        if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_rr_rem_all))
+        if (messageRefs is null || !messageRefs.Any()) {
+            await this.RemoveAllAsync();
+            return;
+        }
+
+        var ids = new List<(ulong ChannelId, ulong MessageId)>();
+        foreach (string messageRef in messageRefs) {
+            (ulong ChannelId, ulong MessageId, _) = await this.ResolveMessageReferenceAsync(messageRef);
+            if (ChannelId != 0 && MessageId != 0)
+                ids.Add((ChannelId, MessageId));
+        }
+
+        int removed = await this.reactionRoles.RemoveByMessageAsync(this.Context.Guild.Id, ids);
+        await this.InfoAsync(this.ModuleColor, TranslationKey.fmt_rr_rem(removed));
+    }
+
+    [Command("deleteall")]
+    [Alias("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
+    public async Task RemoveAllAsync()
+    {
+        if (!await this.ConfirmAsync(TranslationKey.q_rr_rem_all))
             return;
 
-        await this.Service.ClearAsync(ctx.Guild.Id);
-        await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle(TranslationKey.evt_rr_clear).WithColor(this.ModuleColor));
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_rr_clear);
+        await this.reactionRoles.ClearAsync(this.Context.Guild.Id);
+        await this.InfoAsync(this.ModuleColor, TranslationKey.evt_rr_clear);
     }
-    #endregion
 
-    #region reactionroles list
     [Command("list")]
-    [Aliases("print", "show", "view", "ls", "l", "p")]
-    public async Task ListAsync(CommandContext ctx)
+    [Alias("print", "show", "view", "ls", "l", "p")]
+    public async Task ListAsync()
     {
-        IReadOnlyList<ReactionRole> rrs = await this.Service.GetAllAsync(ctx.Guild.Id);
+        IReadOnlyList<ReactionRole> rrs = await this.reactionRoles.GetAllAsync(this.Context.Guild.Id);
         if (!rrs.Any()) {
-            await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.cmd_err_rr_none);
+            await this.ImpInfoAsync(this.ModuleColor, TranslationKey.cmd_err_rr_none);
             return;
         }
 
-        var roles = rrs.Select(rr => (ReactionRole: rr, Role: ctx.Guild.GetRole(rr.RoleId))).ToList();
-        var toRemove = roles
-                .Where(kvp => kvp.Role is null)
-                .Select(kvp => kvp.ReactionRole.Emoji)
-                .Where(e => !DiscordEmoji.TryFromName(ctx.Client, e, out _))
-                .ToList()
-            ;
-
-        if (toRemove.Any()) {
-            await this.Service.RemoveByEmojiAsync(ctx.Guild.Id, toRemove);
-            await ctx.GuildLogAsync(
-                emb => {
-                    emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_rr_automanaged);
-                    emb.AddLocalizedField(TranslationKey.str_roles_rem, toRemove.JoinWith(" "));
-                },
-                false
-            );
-        }
-
-        var toPrint = roles
-            .Where(kvp => !toRemove.Contains(kvp.ReactionRole.Emoji))
-            .OrderBy(kvp => kvp.Role.Position)
-            .ToList();
-        if (!toPrint.Any()) {
-            await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.cmd_err_rr_none);
-            return;
-        }
-
-        await ctx.PaginateAsync(TranslationKey.str_rr, toPrint, FormatReactionRole, this.ModuleColor);
-
-
-        string FormatReactionRole((ReactionRole ReactionRole, DiscordRole Role) kvp)
-        {
-            var sb = new StringBuilder();
-            sb.Append(DiscordEmoji.FromName(ctx.Client, kvp.ReactionRole.Emoji));
-            sb.Append(" | ");
-            sb.Append(kvp.Role.Mention);
-            sb.Append(' ');
-            if (kvp.ReactionRole.MessageId != 0) {
-                ulong gid = kvp.ReactionRole.GuildId;
-                ulong cid = kvp.ReactionRole.ChannelId;
-                ulong mid = kvp.ReactionRole.MessageId;
-                var jumplink = new Uri($"https://discord.com/channels/{ gid }/{ cid }/{ mid }");
-                sb.Append(Formatter.MaskedUrl("msg", jumplink));
+        await this.RespondPagedAsync(
+            TranslationKey.str_rr,
+            rrs.OrderBy(rr => rr.RoleId).ThenBy(rr => rr.Emoji),
+            rr => {
+                SocketRole? role = this.Context.Guild.GetRole(rr.RoleId);
+                string roleText = role?.Mention ?? rr.RoleId.ToString();
+                string messageText = rr.MessageId == 0 ? "" : $" {Format.Url("msg", BuildJumpLink(rr.ChannelId, rr.MessageId))}";
+                return $"{rr.Emoji} | {roleText}{messageText}";
             }
-            return sb.ToString();
+        );
+    }
+
+
+    internal static string NormalizeEmoji(string emoji)
+        => Emote.TryParse(emoji, out Emote? emote) ? emote.ToString() : emoji;
+
+    internal static bool TryParseEmote(string emoji, out IEmote? emote)
+    {
+        if (Emote.TryParse(emoji, out Emote? custom)) {
+            emote = custom;
+            return true;
+        }
+
+        try {
+            emote = new Emoji(emoji);
+            return true;
+        } catch {
+            emote = null;
+            return false;
         }
     }
-    #endregion
+
+    private async Task<(ulong ChannelId, ulong MessageId, IUserMessage? Message)> ResolveMessageReferenceAsync(string? message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+            return (0, 0, null);
+
+        ulong cid;
+        ulong mid;
+        Match match = _messageLinkRegex.Match(message);
+        if (match.Success) {
+            cid = ulong.Parse(match.Groups[1].Value);
+            mid = ulong.Parse(match.Groups[2].Value);
+        } else if (ulong.TryParse(message, out mid)) {
+            cid = this.Context.Channel.Id;
+        } else {
+            throw new LocalizedCommandException(TranslationKey.cmd_err_msg_404);
+        }
+
+        ITextChannel? channel = this.Context.Guild.GetTextChannel(cid);
+        IUserMessage? msg = channel is null ? null : await channel.GetMessageAsync(mid) as IUserMessage;
+        if (msg is null)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_msg_404);
+
+        return (cid, mid, msg);
+    }
+
+    private string BuildJumpLink(ulong channelId, ulong messageId)
+        => $"https://discord.com/channels/{this.Context.Guild.Id}/{channelId}/{messageId}";
 }

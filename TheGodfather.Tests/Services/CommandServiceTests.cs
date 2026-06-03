@@ -7,9 +7,9 @@ using TheGodfather.Modules.Administration.Services;
 namespace TheGodfather.Tests.Services;
 
 [TestFixture]
-public sealed class CommandServiceTests : ITheGodfatherServiceTest<CommandService>
+public sealed class CommandServiceTests : ITheGodfatherServiceTest<CommandInfoService>
 {
-    public CommandService Service { get; private set; } = null!;
+    public CommandInfoService Service { get; private set; } = null!;
     public GuildConfigService Configs { get; private set; } = null!;
     public LocalizationService Localization { get; private set; } = null!;
     public string ValidTestDataPath => Path.Combine(this.testDataPath, "Valid");
@@ -26,7 +26,7 @@ public sealed class CommandServiceTests : ITheGodfatherServiceTest<CommandServic
         var bcs = new BotConfigService();
         this.Configs = new GuildConfigService(bcs, TestDbProvider.Database, false);
         this.Localization = new LocalizationService(this.Configs, bcs, false);
-        this.Service = new CommandService(this.Configs, this.Localization, false);
+        this.Service = new CommandInfoService(this.Configs, this.Localization, false);
         Assume.That(Directory.Exists(this.ValidTestDataPath), "Valid tests dir not present");
         Assume.That(Directory.Exists(this.ThrowsIOTestDataPath), "Invalid tests dir not present");
     }

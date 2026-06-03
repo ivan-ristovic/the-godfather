@@ -2,7 +2,6 @@
 using System.Collections.Immutable;
 using System.Globalization;
 using System.IO;
-using DSharpPlus;
 using Newtonsoft.Json;
 using TheGodfather.Modules.Administration.Services;
 using TheGodfather.Services.Common;
@@ -35,6 +34,7 @@ public sealed class LocalizationService : ITheGodfatherService
 
     public void LoadData(string path)
     {
+        path = ContentPathResolver.Resolve(path);
         Log.Debug("Loading translation strings from {Path}", path);
         this.strings = new ConcurrentDictionary<string, ImmutableDictionary<string, string>>(ReadStrings(path, "*.json"));
         Log.Information("Loaded translation strings");
@@ -92,13 +92,13 @@ public sealed class LocalizationService : ITheGodfatherService
         if (this.strings!.TryGetValue(locale, out ImmutableDictionary<string, string>? localeStrings)) {
             if (!localeStrings.TryGetValue(key, out string? response)) {
                 Log.Error("Failed to find string for {Key} in locale {Locale}", key, locale);
-                throw new LocalizationException($"I do not have a translation ready for:{Formatter.InlineCode(key)} Please report this.");
+                throw new LocalizationException($"I do not have a translation ready for: `{key}` Please report this.");
             }
 
             string unknownKey = TranslationKey.NotFound.Key;
             if (!localeStrings.TryGetValue(unknownKey, out string? str404)) {
                 Log.Error("Failed to find string for {Key} in locale {Locale}", unknownKey, locale);
-                throw new LocalizationException($"I do not have a translation ready for:{Formatter.InlineCode(unknownKey)} Please report this.");
+                throw new LocalizationException($"I do not have a translation ready for: `{unknownKey}` Please report this.");
             }
             IEnumerable<object> margs = args.Any() ? args.Select(a => a ?? str404) : Enumerable.Empty<object>();
             return string.Format(response, margs.ToArray()).Trim();

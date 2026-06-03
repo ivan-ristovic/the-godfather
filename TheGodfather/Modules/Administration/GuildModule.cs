@@ -1,225 +1,152 @@
-﻿using System.IO;
-using System.Net;
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
+using Discord.Commands;
+using Discord.Rest;
+using TheGodfather.Attributes;
 
 namespace TheGodfather.Modules.Administration;
 
-[Group("guild")][Module(ModuleType.Administration)][NotBlocked]
-[Aliases("server", "gld", "svr", "g")]
-[RequireGuild]
+[Group("guild")]
+[Alias("server", "gld", "svr", "g")]
+[RequireContext(ContextType.Guild)]
 [Cooldown(3, 5, CooldownBucketType.Guild)]
 public sealed class GuildModule : TheGodfatherModule
 {
-    #region guild
-    [GroupCommand]
-    public Task ExecuteGroupAsync(CommandContext ctx)
-        => this.GuildInfoAsync(ctx);
-    #endregion
+    public GuildModule(LocalizationService localization)
+        : base(localization, new Color(0x3498DB)) { }
 
-    #region guild bans
+
+    [Command("")]
+    public Task ExecuteGroupAsync()
+        => this.GuildInfoAsync();
+
     [Command("bans")]
-    [Aliases("banlist", "viewbanlist", "getbanlist", "getbans", "viewbans")]
-    [RequirePermissions(Permissions.ViewAuditLog)]
-    public async Task GetBansAsync(CommandContext ctx)
+    [Alias("banlist", "viewbanlist", "getbanlist", "getbans", "viewbans")]
+    [RequireUserPermission(GuildPermission.ViewAuditLog)]
+    public async Task GetBansAsync()
     {
-        IReadOnlyList<DiscordBan> bans = await ctx.Guild.GetBansAsync();
-        await ctx.PaginateAsync(
+        IBan[] bans = (await this.Context.Guild.GetBansAsync().FlattenAsync()).Cast<IBan>().ToArray();
+        await this.RespondPagedAsync(
             TranslationKey.str_bans,
             bans,
-            b => $"{b.User} | {b.Reason}",
-            this.ModuleColor
+            ban => $"{UserDiscriminatorString(ban.User)} | {ban.Reason}"
         );
     }
-    #endregion
 
-    #region guild log
     [Command("log")]
-    [Aliases("auditlog", "viewlog", "getlog", "getlogs", "logs")]
-    [RequirePermissions(Permissions.ViewAuditLog)]
-    public async Task GetAuditLogsAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_auditlog_amount)] int amount = 10,
-        [Description(TranslationKey.desc_auditlog_mem)] DiscordMember? member = null)
+    [Alias("auditlog", "viewlog", "getlog", "getlogs", "logs")]
+    [RequireUserPermission(GuildPermission.ViewAuditLog)]
+    public async Task GetAuditLogsAsync(int amount = 10)
     {
         if (amount is < 1 or > DiscordLimits.AuditLogHistoryLimit)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_auditlog_amount(DiscordLimits.AuditLogHistoryLimit));
+            throw new LocalizedCommandException(TranslationKey.cmd_err_auditlog_amount(DiscordLimits.AuditLogHistoryLimit));
 
-        IReadOnlyList<DiscordAuditLogEntry> logs = await ctx.Guild.GetAuditLogsAsync(amount, member);
-
-        await ctx.PaginateAsync(
+        RestAuditLogEntry[] logs = (await this.Context.Guild.GetAuditLogsAsync(amount).FlattenAsync()).ToArray();
+        await this.RespondPagedAsync(
             logs,
-            (emb, e) => {
-                emb.WithTitle(e.ActionType.ToString());
-                emb.WithDescription(e.Id.ToString());
-                emb.AddInvocationFields(e.UserResponsible);
-                emb.AddReason(e.Reason);
-                emb.WithLocalizedTimestamp(e.CreationTimestamp, e.UserResponsible.AvatarUrl);
+            (emb, entry) => {
+                emb.WithTitle(entry.Action.ToString());
+                emb.WithDescription(entry.Id.ToString());
+                emb.AddField("User", entry.User?.ToString() ?? "Unknown", true);
+                emb.AddField("Reason", entry.Reason, false);
+                emb.WithLocalizedTimestamp(entry.CreatedAt, entry.User?.GetAvatarUrl());
                 return emb;
-            },
-            this.ModuleColor
+            }
         );
     }
-    #endregion
 
-    #region guild icon
-    [Command("icon")][Priority(1)]
-    [Aliases("seticon", "si")]
-    [RequirePermissions(Permissions.ManageGuild)]
-    public async Task SetIconAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_icon_url)] Uri? url)
+    [Command("icon")]
+    [Priority(1)]
+    [Alias("seticon", "si")]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
+    [RequireBotPermission(GuildPermission.ManageGuild)]
+    public async Task SetIconAsync(Uri? url = null)
     {
+        string? attachmentUrl = this.Context.Message.Attachments.FirstOrDefault()?.Url;
+        url ??= Uri.TryCreate(attachmentUrl, UriKind.Absolute, out Uri? parsed) ? parsed : null;
         if (url is null)
-            if (!ctx.Message.Attachments.Any() || !Uri.TryCreate(ctx.Message.Attachments[0].Url, UriKind.Absolute, out url) || url is null)
-                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_image_url);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_image_url);
 
-        if (!await url.ContentTypeHeaderIsImageAsync(DiscordLimits.GuildIconLimit))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_image_url_fail(DiscordLimits.EmojiSizeLimit.ToMetric()));
-
-        try {
-            await using Stream stream = await HttpService.GetMemoryStreamAsync(url);
-            await ctx.Guild.ModifyAsync(e => e.Icon = stream);
-            await ctx.InfoAsync(this.ModuleColor);
-        } catch (WebException e) {
-            throw new CommandFailedException(ctx, e, TranslationKey.err_url_image_fail);
-        }
+        await using Stream stream = await HttpService.GetMemoryStreamAsync(url);
+        await this.Context.Guild.ModifyAsync(props => props.Icon = new Image(stream), new RequestOptions { AuditLogReason = InvocationReason() });
+        await this.InfoAsync(this.ModuleColor);
     }
 
-    [Command("icon")][Priority(0)]
-    public Task SetIconAsync(CommandContext ctx)
-        => ctx.RespondAsync(ctx.Guild.IconUrl);
-    #endregion
+    [Command("icon")]
+    [Priority(0)]
+    public Task GetIconAsync()
+        => this.ReplyAsync(this.Context.Guild.IconUrl ?? this.Context.Guild.IconId ?? string.Empty);
 
-    #region guild info
     [Command("info")]
-    [Aliases("i", "information")]
-    public Task GuildInfoAsync(CommandContext ctx)
+    [Alias("i", "information")]
+    public Task GuildInfoAsync()
     {
-        return ctx.RespondWithLocalizedEmbedAsync(emb => {
-            emb.WithTitle(ctx.Guild.ToString());
+        SocketGuild guild = this.Context.Guild;
+        return this.RespondWithLocalizedEmbedAsync(emb => {
+            emb.WithTitle(guild.Name);
             emb.WithColor(this.ModuleColor);
-            emb.WithThumbnail(ctx.Guild.IconUrl);
-            emb.WithDescription(ctx.Guild.Description, false);
-            emb.AddLocalizedField(TranslationKey.str_members, ctx.Guild.MemberCount, true);
-            emb.AddLocalizedField(TranslationKey.str_owner, ctx.Guild.Owner.Mention, true);
-            emb.AddLocalizedField(TranslationKey.str_created_at, ctx.Guild.CreationTimestamp, true);
-            emb.AddLocalizedField(TranslationKey.str_verlvl, ctx.Guild.VerificationLevel, true);
-            emb.AddLocalizedField(TranslationKey.str_vanity_url, ctx.Guild.VanityUrlCode, true, false);
-            emb.AddLocalizedField(TranslationKey.str_discovery_url, ctx.Guild.DiscoverySplashUrl, true, false);
-            emb.AddLocalizedField(TranslationKey.str_banner, ctx.Guild.BannerUrl, true, false);
-            emb.AddLocalizedField(TranslationKey.str_banner_hash, ctx.Guild.Banner, true, false);
-            emb.AddLocalizedField(TranslationKey.str_boosters, ctx.Guild.PremiumSubscriptionCount, true, false);
-            if (ctx.Guild.PremiumTier != PremiumTier.Unknown)
-                emb.AddLocalizedField(TranslationKey.str_tier, (int)ctx.Guild.PremiumTier, true, false);
-            emb.AddLocalizedField(TranslationKey.str_members_max, ctx.Guild.MaxMembers, true, false);
-            emb.AddLocalizedField(TranslationKey.str_members_max_vid, ctx.Guild.MaxVideoChannelUsers, true, false);
-            if (ctx.Guild.Features?.Any() ?? false)
-                emb.AddLocalizedField(TranslationKey.str_features, ctx.Guild.Features.JoinWith(", "));
+            if (!string.IsNullOrWhiteSpace(guild.IconUrl))
+                emb.WithThumbnail(guild.IconUrl);
+            emb.AddLocalizedField(TranslationKey.str_members, guild.MemberCount, true);
+            emb.AddLocalizedField(TranslationKey.str_owner, guild.Owner?.Mention ?? guild.OwnerId.ToString(), true);
+            emb.AddLocalizedTimestampField(TranslationKey.str_created_at, guild.CreatedAt, true);
+            emb.AddLocalizedField(TranslationKey.str_verlvl, guild.VerificationLevel, true);
+            emb.AddLocalizedField(TranslationKey.str_boosters, guild.PremiumSubscriptionCount, true, false);
+            emb.AddLocalizedField(TranslationKey.str_tier, guild.PremiumTier, true, false);
+            emb.AddLocalizedField(TranslationKey.str_roles, guild.Roles.Count, true);
+            emb.AddLocalizedField(TranslationKey.str_chns, guild.Channels.Count, true);
+            string features = guild.Features.ToString();
+            if (!string.IsNullOrWhiteSpace(features))
+                emb.AddLocalizedField(TranslationKey.str_features, features);
         });
     }
-    #endregion
 
-    #region guild memberlist
     [Command("memberlist")]
-    [Aliases("listmembers", "members")]
-    public async Task MemberlistAsync(CommandContext ctx)
-    {
-        IReadOnlyCollection<DiscordMember> members = await ctx.Guild.GetAllMembersAsync();
-        await ctx.PaginateAsync(
+    [Alias("listmembers", "members")]
+    public Task MemberlistAsync()
+        => this.RespondPagedAsync(
             TranslationKey.str_members,
-            members.OrderBy(m => m.DisplayName),
-            m => $"{m.Id} | {m.Mention}",
-            this.ModuleColor
+            this.Context.Guild.Users.OrderBy(u => u.DisplayName),
+            user => $"{user.Id} | {user.Mention}"
         );
-    }
-    #endregion
 
-    #region guild prune
-    [Command("prune")][UsesInteractivity][Priority(6)]
-    [Aliases("p", "clean", "purge")]
-    [RequirePermissions(Permissions.KickMembers)]
-    [RequireUserPermissions(Permissions.Administrator)]
-    public Task PruneMembersAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_prune_days)] int days,
-        [Description(TranslationKey.desc_rsn)] string reason,
-        [Description(TranslationKey.desc_prune_roles)] params DiscordRole[] roles)
-        => this.InternalPruneAsync(ctx, days, reason, roles);
-
-    [Command("prune")][Priority(5)]
-    public Task PruneMembersAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_rsn)] string reason,
-        [Description(TranslationKey.desc_prune_days)] int days,
-        [Description(TranslationKey.desc_prune_roles)] params DiscordRole[] roles)
-        => this.InternalPruneAsync(ctx, days, reason, roles);
-
-    [Command("prune")][Priority(4)]
-    public Task PruneMembersAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_rsn)] string reason,
-        [Description(TranslationKey.desc_prune_roles)] params DiscordRole[] roles)
-        => this.InternalPruneAsync(ctx, reason: reason, roles: roles);
-
-    [Command("prune")][Priority(3)]
-    public Task PruneMembersAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_prune_days)] int days,
-        [Description(TranslationKey.desc_prune_roles)] params DiscordRole[] roles)
-        => this.InternalPruneAsync(ctx, days, roles: roles);
-
-    [Command("prune")][Priority(2)]
-    public Task PruneMembersAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_prune_days)] int days,
-        [Description(TranslationKey.desc_prune_roles)] DiscordRole role,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string reason)
-        => this.InternalPruneAsync(ctx, days, reason, role);
-
-    [Command("prune")][Priority(1)]
-    public Task PruneMembersAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_prune_days)] int days,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
-        => this.InternalPruneAsync(ctx, days, reason);
-
-    [Command("prune")][Priority(0)]
-    public Task PruneMembersAsync(CommandContext ctx)
-        => this.InternalPruneAsync(ctx);
-    #endregion
-
-    #region guild rename
-    [Command("rename")]
-    [Aliases("r", "name", "setname", "mv")]
-    [RequirePermissions(Permissions.ManageGuild)]
-    public async Task RenameGuildAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_name_new)] string name)
+    [Command("prune")]
+    [Alias("p", "clean", "purge")]
+    [RequireUserPermission(GuildPermission.Administrator)]
+    [RequireBotPermission(GuildPermission.KickMembers)]
+    public async Task PruneMembersAsync(int days = 7, [Remainder] string? reason = null)
     {
-        if (string.IsNullOrWhiteSpace(name))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_missing_name);
+        if (days is < 1 or > 30)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_prune_days(1, 30));
 
-        if (name.Length > DiscordLimits.GuildNameLimit)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_name(DiscordLimits.GuildNameLimit));
-
-        await ctx.Guild.ModifyAsync(m => {
-            m.Name = name;
-            m.AuditLogReason = ctx.BuildInvocationDetailsString();
-        });
-        await ctx.InfoAsync(this.ModuleColor);
-    }
-    #endregion
-
-
-    #region internals
-    public async Task InternalPruneAsync(CommandContext ctx, int days = 7, string? reason = null, params DiscordRole[] roles)
-    {
-        if (days is < 1 or > DiscordLimits.PruneDaysLimit)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_prune_days(1, DiscordLimits.PruneDaysLimit));
-
-        int count = await ctx.Guild.GetPruneCountAsync(days);
+        int count = await this.Context.Guild.PruneUsersAsync(days, true);
         if (count == 0)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_prune_none);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_prune_none);
 
-        if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_prune(count)))
+        if (!await this.ConfirmAsync(TranslationKey.q_prune(count)))
             return;
 
-        await ctx.Guild.PruneAsync(days, false, roles, ctx.BuildInvocationDetailsString(reason));
-        await ctx.InfoAsync(this.ModuleColor);
+        await this.Context.Guild.PruneUsersAsync(days, false, new RequestOptions { AuditLogReason = InvocationReason(reason) });
+        await this.InfoAsync(this.ModuleColor);
     }
-    #endregion
+
+    [Command("rename")]
+    [Alias("r", "name", "setname", "mv")]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
+    [RequireBotPermission(GuildPermission.ManageGuild)]
+    public async Task RenameGuildAsync([Remainder] string name)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new LocalizedCommandException(TranslationKey.cmd_err_missing_name);
+
+        if (name.Length > DiscordLimits.GuildNameLimit)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_name(DiscordLimits.GuildNameLimit));
+
+        await this.Context.Guild.ModifyAsync(props => props.Name = name, new RequestOptions { AuditLogReason = InvocationReason() });
+        await this.InfoAsync(this.ModuleColor);
+    }
+
+
+    private string InvocationReason(string? reason = null)
+        => string.IsNullOrWhiteSpace(reason)
+            ? $"Requested by {this.Context.User} ({this.Context.User.Id})"
+            : $"{reason} | Requested by {this.Context.User} ({this.Context.User.Id})";
 }

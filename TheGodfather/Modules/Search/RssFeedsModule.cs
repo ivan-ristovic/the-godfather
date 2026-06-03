@@ -1,212 +1,239 @@
 ﻿using System.ServiceModel.Syndication;
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
+using Discord.Commands;
+using TheGodfather.Attributes;
+using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Search;
 
-[Module(ModuleType.Searches)][NotBlocked]
 [Cooldown(3, 5, CooldownBucketType.Channel)]
-public sealed class RssFeedsModule : TheGodfatherServiceModule<RssFeedsService>
+public sealed class RssFeedsModule : TheGodfatherModule
 {
-    #region rss
+    private readonly RssFeedsService rss;
+
+
+    public RssFeedsModule(LocalizationService localization, RssFeedsService rss)
+        : base(localization, new Color(0x1abc9c))
+    {
+        this.rss = rss;
+    }
+
+
     [Command("rss")]
-    [Aliases("feed")]
-    public Task RssAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_rss_url)] Uri url)
+    [Alias("feed")]
+    public Task RssAsync(string url)
     {
-        if (!RssFeedsService.IsValidFeedURL(url.AbsoluteUri))
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_rss);
+        if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? uri) || !RssFeedsService.IsValidFeedURL(uri.AbsoluteUri))
+            throw new LocalizedCommandException(TranslationKey.cmd_err_rss);
 
-        IReadOnlyList<SyndicationItem>? res = RssFeedsService.GetFeedResults(url.AbsoluteUri);
+        IReadOnlyList<SyndicationItem>? res = RssFeedsService.GetFeedResults(uri.AbsoluteUri);
         if (res is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_fail(url));
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_fail(uri));
 
-        return ctx.PaginateAsync(res, (emb, r) => {
-            emb.WithTitle(r.Title.Text);
-            emb.WithDescription(r.Summary.Text, false);
-            if (r.Links.Any())
-                emb.WithUrl(r.Links.First().Uri);
-            if (r.Authors.Any())
-                emb.AddLocalizedField(TranslationKey.str_author, r.Authors.First().Name, true, false);
-            emb.WithLocalizedTimestamp(r.LastUpdatedTime);
+        return this.RespondPagedAsync(res, (emb, item) => {
+            emb.WithTitle(item.Title.Text);
+            emb.WithDescription(item.Summary?.Text, false);
+            if (item.Links.Any())
+                emb.WithUrl(item.Links.First().Uri.ToString());
+            if (item.Authors.Any())
+                emb.AddLocalizedField(TranslationKey.str_author, item.Authors.First().Name, true, false);
+            emb.WithLocalizedTimestamp(item.LastUpdatedTime);
             return emb;
-        }, this.ModuleColor);
+        });
     }
-    #endregion
+}
 
-    #region subscribe
-    [Group("subscribe")]
-    [Aliases("sub", "subscriptions", "subscription")]
-    [RequireGuild][RequireOwnerOrPermissions(Permissions.ManageGuild)]
-    public sealed class SubscribeModule : TheGodfatherServiceModule<RssFeedsService>
+[Group("subscribe")]
+[Alias("sub", "subscriptions", "subscription")]
+[RequireContext(ContextType.Guild)]
+[RequireUserPermission(GuildPermission.ManageGuild)]
+public sealed class SubscribeModule : TheGodfatherModule
+{
+    private readonly RssFeedsService rss;
+    private readonly RedditService reddit;
+    private readonly YtService youtube;
+
+
+    public SubscribeModule(LocalizationService localization, RssFeedsService rss, RedditService reddit, YtService youtube)
+        : base(localization, new Color(0x1abc9c))
     {
-        #region subscribe
-        [GroupCommand][Priority(2)]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-            [Description(TranslationKey.desc_sub_chn)] DiscordChannel chn,
-            [Description(TranslationKey.desc_rss_url)] Uri url,
-            [RemainingText][Description(TranslationKey.desc_name_f)] string? name = null)
-        {
-            if (!chn.IsTextOrNewsChannel())
-                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
-
-            if (!RssFeedsService.IsValidFeedURL(url.AbsoluteUri))
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_rss);
-                
-            await this.Service.SubscribeAsync(ctx.Guild.Id, chn.Id, url.AbsoluteUri, name);
-            await ctx.InfoAsync(this.ModuleColor);
-        }
-
-        [GroupCommand][Priority(1)]
-        public Task ExecuteGroupAsync(CommandContext ctx,
-            [Description(TranslationKey.desc_rss_url)] Uri url,
-            [Description(TranslationKey.desc_sub_chn)] DiscordChannel? chn = null,
-            [RemainingText][Description(TranslationKey.desc_name_f)] string? name = null)
-            => this.ExecuteGroupAsync(ctx, chn ?? ctx.Channel, url, name);
-
-        [GroupCommand][Priority(0)]
-        public Task ExecuteGroupAsync(CommandContext ctx,
-            [Description(TranslationKey.desc_sub_chn)] DiscordChannel? chn = null)
-            => this.ListAsync(ctx, chn);
-        #endregion
-
-        #region subscribe list
-        [Command("list")]
-        [Aliases("ls", "listsubs", "listfeeds")]
-        public async Task ListAsync(CommandContext ctx,
-            [Description(TranslationKey.desc_sub_chn)] DiscordChannel? chn = null)
-        {
-            chn ??= ctx.Channel;
-            if (!chn.IsTextOrNewsChannel())
-                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
-
-            IReadOnlyList<RssSubscription> subs = await this.Service.Subscriptions.GetAllAsync((ctx.Guild.Id, chn.Id));
-            if (!subs.Any())
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_subs_none(chn.Name));
-
-            await ctx.PaginateAsync(
-                TranslationKey.str_subs(chn.Mention),
-                subs,
-                sub => {
-                    string? qname = sub.Name;
-                    return $"{Formatter.InlineCode($"{sub.Id:D4}")} | {(string.IsNullOrWhiteSpace(qname) ? sub.Feed.Url : qname)}";
-                },
-                this.ModuleColor,
-                5
-            );
-        }
-        #endregion
-
-        #region subscribe reddit
-        [Command("reddit")][Priority(1)]
-        [Aliases("r")]
-        public Task RedditAsync(CommandContext ctx,
-            [Description(TranslationKey.desc_sub_chn)] DiscordChannel chn,
-            [Description(TranslationKey.desc_sub)] string sub)
-            => ctx.ExecuteOtherCommandAsync("reddit subscribe", chn.Mention, sub);
-            
-        [Command("reddit")][Priority(0)]
-        public Task RedditAsync(CommandContext ctx,
-            [Description(TranslationKey.desc_sub)] string sub,
-            [Description(TranslationKey.desc_sub_chn)] DiscordChannel? chn = null)
-            => this.RedditAsync(ctx, chn ?? ctx.Channel, sub);
-        #endregion
-
-        #region subscribe youtube
-        [Command("youtube")][Priority(2)]
-        [Aliases("y", "yt", "ytube")]
-        public Task YoutubeAsync(CommandContext ctx,
-            [Description(TranslationKey.desc_sub_chn)] DiscordChannel chn,
-            [Description(TranslationKey.desc_sub_url)] Uri url,
-            [RemainingText][Description(TranslationKey.desc_name_f)] string? name = null)
-            => ctx.ExecuteOtherCommandAsync("youtube subscribe", chn.Mention, url.ToString(), name);
-
-        [Command("youtube")][Priority(1)]
-        public Task YoutubeAsync(CommandContext ctx,
-            [Description(TranslationKey.desc_sub_url)] Uri url,
-            [Description(TranslationKey.desc_sub_chn)] DiscordChannel chn,
-            [RemainingText][Description(TranslationKey.desc_name_f)] string? name = null)
-            => this.YoutubeAsync(ctx, chn, url, name);
-
-        [Command("youtube")][Priority(0)]
-        public Task YoutubeAsync(CommandContext ctx,
-            [Description(TranslationKey.desc_sub_url)] Uri url,
-            [RemainingText][Description(TranslationKey.desc_name_f)] string? name = null)
-            => this.YoutubeAsync(ctx, ctx.Channel, url, name);
-        #endregion
+        this.rss = rss;
+        this.reddit = reddit;
+        this.youtube = youtube;
     }
-    #endregion
 
-    #region unsubscribe
-    [Group("unsubscribe")]
-    [Aliases("unsub")]
-    [RequireGuild][RequireOwnerOrPermissions(Permissions.ManageGuild)]
-    public sealed class UnsubscribeModule : TheGodfatherServiceModule<RssFeedsService>
+
+    [Command("")]
+    [Priority(2)]
+    public Task ExecuteGroupAsync(ITextChannel channel, string url, [Remainder] string? name = null)
+        => this.SubscribeRssAsync(channel, url, name);
+
+    [Command("")]
+    [Priority(1)]
+    public Task ExecuteGroupAsync(string url, [Remainder] string? name = null)
+        => this.SubscribeRssAsync((ITextChannel)this.Context.Channel, url, name);
+
+    [Command("")]
+    [Priority(0)]
+    public Task ExecuteGroupAsync()
+        => this.ListAsync();
+
+    [Command("list")]
+    [Alias("ls", "listsubs", "listfeeds")]
+    public async Task ListAsync(ITextChannel? channel = null)
     {
-        #region unsubscribe
-        [GroupCommand][Priority(1)]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-            [Description(TranslationKey.desc_ids)] params int[] ids)
-        {
-            if (ids is null || !ids.Any())
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_ids_none);
+        channel ??= (ITextChannel)this.Context.Channel;
 
-            int removed = await this.Service.Subscriptions.RemoveAsync((ctx.Guild.Id, ctx.Channel.Id), ids);
-            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_unsub(removed));
-        }
+        IReadOnlyList<RssSubscription> subs = await this.rss.Subscriptions.GetAllAsync((this.Context.Guild.Id, channel.Id));
+        if (!subs.Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_subs_none(channel.Name));
 
-        [GroupCommand][Priority(0)]
-        public async Task ExecuteGroupAsync(CommandContext ctx,
-            [RemainingText][Description(TranslationKey.desc_name_f)] string name)
-        {
-            RssSubscription? sub = await this.Service.Subscriptions.GetByNameAsync((ctx.Guild.Id, ctx.Channel.Id), name);
-            if (sub is null)
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_name(ctx.Channel.Mention));
-
-            int removed = await this.Service.Subscriptions.RemoveAsync(sub);
-            await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_unsub(removed));
-        }
-        #endregion
-
-        #region unsubscribe all
-        [Command("all")][UsesInteractivity]
-        [Aliases("a")]
-        public async Task AllAsync(CommandContext ctx,
-            [Description(TranslationKey.desc_sub_chn)] DiscordChannel? chn = null)
-        {
-            chn ??= ctx.Channel;
-
-            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_unsub(chn.Mention)))
-                return;
-
-            await this.Service.Subscriptions.ClearAsync((ctx.Guild.Id, ctx.Channel.Id));
-            await ctx.InfoAsync(this.ModuleColor);
-        }
-        #endregion
-
-        #region unsubscribe reddit
-        [Command("reddit")]
-        [Aliases("r")]
-        public Task RedditAsync(CommandContext ctx,
-            [Description(TranslationKey.desc_sub)] string sub)
-            => ctx.ExecuteOtherCommandAsync("reddit unsubscribe", sub);
-        #endregion
-
-        #region unsubscribe youtube
-        [Command("youtube")]
-        [Aliases("y", "yt", "ytube")]
-        public Task UnsubscribeAsync(CommandContext ctx,
-            [RemainingText][Description(TranslationKey.desc_sub_name_url)] string name_url)
-        {
-            if (string.IsNullOrWhiteSpace(name_url))
-                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_name_404);
-
-            return ctx.ExecuteOtherCommandAsync("youtube unsubscribe", name_url);
-        }
-        #endregion
+        await this.RespondPagedAsync(
+            TranslationKey.str_subs(channel.Mention),
+            subs,
+            sub => $"{InlineCode($"{sub.Id:D4}")} | {(string.IsNullOrWhiteSpace(sub.Name) ? sub.Feed.Url : sub.Name)}",
+            5
+        );
     }
-    #endregion
+
+    [Command("reddit")]
+    [Alias("r")]
+    public async Task RedditAsync(string sub, ITextChannel? channel = null)
+    {
+        channel ??= (ITextChannel)this.Context.Channel;
+        string? url = this.reddit.GetFeedUrlForSubreddit(sub, RedditCategory.New, out string? normalizedSub);
+        if (url is null || normalizedSub is null)
+            throw new LocalizedCommandException(normalizedSub is null ? TranslationKey.cmd_err_sub_format : TranslationKey.cmd_err_sub_404(normalizedSub));
+
+        if (await this.rss.SubscribeAsync(this.Context.Guild.Id, channel.Id, url, normalizedSub))
+            await this.InfoAsync(this.ModuleColor);
+        else
+            await this.FailAsync(TranslationKey.cmd_err_sub(url));
+    }
+
+    [Command("youtube")]
+    [Alias("y", "yt", "ytube")]
+    public async Task YoutubeAsync(string usernameOrUrl, [Remainder] string? name = null)
+    {
+        string? feed = await this.youtube.GetRssUrlForChannel(usernameOrUrl);
+        if (feed is null)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_yt);
+
+        string subscriptionName = string.IsNullOrWhiteSpace(name) ? usernameOrUrl : name;
+        if (!await this.rss.SubscribeAsync(this.Context.Guild.Id, this.Context.Channel.Id, feed, subscriptionName))
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_yt);
+
+        await this.InfoAsync(this.ModuleColor);
+    }
+
+    private async Task SubscribeRssAsync(ITextChannel channel, string url, string? name)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out Uri? uri) || !RssFeedsService.IsValidFeedURL(uri.AbsoluteUri))
+            throw new LocalizedCommandException(TranslationKey.cmd_err_rss);
+
+        await this.rss.SubscribeAsync(this.Context.Guild.Id, channel.Id, uri.AbsoluteUri, name);
+        await this.InfoAsync(this.ModuleColor);
+    }
+}
+
+[Group("unsubscribe")]
+[Alias("unsub")]
+[RequireContext(ContextType.Guild)]
+[RequireUserPermission(GuildPermission.ManageGuild)]
+public sealed class UnsubscribeModule : TheGodfatherModule
+{
+    private readonly RssFeedsService rss;
+    private readonly RedditService reddit;
+    private readonly YtService youtube;
+
+
+    public UnsubscribeModule(LocalizationService localization, RssFeedsService rss, RedditService reddit, YtService youtube)
+        : base(localization, new Color(0x1abc9c))
+    {
+        this.rss = rss;
+        this.reddit = reddit;
+        this.youtube = youtube;
+    }
+
+
+    [Command("")]
+    [Priority(1)]
+    public async Task ExecuteGroupAsync(params int[] ids)
+    {
+        if (ids is null || !ids.Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_ids_none);
+
+        int removed = await this.rss.Subscriptions.RemoveAsync((this.Context.Guild.Id, this.Context.Channel.Id), ids);
+        await this.InfoAsync(this.ModuleColor, TranslationKey.fmt_unsub(removed));
+    }
+
+    [Command("")]
+    [Priority(0)]
+    public async Task ExecuteGroupAsync([Remainder] string name)
+    {
+        RssSubscription? sub = await this.rss.Subscriptions.GetByNameAsync((this.Context.Guild.Id, this.Context.Channel.Id), name);
+        if (sub is null)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_name(this.Context.Channel.Name));
+
+        int removed = await this.rss.Subscriptions.RemoveAsync(sub);
+        await this.InfoAsync(this.ModuleColor, TranslationKey.fmt_unsub(removed));
+    }
+
+    [Command("all")]
+    [Alias("a")]
+    public async Task AllAsync(ITextChannel? channel = null)
+    {
+        channel ??= (ITextChannel)this.Context.Channel;
+        if (!await this.ConfirmAsync(TranslationKey.q_unsub(channel.Mention)))
+            return;
+
+        await this.rss.Subscriptions.ClearAsync((this.Context.Guild.Id, channel.Id));
+        await this.InfoAsync(this.ModuleColor);
+    }
+
+    [Command("reddit")]
+    [Alias("r")]
+    public async Task RedditAsync(string sub)
+    {
+        string? url = this.reddit.GetFeedUrlForSubreddit(sub, RedditCategory.New, out string? normalizedSub);
+        if (url is null || normalizedSub is null)
+            throw new LocalizedCommandException(normalizedSub is null ? TranslationKey.cmd_err_sub_format : TranslationKey.cmd_err_sub_404(normalizedSub));
+
+        RssFeed? feed = await this.rss.GetByUrlAsync(url);
+        if (feed is null)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_not(normalizedSub));
+
+        RssSubscription? subscription = await this.rss.Subscriptions.GetAsync((this.Context.Guild.Id, this.Context.Channel.Id), feed.Id);
+        if (subscription is null)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_not(normalizedSub));
+
+        await this.rss.Subscriptions.RemoveAsync((this.Context.Guild.Id, this.Context.Channel.Id), feed.Id);
+        await this.InfoAsync(this.ModuleColor);
+    }
+
+    [Command("youtube")]
+    [Alias("y", "yt", "ytube")]
+    public async Task YoutubeAsync([Remainder] string subscription)
+    {
+        if (string.IsNullOrWhiteSpace(subscription))
+            throw new LocalizedCommandException(TranslationKey.cmd_err_name_404);
+
+        string? url = await this.youtube.GetRssUrlForChannel(subscription);
+        if (url is null)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_yt);
+
+        RssSubscription? sub = await this.rss.Subscriptions.GetByNameAsync((this.Context.Guild.Id, this.Context.Channel.Id), subscription);
+        if (sub is null) {
+            RssFeed? feed = await this.rss.GetByUrlAsync(url);
+            if (feed is null)
+                throw new LocalizedCommandException(TranslationKey.cmd_err_sub_fail(subscription));
+            sub = await this.rss.Subscriptions.GetAsync((this.Context.Guild.Id, this.Context.Channel.Id), feed.Id);
+        }
+
+        if (sub is null)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_fail(subscription));
+
+        await this.rss.Subscriptions.RemoveAsync(sub);
+        await this.InfoAsync(this.ModuleColor);
+    }
 }

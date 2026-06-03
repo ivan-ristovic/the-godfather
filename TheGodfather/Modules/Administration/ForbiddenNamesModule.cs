@@ -1,242 +1,181 @@
-﻿using System.Text;
+using System.Text;
 using System.Text.RegularExpressions;
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
-using TheGodfather.EventListeners.Common;
-using TheGodfather.Modules.Administration.Extensions;
-using TheGodfather.Modules.Administration.Services;
+using Discord.Commands;
+using TheGodfather.Attributes;
 
 namespace TheGodfather.Modules.Administration;
 
-[Group("forbiddennames")][Module(ModuleType.Administration)][NotBlocked]
-[Aliases("forbiddenname", "forbiddennicknames", "disallowednames", "fnames", "fname", "fn")]
-[RequireGuild][RequireUserPermissions(Permissions.ManageGuild)][RequirePermissions(Permissions.ManageNicknames)]
+[Group("forbiddennames")]
+[Alias("forbiddenname", "forbiddennicknames", "disallowednames", "fnames", "fname", "fn")]
+[RequireContext(ContextType.Guild)]
+[RequireUserPermission(GuildPermission.ManageGuild | GuildPermission.ManageNicknames)]
+[RequireBotPermission(GuildPermission.ManageNicknames)]
 [Cooldown(3, 5, CooldownBucketType.Guild)]
-public sealed class ForbiddenNamesModule : TheGodfatherServiceModule<ForbiddenNamesService>
+public sealed class ForbiddenNamesModule : TheGodfatherModule
 {
-    #region forbiddennames
-    [GroupCommand][Priority(1)]
-    public Task ExecuteGroupAsync(CommandContext ctx)
-        => this.ListAsync(ctx);
+    private readonly ForbiddenNamesService forbiddenNames;
 
-    [GroupCommand][Priority(0)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_fnames)] params string[] names)
-        => this.AddAsync(ctx, names);
-    #endregion
 
-    #region forbiddennames add
-    [Command("add")][Priority(2)]
-    [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_punish_action)] Punishment.Action action,
-        [RemainingText][Description(TranslationKey.desc_fnames)] params string[] names)
-        => this.InternalAddAsync(ctx, action, names);
-
-    [Command("add")][Priority(1)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_fname)] string name,
-        [Description(TranslationKey.desc_punish_action)] Punishment.Action? action = null)
-        => this.InternalAddAsync(ctx, action, name);
-
-    [Command("add")][Priority(0)]
-    public Task AddAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_fnames)] params string[] names)
-        => this.InternalAddAsync(ctx, null, names);
-    #endregion
-
-    #region forbiddennames delete
-    [Group("delete")]
-    [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-    public class ForbiddenNamesDeleteModule : TheGodfatherServiceModule<ForbiddenNamesService>
+    public ForbiddenNamesModule(LocalizationService localization, ForbiddenNamesService forbiddenNames)
+        : base(localization, new Color(0x3498DB))
     {
-        #region forbiddennames delete
-        [GroupCommand][Priority(1)]
-        public Task DeleteAsync(CommandContext ctx,
-            [RemainingText][Description(TranslationKey.desc_fnames_del_ids)] params int[] ids)
-            => this.DeleteIdAsync(ctx, ids);
-
-        [GroupCommand][Priority(0)]
-        public Task DeleteAsync(CommandContext ctx,
-            [RemainingText][Description(TranslationKey.desc_fnames_del)] params string[] regexStrings)
-            => this.DeletePatternAsync(ctx, regexStrings);
-        #endregion
-
-        #region forbiddennames delete id
-        public async Task DeleteIdAsync(CommandContext ctx,
-            [RemainingText][Description(TranslationKey.desc_fnames_del_ids)] params int[] ids)
-        {
-            if (ids is null || !ids.Any())
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_f_ids_none);
-
-            IReadOnlyCollection<ForbiddenName> fns = this.Service.GetGuildForbiddenNames(ctx.Guild.Id);
-            if (!fns.Any())
-                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_fn_none);
-
-            int removed = await this.Service.RemoveForbiddenNamesAsync(ctx.Guild.Id, ids);
-
-            await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, TranslationKey.evt_fn_del);
-                emb.WithDescription(ids.JoinWith());
-            });
-
-            await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_fn_del(removed));
-        }
-        #endregion
-
-        #region forbiddennames delete matching
-        public async Task DeleteMatchingAsync(CommandContext ctx,
-            [Description(TranslationKey.desc_fnames_del)] string match)
-        {
-            if (string.IsNullOrWhiteSpace(match))
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_fn_pat_none);
-
-            IReadOnlyCollection<ForbiddenName> fns = this.Service.GetGuildForbiddenNames(ctx.Guild.Id);
-            if (!fns.Any())
-                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_fn_none);
-
-            int removed = await this.Service.RemoveForbiddenNamesMatchingAsync(ctx.Guild.Id, match);
-
-            await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, TranslationKey.evt_fn_del);
-                emb.WithDescription(match);
-            });
-
-            await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_fn_del(removed));
-        }
-        #endregion
-
-        #region forbiddennames delete pattern
-        public async Task DeletePatternAsync(CommandContext ctx,
-            [RemainingText][Description(TranslationKey.desc_fnames_del)] params string[] regexStrings)
-        {
-            if (regexStrings is null || !regexStrings.Any())
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_fn_pat_none);
-
-            IReadOnlyCollection<ForbiddenName> fs = this.Service.GetGuildForbiddenNames(ctx.Guild.Id);
-            if (!fs.Any())
-                throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_fn_none);
-
-            int removed = await this.Service.RemoveForbiddenNamesAsync(ctx.Guild.Id, regexStrings);
-
-            await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, TranslationKey.evt_fn_del);
-                emb.WithDescription(regexStrings.JoinWith());
-            });
-
-            await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_fn_del(removed));
-        }
-        #endregion
+        this.forbiddenNames = forbiddenNames;
     }
-    #endregion
 
-    #region forbiddennames deleteall
-    [Command("deleteall")][UsesInteractivity]
-    [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
-    public async Task DeleteAllAsync(CommandContext ctx)
+
+    [Command("")]
+    [Priority(1)]
+    public Task ExecuteGroupAsync()
+        => this.ListAsync();
+
+    [Command("")]
+    [Priority(0)]
+    public Task ExecuteGroupAsync([Remainder] string names)
+        => this.InternalAddAsync(null, SplitArguments(names));
+
+    [Command("add")]
+    [Priority(2)]
+    [Alias("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
+    public Task AddAsync(Punishment.Action action, [Remainder] string names)
+        => this.InternalAddAsync(action, SplitArguments(names));
+
+    [Command("add")]
+    [Priority(1)]
+    public Task AddAsync(string name, Punishment.Action? action = null)
+        => this.InternalAddAsync(action, name);
+
+    [Command("add")]
+    [Priority(0)]
+    public Task AddAsync([Remainder] string names)
+        => this.InternalAddAsync(null, SplitArguments(names));
+
+    [Command("delete")]
+    [Priority(1)]
+    [Alias("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
+    public async Task DeleteAsync(params int[] ids)
     {
-        if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_fn_rem_all))
+        if (ids is null || !ids.Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_f_ids_none);
+
+        int removed = await this.forbiddenNames.RemoveForbiddenNamesAsync(this.Context.Guild.Id, ids);
+        await this.InfoAsync(this.ModuleColor, TranslationKey.str_fn_del(removed));
+    }
+
+    [Command("delete")]
+    [Priority(0)]
+    public Task DeletePatternAsync([Remainder] string regex)
+        => this.DeletePatternsAsync(SplitArguments(regex));
+
+    [Command("delete matching")]
+    [Alias("delete match", "delete m")]
+    public async Task DeleteMatchingAsync([Remainder] string match)
+    {
+        if (string.IsNullOrWhiteSpace(match))
+            throw new LocalizedCommandException(TranslationKey.cmd_err_fn_pat_none);
+
+        int removed = await this.forbiddenNames.RemoveForbiddenNamesMatchingAsync(this.Context.Guild.Id, match);
+        await this.InfoAsync(this.ModuleColor, TranslationKey.str_fn_del(removed));
+    }
+
+    [Command("deleteall")]
+    [Alias("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
+    public async Task DeleteAllAsync()
+    {
+        if (!await this.ConfirmAsync(TranslationKey.q_fn_rem_all))
             return;
 
-        int removed = await this.Service.RemoveForbiddenNamesAsync(ctx.Guild.Id);
-
-        await ctx.GuildLogAsync(emb => {
-            emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, TranslationKey.evt_fn_del_all);
-            emb.AddLocalizedField(TranslationKey.str_count, removed, true);
-        });
-
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_fn_del_all(removed));
+        int removed = await this.forbiddenNames.RemoveForbiddenNamesAsync(this.Context.Guild.Id);
+        await this.InfoAsync(this.ModuleColor, TranslationKey.str_fn_del_all(removed));
     }
-    #endregion
 
-    #region forbiddennames list
     [Command("list")]
-    [Aliases("print", "show", "view", "ls", "l", "p")]
-    public Task ListAsync(CommandContext ctx)
+    [Alias("print", "show", "view", "ls", "l", "p")]
+    public Task ListAsync()
     {
-        IReadOnlyCollection<ForbiddenName> fs = this.Service.GetGuildForbiddenNames(ctx.Guild.Id);
-        return fs.Any()
-            ? ctx.PaginateAsync(
-                TranslationKey.str_fn,
-                fs.OrderBy(f => f.Id),
-                f => $"{Formatter.InlineCode($"{f.Id:D3}")} | {Formatter.InlineCode(f.RegexString)}",
-                this.ModuleColor
-            )
-            : throw new CommandFailedException(ctx, TranslationKey.cmd_err_fn_none);
+        IReadOnlyCollection<ForbiddenName> fs = this.forbiddenNames.GetGuildForbiddenNames(this.Context.Guild.Id);
+        if (!fs.Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_fn_none);
+
+        return this.RespondPagedAsync(
+            TranslationKey.str_fn,
+            fs.OrderBy(f => f.Id),
+            f => $"{InlineCode($"{f.Id:D3}")} | {InlineCode(f.RegexString)} | {f.ActionOverride?.Humanize() ?? "-"}"
+        );
     }
-    #endregion
 
 
-    #region internals
-    public async Task InternalAddAsync(CommandContext ctx, Punishment.Action? action, params string[] names)
+    private async Task DeletePatternsAsync(params string[] regexStrings)
+    {
+        if (regexStrings is null || !regexStrings.Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_fn_pat_none);
+
+        int removed = await this.forbiddenNames.RemoveForbiddenNamesAsync(this.Context.Guild.Id, regexStrings);
+        await this.InfoAsync(this.ModuleColor, TranslationKey.str_fn_del(removed));
+    }
+
+    private async Task InternalAddAsync(Punishment.Action? action, params string[] names)
     {
         if (names is null || !names.Any())
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_fn_pat_none);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_fn_pat_none);
 
-        var eb = new StringBuilder();
-        var addedPatterns = new List<Regex>();
-        foreach (string regexString in names) {
+        var errors = new StringBuilder();
+        var added = new List<Regex>();
+        foreach (string regexString in names.Where(n => !string.IsNullOrWhiteSpace(n))) {
             if (regexString.Length is < 3 or > ForbiddenName.NameLimit) {
-                eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, TranslationKey.cmd_err_fn_size(Formatter.InlineCode(regexString), ForbiddenName.NameLimit)));
+                errors.AppendLine(this.Localization.GetString(this.Context.Guild.Id, TranslationKey.cmd_err_fn_size(InlineCode(regexString), ForbiddenName.NameLimit)));
                 continue;
             }
 
             if (!regexString.TryParseRegex(out Regex? regex) || regex is null) {
-                eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, TranslationKey.cmd_err_fn_invalid(Formatter.InlineCode(regexString))));
+                errors.AppendLine(this.Localization.GetString(this.Context.Guild.Id, TranslationKey.cmd_err_fn_invalid(InlineCode(regexString))));
                 continue;
             }
 
-            if (!this.Service.IsSafePattern(regex)) {
-                eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, TranslationKey.cmd_err_fn_unsafe(Formatter.InlineCode(regexString))));
+            if (!this.forbiddenNames.IsSafePattern(regex)) {
+                errors.AppendLine(this.Localization.GetString(this.Context.Guild.Id, TranslationKey.cmd_err_fn_unsafe(InlineCode(regexString))));
                 continue;
             }
 
-            if (!await this.Service.AddForbiddenNameAsync(ctx.Guild.Id, regex, action)) {
-                eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, TranslationKey.cmd_err_fn_dup(Formatter.InlineCode(regexString))));
+            if (!await this.forbiddenNames.AddForbiddenNameAsync(this.Context.Guild.Id, regex, action)) {
+                errors.AppendLine(this.Localization.GetString(this.Context.Guild.Id, TranslationKey.cmd_err_fn_dup(InlineCode(regexString))));
                 continue;
             }
 
-            addedPatterns.Add(regex);
+            added.Add(regex);
         }
 
-        DiscordMember bot = ctx.Guild.CurrentMember;
-        bool failed = false;
-        IReadOnlyCollection<DiscordMember> members = await ctx.Guild.GetAllMembersAsync();
-        foreach (DiscordMember member in members.Where(m => !m.IsBot && m.Hierarchy < bot.Hierarchy)) {
-            Regex? match = addedPatterns.FirstOrDefault(r => r.IsMatch(member.DisplayName));
-            if (match is not null)
-                try {
-                    if (action is not null)
-                        await this.Service.PunishMemberAsync(ctx.Guild, member, action.Value);
-                    else
-                        await member.ModifyAsync(m => {
-                            m.Nickname = member.Id.ToString();
-                            m.AuditLogReason = this.Localization.GetString(ctx.Guild.Id, TranslationKey.rsn_fname_match(match));
-                        });
-                    if (!member.IsBot)
-                        await member.SendMessageAsync(this.Localization.GetString(null, TranslationKey.dm_fname_match(Formatter.Italic(ctx.Guild.Name))));
-                } catch (UnauthorizedException) {
-                    if (!failed) {
-                        failed = true;
-                        eb.Append(this.Localization.GetString(ctx.Guild.Id, TranslationKey.err_fname_match));
-                    }
-                }
-        }
+        await EnforceAsync(added, action);
 
-        await ctx.GuildLogAsync(emb => {
-            emb.WithLocalizedTitle(DiscordEventType.GuildUpdated, TranslationKey.evt_fn_add);
-            emb.AddLocalizedField(TranslationKey.str_fn_add, Formatter.BlockCode(addedPatterns.Select(p => p.ToString()).JoinWith()));
-            if (eb.Length > 0)
-                emb.AddLocalizedField(TranslationKey.str_err, eb);
-        });
-
-        if (eb.Length > 0)
-            await ctx.FailAsync(TranslationKey.fmt_err(eb.ToString()));
+        if (errors.Length > 0)
+            await this.FailAsync(this.Localization.GetString(this.Context.Guild.Id, TranslationKey.fmt_err(errors.ToString())));
         else
-            await ctx.InfoAsync(this.ModuleColor, TranslationKey.str_fn_add);
+            await this.InfoAsync(this.ModuleColor, TranslationKey.str_fn_add);
     }
-    #endregion
+
+    private async Task EnforceAsync(IEnumerable<Regex> patterns, Punishment.Action? action)
+    {
+        Regex[] addedPatterns = patterns.ToArray();
+        if (!addedPatterns.Any())
+            return;
+
+        SocketGuildUser bot = this.Context.Guild.CurrentUser;
+        foreach (SocketGuildUser member in this.Context.Guild.Users.Where(u => !u.IsBot && u.Hierarchy < bot.Hierarchy)) {
+            Regex? match = addedPatterns.FirstOrDefault(r => r.IsMatch(member.DisplayName));
+            if (match is null)
+                continue;
+
+            if (action is null)
+                await member.ModifyAsync(
+                    props => props.Nickname = member.Id.ToString(),
+                    new RequestOptions {
+                        AuditLogReason = this.Localization.GetString(this.Context.Guild.Id, TranslationKey.rsn_fname_match(match))
+                    }
+                );
+        }
+    }
+
+    private static string[] SplitArguments(string? value)
+        => string.IsNullOrWhiteSpace(value)
+            ? Array.Empty<string>()
+            : value.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 }

@@ -1,59 +1,60 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using Microsoft.Extensions.DependencyInjection;
-using TheGodfather.Modules.Administration.Services;
+﻿using Discord.Commands;
+using TheGodfather.Attributes;
 using TheGodfather.Modules.Currency.Services;
 
 namespace TheGodfather.Modules.Currency;
 
-[Group("work")][Module(ModuleType.Currency)][NotBlocked]
-[Aliases("job")]
+[Group("work")]
+[Alias("job")]
+[RequireContext(ContextType.Guild)]
 [Cooldown(1, 60, CooldownBucketType.User)]
-[RequireGuild]
-public sealed class WorkModule : TheGodfatherServiceModule<WorkService>
+public sealed class WorkModule : TheGodfatherModule
 {
-    #region work
-    [GroupCommand]
-    public async Task ExecuteGroupAsync(CommandContext ctx)
-    {
-        string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
-        string workStr = await this.Service.WorkAsync(ctx.Guild.Id, ctx.User.Id, currency);
-        await this.RespondWithWorkString(ctx, workStr, TranslationKey.str_work_footer);
-    }
-    #endregion
+    private readonly WorkService work;
+    private readonly GuildConfigService guildConfig;
 
-    #region work streets
+
+    public WorkModule(LocalizationService localization, WorkService work, GuildConfigService guildConfig)
+        : base(localization, new Color(0x2ECC71))
+    {
+        this.work = work;
+        this.guildConfig = guildConfig;
+    }
+
+
+    [Command("")]
+    public async Task ExecuteGroupAsync()
+    {
+        string currency = this.guildConfig.GetCachedConfig(this.Context.Guild.Id).Currency;
+        string workString = await this.work.WorkAsync(this.Context.Guild.Id, this.Context.User.Id, currency);
+        await this.RespondWithWorkString(workString, TranslationKey.str_work_footer);
+    }
+
     [Command("streets")]
-    [Aliases("prostitute")]
+    [Alias("prostitute")]
     [Cooldown(1, 120, CooldownBucketType.User)]
-    public async Task StreetsAsync(CommandContext ctx)
+    public async Task StreetsAsync()
     {
-        string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
-        string workStr = await this.Service.StreetsAsync(ctx.Guild.Id, ctx.User.Id, currency);
-        await this.RespondWithWorkString(ctx, workStr, TranslationKey.str_work_streets_footer);
+        string currency = this.guildConfig.GetCachedConfig(this.Context.Guild.Id).Currency;
+        string workString = await this.work.StreetsAsync(this.Context.Guild.Id, this.Context.User.Id, currency);
+        await this.RespondWithWorkString(workString, TranslationKey.str_work_streets_footer);
     }
-    #endregion
 
-    #region work crime
     [Command("crime")]
     [Cooldown(1, 300, CooldownBucketType.User)]
-    public async Task CrimeAsync(CommandContext ctx)
+    public async Task CrimeAsync()
     {
-        string currency = ctx.Services.GetRequiredService<GuildConfigService>().GetCachedConfig(ctx.Guild.Id).Currency;
-        string workStr = await this.Service.CrimeAsync(ctx.Guild.Id, ctx.User.Id, currency);
-        await this.RespondWithWorkString(ctx, workStr, TranslationKey.str_work_crime_footer);
+        string currency = this.guildConfig.GetCachedConfig(this.Context.Guild.Id).Currency;
+        string workString = await this.work.CrimeAsync(this.Context.Guild.Id, this.Context.User.Id, currency);
+        await this.RespondWithWorkString(workString, TranslationKey.str_work_crime_footer);
     }
-    #endregion
 
-
-    #region internals
-    public Task RespondWithWorkString(CommandContext ctx, string str, TranslationKey footer)
+    private Task RespondWithWorkString(string text, TranslationKey footer)
     {
-        return ctx.RespondWithLocalizedEmbedAsync(emb => {
+        return this.RespondWithLocalizedEmbedAsync(emb => {
             emb.WithColor(this.ModuleColor);
-            emb.WithDescription($"{ctx.User.Mention} {str}");
-            emb.WithLocalizedFooter(footer, ctx.User.AvatarUrl);
+            emb.WithDescription($"{this.Context.User.Mention} {text}");
+            emb.WithLocalizedFooter(footer, this.Context.User.GetAvatarUrl());
         });
     }
-    #endregion
 }

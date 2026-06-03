@@ -1,262 +1,146 @@
-﻿using System.IO;
-using System.Net;
-using System.Net.Http.Headers;
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using TheGodfather.Services.Common;
+using Discord.Commands;
+using TheGodfather.Attributes;
 
 namespace TheGodfather.Modules.Administration;
 
-[Group("webhook")][Module(ModuleType.Administration)][NotBlocked]
-[Aliases("wh", "webhooks", "whook")]
+[Group("webhook")]
+[Alias("webhooks", "wh")]
+[RequireContext(ContextType.Guild)]
+[RequireUserPermission(GuildPermission.ManageWebhooks)]
+[RequireBotPermission(GuildPermission.ManageWebhooks)]
 [Cooldown(3, 5, CooldownBucketType.Guild)]
-[RequireGuild][RequirePermissions(Permissions.ManageWebhooks)]
 public sealed class WebhookModule : TheGodfatherModule
 {
-    #region webhook
-    [GroupCommand]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_chn_wh_list)] DiscordChannel? channel = null)
-        => this.ListAsync(ctx, channel);
-    #endregion
+    public WebhookModule(LocalizationService localization)
+        : base(localization, new Color(0x3498DB)) { }
 
-    #region webhook add
-    [Command("add")][Priority(6)]
-    [Aliases("create", "c", "register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_avatar_url)] Uri? avatarUrl,
-        [Description(TranslationKey.desc_chn_wh_add)] DiscordChannel channel,
-        [Description(TranslationKey.desc_chn_wh_name)] string name,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
-        => this.CreateWebhookAsync(ctx, channel, name, avatarUrl, reason);
 
-    [Command("add")][Priority(5)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_avatar_url)] Uri avatarUrl,
-        [Description(TranslationKey.desc_chn_wh_name)] string name,
-        [Description(TranslationKey.desc_chn_wh_add)] DiscordChannel channel,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
-        => this.CreateWebhookAsync(ctx, channel, name, avatarUrl, reason);
+    [Command("")]
+    public Task ExecuteGroupAsync()
+        => this.ListAsync();
 
-    [Command("add")][Priority(4)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_chn_wh_add)] DiscordChannel channel,
-        [Description(TranslationKey.desc_avatar_url)] Uri avatarUrl,
-        [Description(TranslationKey.desc_chn_wh_name)] string name,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
-        => this.CreateWebhookAsync(ctx, channel, name, avatarUrl, reason);
-
-    [Command("add")][Priority(3)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_chn_wh_add)] DiscordChannel channel,
-        [Description(TranslationKey.desc_chn_wh_name)] string name,
-        [Description(TranslationKey.desc_avatar_url)] Uri avatarUrl,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
-        => this.CreateWebhookAsync(ctx, channel, name, avatarUrl, reason);
-
-    [Command("add")][Priority(2)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_chn_wh_name)] string name,
-        [Description(TranslationKey.desc_avatar_url)] Uri avatarUrl,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
-        => this.CreateWebhookAsync(ctx, ctx.Channel, name, avatarUrl, reason);
-
-    [Command("add")][Priority(1)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_avatar_url)] Uri avatarUrl,
-        [Description(TranslationKey.desc_chn_wh_name)] string name,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
-        => this.CreateWebhookAsync(ctx, ctx.Channel, name, avatarUrl, reason);
-
-    [Command("add")][Priority(0)]
-    public Task AddAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_chn_wh_name)] string name)
-        => this.CreateWebhookAsync(ctx, ctx.Channel, name, null, null);
-    #endregion
-
-    #region webhook delete
-    [Command("delete")][Priority(3)]
-    public Task DeleteAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_chn_wh_del)] DiscordChannel channel,
-        [RemainingText][Description(TranslationKey.desc_chn_wh_name)] string name)
-        => this.DeleteAsync(ctx, name, channel);
-
-    [Command("delete")][Priority(2)]
-    public Task DeleteAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_chn_wh_del)] DiscordChannel channel,
-        [Description(TranslationKey.desc_id)] ulong whid)
-        => this.DeleteAsync(ctx, whid, channel);
-
-    [Command("delete")][Priority(1)]
-    [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
-    public async Task DeleteAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_chn_wh_name)] string name,
-        [Description(TranslationKey.desc_chn_wh_del)] DiscordChannel? channel = null)
+    [Command("add")]
+    [Priority(1)]
+    [Alias("create", "new", "a", "+")]
+    public async Task AddAsync(ITextChannel channel, [Remainder] string name)
     {
-        channel ??= ctx.Channel;
-
-        // TODO what about other channel types? news, store etc?
-        if (channel?.Type != ChannelType.Text)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
-
-        IEnumerable<DiscordWebhook> whs = await channel.GetWebhooksAsync();
-        DiscordWebhook? wh = whs.SingleOrDefault(w => w.Name.Equals(name, StringComparison.InvariantCultureIgnoreCase));
-        if (wh is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_chn_wh_uniq_name(Formatter.Bold(Formatter.Strip(name))));
-
-        await wh.DeleteAsync();
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_wh_del(Formatter.Bold(Formatter.Strip(name))));
+        IWebhook webhook = await channel.CreateWebhookAsync(name, options: new RequestOptions { AuditLogReason = InvocationReason() });
+        await this.InfoAsync(this.ModuleColor, $"{webhook.Name} ({webhook.Id})");
     }
 
-    [Command("delete")][Priority(0)]
-    public async Task DeleteAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_id)] ulong whid,
-        [Description(TranslationKey.desc_chn_wh_del)] DiscordChannel? channel = null)
+    [Command("add")]
+    [Priority(0)]
+    public Task AddCurrentAsync([Remainder] string name)
     {
-        channel ??= ctx.Channel;
-
-        // TODO what about other channel types? news, store etc?
-        if (channel?.Type != ChannelType.Text)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
-
-        IEnumerable<DiscordWebhook> whs = await channel.GetWebhooksAsync();
-        DiscordWebhook? wh = whs.SingleOrDefault(w => w.Id == whid);
-        if (wh is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_chn_wh_uniq_id(Formatter.Bold(Formatter.Strip(whid.ToString()))));
-
-        await wh.DeleteAsync();
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_wh_del(Formatter.Bold(Formatter.Strip(wh.Name))));
+        if (this.Context.Channel is not ITextChannel channel)
+            return this.FailAsync(TranslationKey.cmd_err_chn_type_text);
+        return this.AddAsync(channel, name);
     }
-    #endregion
 
-    #region webhook deleteall
-    [Command("deleteall")][Priority(1)][UsesInteractivity]
-    [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
-    public async Task DeleteAllAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_chn_wh_del)] DiscordChannel? channel = null)
+    [Command("delete")]
+    [Priority(1)]
+    [Alias("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
+    public async Task DeleteAsync(ulong id)
     {
-        channel ??= ctx.Channel;
-
-        // TODO what about other channel types? news, store etc?
-        if (channel?.Type != ChannelType.Text)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
-
-        IReadOnlyList<DiscordWebhook> whs = await channel.GetWebhooksAsync();
-        if (whs.Any()) {
-            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_wh_rem_all(channel.Mention, whs.Count)))
-                return;
-            await Task.WhenAll(whs.Select(w => w.DeleteAsync()));
+        IWebhook? webhook = await FindWebhookAsync(id.ToString());
+        if (webhook is null) {
+            await this.FailAsync(this.Localization.GetString(this.Context.Guild.Id, TranslationKey.cmd_err_chn_wh_uniq_id(id)));
+            return;
         }
-
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_wh_del_all(channel.Mention));
+        await webhook.DeleteAsync(new RequestOptions { AuditLogReason = InvocationReason() });
+        await this.InfoAsync(this.ModuleColor);
     }
 
-    [Command("deleteall")][Priority(0)]
-    public async Task DeleteAllAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_chn_wh_del)] params DiscordChannel[] channels)
+    [Command("delete")]
+    [Priority(0)]
+    public async Task DeleteByNameAsync([Remainder] string name)
     {
-        foreach (DiscordChannel channel in channels.Where(c => c.IsTextOrNewsChannel()))
-            await this.DeleteAllAsync(ctx, channel);
-    }
-    #endregion
-
-    #region webhook list
-    [Command("list")][UsesInteractivity]
-    [Aliases("l", "ls", "show", "s", "print")]
-    public Task ListAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_chn_wh_list)] DiscordChannel? channel = null)
-        => this.PrintWebhooksAsync(ctx, channel ?? ctx.Channel);
-    #endregion
-
-    #region webhook listall
-    [Command("listall")][UsesInteractivity]
-    [Aliases("la", "lsa", "showall", "printall")]
-    public Task ListAllAsync(CommandContext ctx)
-        => this.PrintWebhooksAsync(ctx);
-    #endregion
-
-
-    #region internals
-    private async Task CreateWebhookAsync(CommandContext ctx, DiscordChannel channel, string name, Uri? avatarUrl, string? reason)
-    {
-        // TODO what about other channel types? news, store etc?
-        if (channel?.Type != ChannelType.Text)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
-
-        if (string.IsNullOrWhiteSpace(name) || name.Length > DiscordLimits.NameLimit)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_name(DiscordLimits.NameLimit));
-
-        DiscordWebhook wh;
-        if (avatarUrl is null) {
-            wh = await channel.CreateWebhookAsync(name, reason: ctx.BuildInvocationDetailsString(reason));
-        } else {
-            (_, HttpContentHeaders headers) = await HttpService.HeadAsync(avatarUrl);
-            if (!headers.ContentTypeHeaderIsImage() || headers.ContentLength.GetValueOrDefault() > 8 * 1024 * 1024)
-                throw new CommandFailedException(ctx, TranslationKey.err_url_image_8mb);
-            try {
-                await using MemoryStream ms = await HttpService.GetMemoryStreamAsync(avatarUrl);
-                wh = await channel.CreateWebhookAsync(name, ms, ctx.BuildInvocationDetailsString(reason));
-            } catch (WebException e) {
-                throw new CommandFailedException(ctx, e, TranslationKey.err_url_image_fail);
-            }
-        }
-
-        if (await ctx.WaitForBoolReplyAsync(TranslationKey.q_send_token))
-            try {
-                DiscordDmChannel? dm = await ctx.Client.CreateDmChannelAsync(ctx.User.Id);
-                if (dm is not null) {
-                    var emb = new LocalizedEmbedBuilder(this.Localization, ctx.Guild.Id);
-                    emb.WithLocalizedTitle(TranslationKey.fmt_wh_add(Formatter.Bold(Formatter.Strip(wh.Name)), channel.Mention));
-                    emb.WithDescription(Formatter.Spoiler(wh.BuildUrlString()));
-                    emb.WithColor(this.ModuleColor);
-                    emb.WithThumbnail(wh.AvatarUrl);
-                    emb.AddLocalizedField(TranslationKey.str_id, wh.Id, true);
-                    emb.AddLocalizedField(TranslationKey.str_name, wh.Name, true);
-                    emb.AddLocalizedField(TranslationKey.str_token, Formatter.Spoiler(wh.Token));
-                    await dm.SendMessageAsync(emb.Build());
-                } else {
-                    await ctx.FailAsync(TranslationKey.err_dm_fail);
-                }
-            } catch {
-                await ctx.FailAsync(TranslationKey.err_dm_fail);
-            }
-
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_wh_add(Formatter.Bold(Formatter.Strip(wh.Name)), channel.Mention));
-    }
-
-    private async Task PrintWebhooksAsync(CommandContext ctx, DiscordChannel? channel = null)
-    {
-        // TODO what about other channel types? news, store etc?
-        if (channel?.Type != ChannelType.Text)
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
-
-        IReadOnlyList<DiscordWebhook> whs = await (channel?.GetWebhooksAsync() ?? ctx.Guild.GetWebhooksAsync());
-        if (!whs.Any()) {
-            await ctx.InfoAsync(this.ModuleColor, TranslationKey.cmd_err_chn_wh_none);
+        IWebhook? webhook = await FindWebhookAsync(name);
+        if (webhook is null) {
+            await this.FailAsync(this.Localization.GetString(this.Context.Guild.Id, TranslationKey.cmd_err_chn_wh_uniq_name(name)));
             return;
         }
 
-        bool displayToken = await ctx.WaitForBoolReplyAsync(TranslationKey.q_display_tokens, reply: false);
-
-        await ctx.PaginateAsync(
-            whs.OrderBy(wh => wh.ChannelId),
-            (emb, wh) => emb
-                .WithLocalizedTitle(TranslationKey.fmt_wh(wh.Name, wh.ChannelId))
-                .WithThumbnail(wh.AvatarUrl)
-                .AddLocalizedField(TranslationKey.str_id, wh.Id, true)
-                .AddLocalizedField(TranslationKey.str_created_at, this.Localization.GetLocalizedTimeString(ctx.Guild.Id, wh.CreationTimestamp, unknown: true), true)
-                .AddLocalizedField(TranslationKey.str_created_by, wh.User?.Mention, true)
-                .AddLocalizedField(TranslationKey.str_token, SanitizeWebhookData(wh, wh.Token), unknown: false)
-                .AddLocalizedField(TranslationKey.str_url, SanitizeWebhookData(wh, wh.BuildUrlString()), unknown: false)
-            ,
-            this.ModuleColor
-        );
-
-
-        string? SanitizeWebhookData(DiscordWebhook wh, string data)
-            => displayToken && !string.IsNullOrWhiteSpace(wh.Token) ? Formatter.Spoiler(data) : null;
+        await webhook.DeleteAsync(new RequestOptions { AuditLogReason = InvocationReason() });
+        await this.InfoAsync(this.ModuleColor);
     }
-    #endregion
+
+    [Command("deleteall")]
+    [Alias("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
+    public async Task DeleteAllAsync(ITextChannel? channel = null)
+    {
+        channel ??= this.Context.Channel as ITextChannel;
+        if (channel is null)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_chn_type_text);
+
+        IReadOnlyCollection<IWebhook> hooks = await channel.GetWebhooksAsync();
+        if (!await this.ConfirmAsync(TranslationKey.q_wh_rem_all(channel.Mention, hooks.Count)))
+            return;
+
+        foreach (IWebhook hook in hooks)
+            await hook.DeleteAsync(new RequestOptions { AuditLogReason = InvocationReason() });
+        await this.InfoAsync(this.ModuleColor, TranslationKey.fmt_wh_del_all(channel.Mention));
+    }
+
+    [Command("list")]
+    [Alias("print", "show", "view", "ls", "l", "p")]
+    public async Task ListAsync(ITextChannel? channel = null)
+    {
+        channel ??= this.Context.Channel as ITextChannel;
+        if (channel is null)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_chn_type_text);
+
+        IReadOnlyCollection<IWebhook> hooks = await channel.GetWebhooksAsync();
+        if (!hooks.Any()) {
+            await this.InfoAsync(this.ModuleColor, TranslationKey.cmd_err_chn_wh_none);
+            return;
+        }
+
+        await this.RespondPagedAsync(
+            TranslationKey.evt_gld_wh_upd,
+            hooks.OrderBy(h => h.Name),
+            hook => $"{InlineCode(hook.Id)} | {hook.Name}"
+        );
+    }
+
+    [Command("listall")]
+    [Alias("lsa")]
+    public async Task ListAllAsync()
+    {
+        var hooks = new List<IWebhook>();
+        foreach (SocketTextChannel channel in this.Context.Guild.TextChannels)
+            hooks.AddRange(await channel.GetWebhooksAsync());
+
+        if (!hooks.Any()) {
+            await this.InfoAsync(this.ModuleColor, TranslationKey.cmd_err_chn_wh_none);
+            return;
+        }
+
+        await this.RespondPagedAsync(
+            TranslationKey.evt_gld_wh_upd,
+            hooks.OrderBy(h => h.ChannelId).ThenBy(h => h.Name),
+            hook => $"{InlineCode(hook.Id)} | <#{hook.ChannelId}> | {hook.Name}"
+        );
+    }
+
+
+    private async Task<IWebhook?> FindWebhookAsync(string nameOrId)
+    {
+        ulong? id = ulong.TryParse(nameOrId, out ulong parsedId) ? parsedId : null;
+
+        foreach (SocketTextChannel channel in this.Context.Guild.TextChannels) {
+            IWebhook? hook = (await channel.GetWebhooksAsync()).FirstOrDefault(h =>
+                (id is not null && h.Id == id.Value) || string.Equals(h.Name, nameOrId, StringComparison.OrdinalIgnoreCase)
+            );
+            if (hook is not null)
+                return hook;
+        }
+
+        return null;
+    }
+
+    private string InvocationReason(string? reason = null)
+        => string.IsNullOrWhiteSpace(reason)
+            ? $"Requested by {this.Context.User} ({this.Context.User.Id})"
+            : $"{reason} | Requested by {this.Context.User} ({this.Context.User.Id})";
 }

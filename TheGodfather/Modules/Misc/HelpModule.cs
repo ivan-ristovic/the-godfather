@@ -1,46 +1,58 @@
-﻿using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
+﻿using Discord.Commands;
+using TheGodfather.Attributes;
 
 namespace TheGodfather.Modules.Misc;
 
-[Group("help")][Module(ModuleType.Misc)][NotBlocked]
-[Aliases("h", "?", "??", "???", "man")]
+[Group("help")]
+[Alias("h", "?", "??", "???", "man")]
 [Cooldown(3, 5, CooldownBucketType.User)]
-public sealed class HelpModule : TheGodfatherServiceModule<CommandService>
+public sealed class HelpModule : TheGodfatherModule
 {
-    #region help
-    [GroupCommand][Priority(2)]
-    public Task ExecuteGroupAsync(CommandContext ctx)
+    private readonly CommandService commands;
+
+
+    public HelpModule(LocalizationService localization, CommandService commands)
+        : base(localization, new Color(0x007FFF))
     {
-        return ctx.RespondWithLocalizedEmbedAsync(emb => {
+        this.commands = commands;
+    }
+
+
+    [Command("")]
+    [Priority(1)]
+    public Task ExecuteGroupAsync()
+    {
+        IEnumerable<string> moduleNames = this.commands.Modules
+            .Select(module => module.Name)
+            .Distinct()
+            .OrderBy(name => name)
+            .Select(name => $"- {name}");
+
+        return this.RespondWithLocalizedEmbedAsync(emb => {
             emb.WithColor(this.ModuleColor);
             emb.WithLocalizedTitle(TranslationKey.h_title);
-            emb.WithLocalizedDescription(TranslationKey.fmt_modules(Enum.GetNames<ModuleType>().Select(s => $"• {s}").JoinWith()));
-            emb.WithLocalizedFooter(TranslationKey.h_footer, ctx.Client.CurrentUser.AvatarUrl);
+            emb.WithDescription(moduleNames.JoinWith());
+            emb.WithLocalizedFooter(TranslationKey.h_footer, this.Context.Client.CurrentUser.GetAvatarUrl());
         });
     }
 
-    [GroupCommand][Priority(1)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_module)] ModuleType module)
+    [Command("")]
+    [Priority(0)]
+    public Task ExecuteGroupAsync([Remainder] string command)
     {
-        Command? cmd = ctx.CommandsNext.FindCommand(module.ToString(), out string? _);
-        if (cmd is CommandGroup group && group.IsExecutableWithoutSubcommands)
-            return this.ExecuteGroupAsync(ctx, module.ToString());
+        SearchResult search = this.commands.Search(this.Context, command);
+        if (!search.IsSuccess || !search.Commands.Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_404(command));
 
-        IEnumerable<string> cmds = this.Service.GetCommandsInModule(module).OrderBy(cmd => cmd);
-        return ctx.RespondWithLocalizedEmbedAsync(emb => {
-            emb.WithColor(module.ToDiscordColor());
-            emb.WithLocalizedTitle(TranslationKey.h_title_m(module));
-            emb.WithLocalizedDescription(module.ToLocalizedDescription(cmds.Select(s => Formatter.InlineCode(s)).JoinWith(", ")));
-            emb.WithLocalizedFooter(TranslationKey.h_footer, ctx.Client.CurrentUser.AvatarUrl);
+        CommandInfo info = search.Commands.First().Command;
+        string aliases = info.Aliases.Select(InlineCode).JoinWith(", ");
+        string parameters = info.Parameters.Select(param => $"{param.Name}: {param.Type.Name}").JoinWith("\n");
+        return this.RespondWithLocalizedEmbedAsync(emb => {
+            emb.WithColor(this.ModuleColor);
+            emb.WithTitle(info.Name);
+            emb.AddLocalizedField(TranslationKey.str_aliases, aliases, false, false);
+            emb.AddLocalizedField(TranslationKey.str_args, parameters, false, false);
+            emb.WithLocalizedFooter(TranslationKey.h_footer, this.Context.Client.CurrentUser.GetAvatarUrl());
         });
     }
-
-    [GroupCommand][Priority(0)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_cmd)] params string[] cmd)
-        => new CommandsNextExtension.DefaultHelpModule().DefaultHelpAsync(ctx, cmd);
-    #endregion
 }

@@ -1,275 +1,186 @@
 ﻿using System.Text;
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using TheGodfather.Modules.Administration.Extensions;
-using TheGodfather.Modules.Reactions.Extensions;
+using Discord.Commands;
+using TheGodfather.Attributes;
 using TheGodfather.Modules.Reactions.Services;
 
 namespace TheGodfather.Modules.Reactions;
 
-[Group("emojireaction")][Module(ModuleType.Reactions)][NotBlocked]
-[Aliases("ereact", "er", "emojir", "emojireactions")]
-[RequireGuild][RequirePermissions(Permissions.ManageGuild)]
+[Group("emojireaction")]
+[Alias("ereact", "er", "emojir", "emojireactions")]
+[RequireContext(ContextType.Guild)]
+[RequireUserPermission(GuildPermission.ManageGuild)]
 [Cooldown(3, 5, CooldownBucketType.Guild)]
-public sealed class EmojiReactionsModule : TheGodfatherServiceModule<ReactionsService>
+public sealed class EmojiReactionsModule : TheGodfatherModule
 {
-    #region emojireaction
-    [GroupCommand][Priority(2)]
-    public Task ExecuteGroupAsync(CommandContext ctx)
-        => this.ListAsync(ctx);
+    private readonly ReactionsService reactions;
 
-    [GroupCommand][Priority(1)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
-        [RemainingText][Description(TranslationKey.desc_triggers)] params string[] triggers)
-        => this.AddEmojiReactionAsync(ctx, emoji, false, triggers);
 
-    [GroupCommand][Priority(0)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_triggers)] string trigger,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji)
-        => this.AddEmojiReactionAsync(ctx, emoji, false, trigger);
-    #endregion
-
-    #region emojireaction add
-    [Command("add")][Priority(1)]
-    [Aliases("register", "reg", "new", "a", "+", "+=", "<<", "<", "<-", "<=")]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
-        [RemainingText][Description(TranslationKey.desc_triggers)] params string[] triggers)
-        => this.AddEmojiReactionAsync(ctx, emoji, false, triggers);
-
-    [Command("add")][Priority(0)]
-    public Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_triggers)] string trigger,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji)
-        => this.AddEmojiReactionAsync(ctx, emoji, false, trigger);
-    #endregion
-
-    #region emojireaction addregex
-    [Command("addregex")][Priority(1)]
-    [Aliases("registerregex", "regex", "newregex", "ar", "+r", "+=r", "<<r", "<r", "<-r", "<=r", "+regex", "+regexp", "+rgx")]
-    public Task AddRegexAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji,
-        [RemainingText][Description(TranslationKey.desc_triggers)] params string[] triggers)
-        => this.AddEmojiReactionAsync(ctx, emoji, true, triggers);
-
-    [Command("addregex")][Priority(0)]
-    public Task AddRegexAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_triggers)] string trigger,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji)
-        => this.AddEmojiReactionAsync(ctx, emoji, true, trigger);
-    #endregion
-
-    #region emojireaction delete
-    [Command("delete")][Priority(2)]
-    [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
-    public async Task DeleteAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_emoji)] DiscordEmoji emoji)
+    public EmojiReactionsModule(LocalizationService localization, ReactionsService reactions)
+        : base(localization, new Color(0x9B59B6))
     {
-        if (!this.Service.GetGuildEmojiReactions(ctx.Guild.Id).Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_er_none);
-
-        int removed = await this.Service.RemoveEmojiReactionsEmojiAsync(ctx.Guild.Id, emoji);
-        if (removed == 0)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_er_404);
-
-        await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_er_del(removed));
-
-        if (removed > 0)
-            await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(TranslationKey.evt_er_del);
-                emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedField(TranslationKey.str_emoji, emoji, true);
-                emb.AddLocalizedField(TranslationKey.str_count, removed, true);
-            });
+        this.reactions = reactions;
     }
 
-    [Command("delete")][Priority(1)]
-    public async Task DeleteAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_r_del_ids)] params int[] ids)
+
+    [Command("")]
+    [Priority(2)]
+    public Task ExecuteGroupAsync()
+        => this.ListAsync();
+
+    [Command("")]
+    [Priority(1)]
+    public Task ExecuteGroupAsync(string emoji, [Remainder] string triggers)
+        => this.AddEmojiReactionAsync(emoji, false, SplitTriggers(triggers));
+
+    [Command("add")]
+    [Priority(1)]
+    [Alias("register", "reg", "new", "a", "+", "+=", "<<", "<", "<-", "<=")]
+    public Task AddAsync(string emoji, [Remainder] string triggers)
+        => this.AddEmojiReactionAsync(emoji, false, SplitTriggers(triggers));
+
+    [Command("addregex")]
+    [Priority(1)]
+    [Alias("registerregex", "regex", "newregex", "ar", "+r", "+=r", "<<r", "<r", "<-r", "<=r", "+regex", "+regexp", "+rgx")]
+    public Task AddRegexAsync(string emoji, [Remainder] string triggers)
+        => this.AddEmojiReactionAsync(emoji, true, SplitTriggers(triggers));
+
+    [Command("delete")]
+    [Priority(2)]
+    [Alias("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
+    public async Task DeleteEmojiAsync(string emoji)
+    {
+        if (!this.reactions.GetGuildEmojiReactions(this.Context.Guild.Id).Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_er_none);
+
+        int removed = await this.reactions.RemoveEmojiReactionsAsync(this.Context.Guild.Id, emoji);
+        if (removed == 0)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_er_404);
+
+        await this.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_er_del(removed));
+    }
+
+    [Command("delete")]
+    [Priority(1)]
+    public async Task DeleteAsync(params int[] ids)
     {
         if (ids is null || !ids.Any())
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_ids_none);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_ids_none);
 
-        if (!this.Service.GetGuildEmojiReactions(ctx.Guild.Id).Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_er_none);
+        if (!this.reactions.GetGuildEmojiReactions(this.Context.Guild.Id).Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_er_none);
 
-        int removed = await this.Service.RemoveEmojiReactionsAsync(ctx.Guild.Id, ids);
-
-        await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_er_del(removed));
-
-        if (removed > 0)
-            await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(TranslationKey.evt_er_del);
-                emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedField(TranslationKey.str_ids, ids.JoinWith(", "), true);
-                emb.AddLocalizedField(TranslationKey.str_count, removed, true);
-            });
+        int removed = await this.reactions.RemoveEmojiReactionsAsync(this.Context.Guild.Id, ids);
+        await this.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_er_del(removed));
     }
 
-    [Command("delete")][Priority(0)]
-    public async Task DeleteAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_triggers)] params string[] triggers)
+    [Command("delete")]
+    [Priority(0)]
+    public async Task DeleteTriggersAsync([Remainder] string triggers)
     {
-        if (triggers is null || !triggers.Any())
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_trig_none);
+        string[] split = SplitTriggers(triggers);
+        if (!split.Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_trig_none);
 
-        IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(ctx.Guild.Id);
-        if (!ers.Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_er_none);
+        IReadOnlyCollection<EmojiReaction> existing = this.reactions.GetGuildEmojiReactions(this.Context.Guild.Id);
+        if (!existing.Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_er_none);
 
-        var eb = new StringBuilder();
+        var errors = new StringBuilder();
         var validTriggers = new HashSet<string>();
         var foundReactions = new HashSet<EmojiReaction>();
-        foreach (string trigger in triggers.Select(t => t.ToLowerInvariant()).Distinct()) {
+        foreach (string trigger in split.Select(t => t.ToLowerInvariant()).Distinct()) {
             if (!trigger.TryParseRegex(out _)) {
-                eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, TranslationKey.cmd_err_trig_regex(trigger)));
+                errors.AppendLine(this.Localization.GetString(this.Context.Guild.Id, TranslationKey.cmd_err_trig_regex(trigger)));
                 continue;
             }
 
-            IEnumerable<EmojiReaction> found = ers.Where(er => er.ContainsTriggerPattern(trigger));
+            IEnumerable<EmojiReaction> found = existing.Where(reaction => reaction.ContainsTriggerPattern(trigger));
             if (!found.Any()) {
-                eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, TranslationKey.cmd_err_trig_404(trigger)));
+                errors.AppendLine(this.Localization.GetString(this.Context.Guild.Id, TranslationKey.cmd_err_trig_404(trigger)));
                 continue;
             }
 
             validTriggers.Add(trigger);
-            foreach (EmojiReaction er in found)
-                foundReactions.Add(er);
+            foreach (EmojiReaction reaction in found)
+                foundReactions.Add(reaction);
         }
 
-        int removed = await this.Service.RemoveEmojiReactionTriggersAsync(ctx.Guild.Id, foundReactions, validTriggers);
-
-        if (eb.Length > 0)
-            await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_action_err(eb));
-        else
-            await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_er_del(removed));
-
-        await ctx.GuildLogAsync(emb => {
-            emb.WithLocalizedTitle(TranslationKey.evt_er_del);
-            emb.WithColor(this.ModuleColor);
-            emb.AddLocalizedField(TranslationKey.str_triggers, validTriggers.JoinWith(), true);
-            emb.AddLocalizedField(TranslationKey.str_count, removed, true);
-        });
+        int removed = await this.reactions.RemoveEmojiReactionTriggersAsync(this.Context.Guild.Id, foundReactions, validTriggers);
+        await this.ImpInfoAsync(this.ModuleColor, errors.Length > 0 ? TranslationKey.fmt_action_err(errors) : TranslationKey.fmt_er_del(removed));
     }
-    #endregion
 
-    #region emojireaction deleteall
-    [Command("deleteall")][UsesInteractivity]
-    [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
-    [RequireUserPermissions(Permissions.Administrator)]
-    public async Task DeleteAllAsync(CommandContext ctx)
+    [Command("deleteall")]
+    [Alias("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
+    [RequireUserPermission(GuildPermission.Administrator)]
+    public async Task DeleteAllAsync()
     {
-        if (!this.Service.GetGuildEmojiReactions(ctx.Guild.Id).Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_er_none);
+        if (!this.reactions.GetGuildEmojiReactions(this.Context.Guild.Id).Any())
+            throw new LocalizedCommandException(TranslationKey.cmd_err_er_none);
 
-        if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_er_rem_all))
+        if (!await this.ConfirmAsync(TranslationKey.q_er_rem_all))
             return;
 
-        int removed = await this.Service.RemoveEmojiReactionsAsync(ctx.Guild.Id);
-
-        await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_er_del(removed));
-
-        if (removed > 0)
-            await ctx.GuildLogAsync(emb => {
-                emb.WithLocalizedTitle(TranslationKey.evt_er_del);
-                emb.WithColor(this.ModuleColor);
-                emb.AddLocalizedField(TranslationKey.str_count, removed, true);
-            });
+        int removed = await this.reactions.RemoveEmojiReactionsAsync(this.Context.Guild.Id);
+        await this.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_er_del(removed));
     }
-    #endregion
 
-    #region emojireaction find
     [Command("find")]
-    [Aliases("f", "test")]
-    public Task FindAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_trigger)] string trigger)
+    [Alias("f", "test")]
+    public Task FindAsync([Remainder] string trigger)
     {
-        IReadOnlyCollection<EmojiReaction> ers = this.Service.FindMatchingEmojiReactions(ctx.Guild.Id, trigger);
+        IReadOnlyCollection<EmojiReaction> ers = this.reactions.FindMatchingEmojiReactions(this.Context.Guild.Id, trigger);
         if (!ers.Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_er_404);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_er_404);
 
-        return ctx.RespondWithLocalizedEmbedAsync(emb => {
+        return this.RespondWithLocalizedEmbedAsync(emb => {
             emb.WithLocalizedTitle(TranslationKey.str_er_matching);
-            emb.WithDescription(ers.Select(er => FormatEmojiReaction(ctx.Client, er)).JoinWith());
+            emb.WithDescription(ers.Select(FormatEmojiReaction).JoinWith());
             emb.WithColor(this.ModuleColor);
         });
     }
-    #endregion
 
-    #region emojireaction list
     [Command("list")]
-    [Aliases("print", "show", "view", "ls", "l", "p")]
-    public Task ListAsync(CommandContext ctx)
+    [Alias("print", "show", "view", "ls", "l", "p")]
+    public Task ListAsync()
     {
-        IReadOnlyCollection<EmojiReaction> ers = this.Service.GetGuildEmojiReactions(ctx.Guild.Id);
+        IReadOnlyCollection<EmojiReaction> ers = this.reactions.GetGuildEmojiReactions(this.Context.Guild.Id);
         if (!ers.Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_er_none);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_er_none);
 
-        return ctx.PaginateAsync(
-            TranslationKey.str_er,
-            ers.OrderBy(er => er.Id),
-            er => FormatEmojiReaction(ctx.Client, er),
-            this.ModuleColor
-        );
-    }
-    #endregion
-
-
-    #region internals
-    private static string FormatEmojiReaction(DiscordClient client, EmojiReaction er)
-    {
-        string emoji;
-        try {
-            emoji = DiscordEmoji.FromName(client, er.Response);
-        } catch (ArgumentException) {
-            emoji = "404";
-        }
-
-        return $"{Formatter.InlineCode($"{er.Id:D4}")} | {emoji} | {Formatter.InlineCode(er.Triggers.JoinWith(", "))}";
+        return this.RespondPagedAsync(TranslationKey.str_er, ers.OrderBy(reaction => reaction.Id), FormatEmojiReaction);
     }
 
-    private async Task AddEmojiReactionAsync(CommandContext ctx, DiscordEmoji emoji, bool regex, params string[] triggers)
+    private async Task AddEmojiReactionAsync(string emoji, bool regex, params string[] triggers)
     {
-        if (emoji is DiscordGuildEmoji && !ctx.Guild.Emojis.Select(kvp => kvp.Value).Contains(emoji))
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_er_emoji_404);
+        if (string.IsNullOrWhiteSpace(emoji))
+            throw new LocalizedCommandException(TranslationKey.cmd_err_er_emoji_404);
 
         if (triggers is null || !triggers.Any())
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_trig_none);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_trig_none);
 
-        var eb = new StringBuilder();
+        var errors = new StringBuilder();
         var validTriggers = new HashSet<string>();
         foreach (string trigger in triggers.Select(t => t.ToLowerInvariant())) {
             if (trigger.Length > ReactionTrigger.TriggerLimit) {
-                eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, TranslationKey.cmd_err_trig_len(trigger, ReactionTrigger.TriggerLimit)));
+                errors.AppendLine(this.Localization.GetString(this.Context.Guild.Id, TranslationKey.cmd_err_trig_len(trigger, ReactionTrigger.TriggerLimit)));
                 continue;
             }
 
             if (regex && !trigger.TryParseRegex(out _)) {
-                eb.AppendLine(this.Localization.GetString(ctx.Guild.Id, TranslationKey.cmd_err_trig_regex(trigger)));
+                errors.AppendLine(this.Localization.GetString(this.Context.Guild.Id, TranslationKey.cmd_err_trig_regex(trigger)));
                 continue;
             }
 
             validTriggers.Add(trigger);
         }
 
-        int added = await this.Service.AddEmojiReactionEmojiAsync(ctx.Guild.Id, emoji, validTriggers, regex);
-
-        if (eb.Length > 0)
-            await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_action_err(eb));
-        else
-            await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.fmt_er_add(added));
-
-        await ctx.GuildLogAsync(emb => {
-            emb.WithLocalizedTitle(TranslationKey.evt_er_add);
-            emb.WithColor(this.ModuleColor);
-            emb.AddLocalizedField(TranslationKey.str_reaction, emoji, true);
-            emb.AddLocalizedField(TranslationKey.str_count, added, true);
-            emb.AddLocalizedField(TranslationKey.str_triggers, validTriggers.JoinWith());
-        });
+        int added = await this.reactions.AddEmojiReactionAsync(this.Context.Guild.Id, emoji, validTriggers, regex);
+        await this.ImpInfoAsync(this.ModuleColor, errors.Length > 0 ? TranslationKey.fmt_action_err(errors) : TranslationKey.fmt_er_add(added));
     }
-    #endregion
+
+    private static string FormatEmojiReaction(EmojiReaction reaction)
+        => $"{InlineCode($"{reaction.Id:D4}")} | {reaction.Response} | {InlineCode(reaction.Triggers.JoinWith(", "))}";
+
+    private static string[] SplitTriggers(string triggers)
+        => (triggers ?? string.Empty).Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 }

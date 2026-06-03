@@ -1,50 +1,32 @@
-﻿using System.Collections.Concurrent;
-using DSharpPlus.Entities;
-using DSharpPlus.EventArgs;
-using TheGodfather.Common.Collections;
+using System.Collections.Concurrent;
 using TheGodfather.Modules.Administration.Common;
 
 namespace TheGodfather.Modules.Administration.Services;
 
-public sealed class AntifloodService : ProtectionServiceBase
+public sealed class AntifloodService : ITheGodfatherService
 {
-    private readonly ConcurrentDictionary<ulong, ConcurrentHashSet<DiscordMember>> guildFloodUsers;
+    public bool IsDisabled => false;
+
+    private readonly ConcurrentDictionary<ulong, ConcurrentDictionary<ulong, DateTimeOffset>> guildJoins = new();
 
 
-    public AntifloodService(DbContextBuilder dbb, LoggingService ls, SchedulingService ss, GuildConfigService gcs)
-        : base(dbb, ls, ss, gcs, "_gf: Flooding")
+    public IReadOnlyList<ulong> RegisterJoin(ulong gid, ulong uid, AntifloodSettings settings)
     {
-        this.guildFloodUsers = new ConcurrentDictionary<ulong, ConcurrentHashSet<DiscordMember>>();
-    }
+        if (!settings.Enabled)
+            return Array.Empty<ulong>();
 
+        DateTimeOffset now = DateTimeOffset.UtcNow;
+        ConcurrentDictionary<ulong, DateTimeOffset> joins = this.guildJoins.GetOrAdd(gid, _ => new ConcurrentDictionary<ulong, DateTimeOffset>());
+        foreach ((ulong existingUid, DateTimeOffset expiresAt) in joins.ToArray())
+            if (expiresAt <= now)
+                joins.TryRemove(existingUid, out _);
 
-    public override bool TryAddGuildToWatch(ulong gid)
-        => this.guildFloodUsers.TryAdd(gid, new ConcurrentHashSet<DiscordMember>());
+        joins[uid] = now + TimeSpan.FromSeconds(settings.Cooldown);
+        if (joins.Count < settings.Sensitivity)
+            return Array.Empty<ulong>();
 
-    public override bool TryRemoveGuildFromWatch(ulong gid)
-        => this.guildFloodUsers.TryRemove(gid, out _);
-
-
-    public async Task HandleMemberJoinAsync(GuildMemberAddEventArgs e, AntifloodSettings settings)
-    {
-        if (!this.guildFloodUsers.ContainsKey(e.Guild.Id) && !this.TryAddGuildToWatch(e.Guild.Id))
-            throw new ConcurrentOperationException("Failed to add guild to antiflood watch list!");
-
-        if (!this.guildFloodUsers[e.Guild.Id].Add(e.Member))
-            throw new ConcurrentOperationException("Failed to add member to antiflood watch list!");
-
-        if (this.guildFloodUsers[e.Guild.Id].Count >= settings.Sensitivity) {
-            foreach (DiscordMember m in this.guildFloodUsers[e.Guild.Id]) {
-                await this.PunishMemberAsync(e.Guild, m, settings.Action);
-                await Task.Delay(TimeSpan.FromMilliseconds(100));
-            }
-            this.guildFloodUsers[e.Guild.Id].Clear();
-            return;
-        }
-
-        await Task.Delay(TimeSpan.FromSeconds(settings.Cooldown));
-
-        if (this.guildFloodUsers.ContainsKey(e.Guild.Id) && !this.guildFloodUsers[e.Guild.Id].TryRemove(e.Member))
-            throw new ConcurrentOperationException("Failed to remove member from antiflood watch list!");
+        ulong[] offenders = joins.Keys.ToArray();
+        joins.Clear();
+        return offenders;
     }
 }

@@ -1,7 +1,4 @@
-﻿using System.Threading;
-using DSharpPlus;
-using DSharpPlus.Entities;
-using DSharpPlus.Exceptions;
+using System.Threading;
 
 namespace TheGodfather.Services.Common;
 
@@ -36,20 +33,17 @@ public sealed class ScheduledTaskExecutor : IDisposable
     {
         switch (this.Job) {
             case GuildTask gt:
-                switch (gt.Type) {
-                    case ScheduledTaskType.Unban:
-                        this.timer = new Timer(this.UnbanUserCallback, this.Job, this.Job.TimeUntilExecution, TimeSpan.FromMilliseconds(-1));
-                        break;
-                    case ScheduledTaskType.Unmute:
-                        this.timer = new Timer(this.UnmuteUserCallback, this.Job, this.Job.TimeUntilExecution, TimeSpan.FromMilliseconds(-1));
-                        break;
-                }
+                this.timer = gt.Type switch {
+                    ScheduledTaskType.Unban => new Timer(this.UnbanUserCallback, this.Job, this.Job.TimeUntilExecution, Timeout.InfiniteTimeSpan),
+                    ScheduledTaskType.Unmute => new Timer(this.UnmuteUserCallback, this.Job, this.Job.TimeUntilExecution, Timeout.InfiniteTimeSpan),
+                    _ => this.timer
+                };
                 break;
             case Reminder rem:
                 this.timer = new Timer(this.SendMessageCallback, this.Job, rem.TimeUntilExecution, rem.RepeatInterval);
                 break;
             default:
-                throw new ArgumentException(@"Unknown saved task info type!", nameof(this.Job));
+                throw new ArgumentException("Unknown saved task info type.", nameof(this.Job));
         }
     }
 
@@ -57,33 +51,25 @@ public sealed class ScheduledTaskExecutor : IDisposable
     {
         try {
             switch (this.Job) {
-                case GuildTask gt:
-                    switch (gt.Type) {
-                        case ScheduledTaskType.Unban:
-                            this.UnbanUserCallback(this.Job);
-                            break;
-                        case ScheduledTaskType.Unmute:
-                            this.UnmuteUserCallback(this.Job);
-                            break;
-                    }
+                case GuildTask gt when gt.Type is ScheduledTaskType.Unban:
+                    this.UnbanUserCallback(this.Job);
+                    break;
+                case GuildTask gt when gt.Type is ScheduledTaskType.Unmute:
+                    this.UnmuteUserCallback(this.Job);
                     break;
                 case Reminder rem:
-                    DiscordClient shard = this.client.GetShard(0);
-                    DiscordChannel? channel = rem.ChannelId != 0
-                        ? await shard.GetChannelAsync(rem.ChannelId)
-                        : await shard.CreateDmChannelAsync(rem.UserId);
+                    IMessageChannel? channel = await this.ResolveReminderChannelAsync(rem);
                     if (channel is null) {
-                        Log.Warning("Cannot find channel for reminder with id {ReminderId} (channel: {ChannelId}, user: {UserId})",
-                            rem.Id, rem.ChannelId, rem.UserId
-                        );
+                        Log.Warning("Cannot find channel for reminder {ReminderId} (channel: {ChannelId}, user: {UserId})", rem.Id, rem.ChannelId, rem.UserId);
                         break;
                     }
-                    await channel.LocalizedEmbedAsync(this.lcs, Emojis.X, DiscordColor.Red,
-                        TranslationKey.fmt_remind_miss(this.lcs.GetLocalizedTimeString(channel.GuildId, rem.ExecutionTime), rem.Message)
+
+                    await this.SendLocalizedAsync(channel, Emojis.X, Color.Red,
+                        TranslationKey.fmt_remind_miss(this.lcs.GetLocalizedTimeString((channel as IGuildChannel)?.GuildId, rem.ExecutionTime), rem.Message)
                     );
                     break;
                 default:
-                    throw new ArgumentException(@"Unknown saved task info type!", nameof(this.Job));
+                    throw new ArgumentException("Unknown saved task info type.", nameof(this.Job));
             }
             Log.Debug("Executed missed saved task of type: {SavedTaskType}", this.Job.GetType().Name);
         } catch (Exception e) {
@@ -92,25 +78,38 @@ public sealed class ScheduledTaskExecutor : IDisposable
     }
 
 
-    #region Callbacks
-    private void SendMessageCallback(object? _)
+    private async Task<IMessageChannel?> ResolveReminderChannelAsync(Reminder rem)
     {
-        Reminder rem = _ as Reminder ?? throw new InvalidCastException("Failed to cast scheduled task to Reminder");
+        if (rem.ChannelId != 0)
+            return this.client.GetChannel(rem.ChannelId) as IMessageChannel;
+
+        IUser? user = this.client.GetUser(rem.UserId);
+        return user is null ? null : await user.CreateDMChannelAsync();
+    }
+
+    private Task SendLocalizedAsync(IMessageChannel channel, string emoji, Color color, TranslationKey key)
+    {
+        ulong? gid = (channel as IGuildChannel)?.GuildId;
+        return channel.SendMessageAsync(embed: new EmbedBuilder {
+            Color = color,
+            Description = $"{emoji} {this.lcs.GetString(gid, key)}"
+        }.Build());
+    }
+
+    private void SendMessageCallback(object? state)
+    {
+        Reminder rem = state as Reminder ?? throw new InvalidCastException("Failed to cast scheduled task to Reminder");
 
         try {
-            DiscordClient shard = this.client.GetShard(0);
-            DiscordChannel? channel = rem.ChannelId != 0
-                ? this.async.Execute(shard.GetChannelAsync(rem.ChannelId))
-                : this.async.Execute(shard.CreateDmChannelAsync(rem.UserId));
+            IMessageChannel? channel = this.async.Execute(this.ResolveReminderChannelAsync(rem));
             if (channel is null)
                 return;
-            DiscordUser user = this.async.Execute(shard.GetUserAsync(rem.UserId));
 
-            this.async.Execute(
-                channel.LocalizedEmbedAsync(this.lcs, Emojis.AlarmClock, DiscordColor.Green, TranslationKey.fmt_remind_exec(user.Mention, rem.Message))
-            );
-        } catch (UnauthorizedException) {
-            // Do nothing, user has disabled DM in meantime
+            IUser? user = this.client.GetUser(rem.UserId);
+            string mention = user?.Mention ?? MentionUtils.MentionUser(rem.UserId);
+            this.async.Execute(this.SendLocalizedAsync(channel, Emojis.AlarmClock, Color.Green, TranslationKey.fmt_remind_exec(mention, rem.Message)));
+        } catch (Discord.Net.HttpException e) when (e.DiscordCode == DiscordErrorCode.MissingPermissions) {
+            // User disabled DMs or the bot lost channel access.
         } catch (Exception e) {
             Log.Debug(e, "Error while handling send message saved task");
         } finally {
@@ -122,15 +121,16 @@ public sealed class ScheduledTaskExecutor : IDisposable
         }
     }
 
-    private void UnbanUserCallback(object? _)
+    private void UnbanUserCallback(object? state)
     {
-        GuildTask gt = _ as GuildTask ?? throw new InvalidCastException("Failed to cast scheduled task to GuildTask");
+        GuildTask gt = state as GuildTask ?? throw new InvalidCastException("Failed to cast scheduled task to GuildTask");
 
         try {
-            DiscordGuild guild = this.async.Execute(this.client.GetShard(gt.GuildId).GetGuildAsync(gt.GuildId));
-            this.async.Execute(guild.UnbanMemberAsync(gt.UserId, "Temporary ban time expired"));
-        } catch (UnauthorizedException) {
-            // Do nothing, perms to unban removed in meantime
+            SocketGuild? guild = this.client.GetGuild(gt.GuildId);
+            if (guild is not null)
+                this.async.Execute(guild.RemoveBanAsync(gt.UserId, new RequestOptions { AuditLogReason = "Temporary ban time expired" }));
+        } catch (Discord.Net.HttpException e) when (e.DiscordCode is DiscordErrorCode.MissingPermissions or DiscordErrorCode.UnknownBan) {
+            // Permissions changed or the user was already unbanned.
         } catch (Exception e) {
             Log.Debug(e, "Error while handling unban saved task");
         } finally {
@@ -142,19 +142,18 @@ public sealed class ScheduledTaskExecutor : IDisposable
         }
     }
 
-    private void UnmuteUserCallback(object? _)
+    private void UnmuteUserCallback(object? state)
     {
-        GuildTask? gt = _ as GuildTask ?? throw new InvalidCastException("Failed to cast scheduled task to GuildTask");
+        GuildTask gt = state as GuildTask ?? throw new InvalidCastException("Failed to cast scheduled task to GuildTask");
 
         try {
-            DiscordGuild guild = this.async.Execute(this.client.GetShard(gt.GuildId).GetGuildAsync(gt.GuildId));
-            DiscordRole? role = guild.GetRole(gt.RoleId);
-            DiscordMember member = this.async.Execute(guild.GetMemberAsync(gt.UserId));
-            if (role is null)
-                return;
-            this.async.Execute(member.RevokeRoleAsync(role, "Temporary mute time expired"));
-        } catch (Exception e) when (e is UnauthorizedException or NotFoundException) {
-            // Do nothing, perms to unmute removed in meantime or 404
+            SocketGuild? guild = this.client.GetGuild(gt.GuildId);
+            SocketRole? role = guild?.GetRole(gt.RoleId);
+            SocketGuildUser? member = guild?.GetUser(gt.UserId);
+            if (role is not null && member is not null)
+                this.async.Execute(member.RemoveRoleAsync(role, new RequestOptions { AuditLogReason = "Temporary mute time expired" }));
+        } catch (Discord.Net.HttpException e) when (e.DiscordCode is DiscordErrorCode.MissingPermissions or DiscordErrorCode.UnknownMember) {
+            // Permissions changed or the member left.
         } catch (Exception e) {
             Log.Debug(e, "Error while handling unmute saved task");
         } finally {
@@ -165,5 +164,4 @@ public sealed class ScheduledTaskExecutor : IDisposable
             }
         }
     }
-    #endregion
 }

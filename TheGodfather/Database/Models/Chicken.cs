@@ -1,8 +1,7 @@
 ﻿using System.Collections.Immutable;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DSharpPlus;
-using DSharpPlus.Entities;
+using Discord;
 
 namespace TheGodfather.Database.Models;
 
@@ -80,7 +79,7 @@ public class Chicken : IEquatable<Chicken>
     };
 
     [NotMapped]
-    public DiscordUser? Owner { get; set; }
+    public IUser? Owner { get; set; }
 
     [NotMapped]
     public long SellPrice => PriceForAttribute(this.Stats.BareStrength);
@@ -211,9 +210,9 @@ public sealed class ChickenStats
 
 
     public string ToShortString()
-        => $"STR: {Formatter.Bold(this.TotalStrength.ToString())} VIT: {Formatter.Bold(this.TotalVitality.ToString())}";
+        => $"STR: {Format.Bold(this.TotalStrength.ToString())} VIT: {Format.Bold(this.TotalVitality.ToString())}";
 
     public override string ToString()
-        => $"STR: {Formatter.Bold(this.TotalStrength.ToString())} (bare: {Formatter.Bold(this.BareStrength.ToString())})\n" +
-           $"VIT: {Formatter.Bold(this.TotalVitality.ToString())} / {Formatter.Bold(this.TotalMaxVitality.ToString())}";
+        => $"STR: {Format.Bold(this.TotalStrength.ToString())} (bare: {Format.Bold(this.BareStrength.ToString())})\n" +
+           $"VIT: {Format.Bold(this.TotalVitality.ToString())} / {Format.Bold(this.TotalMaxVitality.ToString())}";
 }

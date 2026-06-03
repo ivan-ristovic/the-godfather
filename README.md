@@ -11,7 +11,7 @@
 [![Docker URL](https://img.shields.io/docker/pulls/ivanristovic/godfather?style=for-the-badge)](https://hub.docker.com/r/ivanristovic/godfather)
 [![Docker Image Size](https://img.shields.io/docker/image-size/ivanristovic/godfather?style=for-the-badge)](https://hub.docker.com/r/ivanristovic/godfather)
 
-Just another general-purpose Discord bot developed with the goal to remove all other bots from the guild and create one that will do everything as efficiently as possible while keeping simplicity in mind when it comes to usage. Written in C# using [DSharpPlus](https://github.com/DSharpPlus/DSharpPlus).
+Just another general-purpose Discord bot developed with the goal to remove all other bots from the guild and create one that will do everything as efficiently as possible while keeping simplicity in mind when it comes to usage. This copy is the incremental Discord.Net port.
 
 [![TheGodfather](https://discord.com/api/guilds/794671727291531274/embed.png?style=banner2)](https://discord.gg/z7KZGQQxRz)
 
@@ -39,7 +39,6 @@ Features:
   - Currency management and multiplayer gambling games: Poker, BlackJack, Slots etc.
   - Speaking of games, adventurers may wish to train their own chickens, upgrade them using guild currency, make them fight other chickens and even start ambushes or wars!
   - Todo list which can be private (via DM) or public (guild channels). Reminders can be scheduled using absolute or relative time and can be listed in various ways.
-  - Music playback and queue management commands supporting YouTube, Twitch, Soundcloud and many more.
   - Starboard with customizable star emoji and reaction threshold.
   - Interactive text or reaction poll system.
   - Guild-specific culture setting (e.g. language, timezone). Currently supported languages/cultures: `en-UK` (default), `en-US`.
@@ -97,7 +96,7 @@ A command argument can have exactly one of the following types (only the the mos
   - ``double`` : A floating point number, can also be an integer. Valid examples: ``5.64`` , ``-3.2`` , ``5`` , ``123456.5646``.
   - ``string`` : Unicode character sequence without spaces. If you wish to include spaces, then surround the sequence with quotation marks (`"`). Valid examples: ``testtest`` , ``T3S7``, ``"quotes"`` , ``"I need quotes for spaces!"``
   - ``string...`` : Unicode characrer sequence which includes spaces. Since this is a very general argument type, it will always come last in argument queue. Valid examples: ``This is a text so I do not need quotes``.
-  - ``boolean`` : A truth value, either ``true`` or ``false`` (can also be converted from ``yes`` or ``no`` in various forms, see: [CustomBoolConverter](TheGodfather/Common/Converters/CustomBoolConverter.cs)). Valid examples: ``true`` , ``yes`` , ``no`` , ``0``.
+  - ``boolean`` : A truth value, either ``true`` or ``false`` (can also be converted from ``yes`` or ``no`` in various forms). Valid examples: ``true`` , ``yes`` , ``no`` , ``0``.
   - ``user`` : Discord user - given by mention, username or UID (User ID). Valid examples: ``@Someone`` , ``Someone`` , ``123456789123456``.
   - ``member`` : Discord guild member - given by mention, username or UID (User ID). Valid examples: ``@Someone`` , ``Someone`` , ``123456789123456``.
   - ``channel`` : Discord channel - given by mention, channel name or CID (Channel ID). Valid examples: ``#channel`` , ``MyChannel`` , ``123456789123456``.
@@ -132,4 +131,3 @@ This way, the ordering of the arguments does not matter and therefore does not n
 **Note:** ``string...`` argument always comes last in queue because it captures raw text until the end of the message. Therefore it cannot come before any other argument.
 
 **Note:** It is always preferred to surround arguments of type ``string`` with quotes, although not nececary. This prevents the accidental misinterpretation of the second word in a given string as a different argument. Also note that, in case of ``string...`` type, the quotes will also be captured.
-

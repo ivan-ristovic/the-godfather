@@ -1,174 +1,129 @@
-﻿using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
+﻿using Discord.Commands;
 using Google.Apis.YouTube.v3.Data;
-using Microsoft.Extensions.DependencyInjection;
+using TheGodfather.Attributes;
 using TheGodfather.Modules.Search.Services;
 
 namespace TheGodfather.Modules.Search;
 
-[Group("youtube")][Module(ModuleType.Searches)][NotBlocked]
-[Aliases("y", "yt", "ytube")]
+[Group("youtube")]
+[Alias("y", "yt", "ytube")]
 [Cooldown(3, 5, CooldownBucketType.Channel)]
-public sealed class YoutubeModule : TheGodfatherServiceModule<YtService>
+public sealed class YoutubeModule : TheGodfatherModule
 {
-    #region youtube
-    [GroupCommand]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_query)] string query)
-        => this.SearchAndSendResultsAsync(ctx, 5, query);
-    #endregion
+    private readonly YtService youtube;
+    private readonly RssFeedsService rss;
 
-    #region youtube search
-    [Command("search")]
-    [Aliases("s")]
-    public Task AdvancedSearchAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_res_amount)] int amount,
-        [RemainingText][Description(TranslationKey.desc_query)] string query)
-        => this.SearchAndSendResultsAsync(ctx, amount, query);
-    #endregion
 
-    #region youtube searchvideo
-    [Command("searchvideo")]
-    [Description("Advanced youtube search for videos only.")]
-    [Aliases("searchvideos", "sv", "searchv", "video")]
-    public Task SearchVideoAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_query)] string query)
-        => this.SearchAndSendResultsAsync(ctx, 5, query, "video");
-    #endregion
-
-    #region youtube searchchannel
-    [Command("searchchannel")]
-    [Aliases("searchchannels", "sc", "searchc", "channel")]
-    public Task SearchChannelAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_query)] string query)
-        => this.SearchAndSendResultsAsync(ctx, 5, query, "channel");
-    #endregion
-
-    #region youtube searchplaylist
-    [Command("searchplaylist")]
-    [Aliases("searchplaylists", "sp", "searchp", "playlist")]
-    public Task SearchPlaylistAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_query)] string query)
-        => this.SearchAndSendResultsAsync(ctx, 5, query, "playlist");
-    #endregion
-
-    #region youtube subscribe
-    [Command("subscribe")][Priority(5)]
-    [Aliases("sub", "follow")]
-    [RequireUserPermissions(Permissions.ManageGuild)]
-    public Task SubscribeAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub_chn)] DiscordChannel chn,
-        [Description(TranslationKey.desc_sub_yt)] Uri url,
-        [RemainingText][Description(TranslationKey.desc_name_f)] string? name = null)
-        => this.SubscribeAsync(ctx, chn, url.AbsoluteUri, name);
-        
-    [Command("subscribe")][Priority(4)]
-    public Task SubscribeAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub_yt)] Uri url,
-        [Description(TranslationKey.desc_sub_chn)] DiscordChannel chn,
-        [RemainingText][Description(TranslationKey.desc_name_f)] string? name = null)
-        => this.SubscribeAsync(ctx, url.AbsoluteUri, name);
-
-    [Command("subscribe")][Priority(3)]
-    public Task SubscribeAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub_yt_username)] string username,
-        [Description(TranslationKey.desc_sub_chn)] DiscordChannel? chn = null,
-        [RemainingText][Description(TranslationKey.desc_name_f)] string? name = null)
-        => this.SubscribeAsync(ctx, chn ?? ctx.Channel, username, name);
-
-    [Command("subscribe")][Priority(2)]
-    public async Task SubscribeAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub_chn)] DiscordChannel chn,
-        [Description(TranslationKey.desc_sub_yt_username)] string username,
-        [RemainingText][Description(TranslationKey.desc_name_f)] string? name = null)
+    public YoutubeModule(LocalizationService localization, YtService youtube, RssFeedsService rss)
+        : base(localization, Color.Red)
     {
-        if (!chn.IsTextOrNewsChannel())
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_chn_type_text);
-
-        string? feed = await this.Service.GetRssUrlForChannel(username);
-        if (feed is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_yt);
-
-        string fname = string.IsNullOrWhiteSpace(name) ? username : name;
-        if (!await ctx.Services.GetRequiredService<RssFeedsService>().SubscribeAsync(ctx.Guild.Id, chn.Id, feed, fname))
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_yt);
-        
-        await ctx.InfoAsync(this.ModuleColor);
+        this.youtube = youtube;
+        this.rss = rss;
     }
 
-    [Command("subscribe")][Priority(1)]
-    public Task SubscribeAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub_yt_username)] string username,
-        [RemainingText][Description(TranslationKey.desc_name_f)] string? name = null)
-        => this.SubscribeAsync(ctx, ctx.Channel, username, name);
 
+    [Command("")]
+    public Task ExecuteGroupAsync([Remainder] string query)
+        => this.SearchAndSendResultsAsync(5, query);
 
-    [Command("subscribe")][Priority(0)]
-    public Task SubscribeAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub_yt_username)] Uri url,
-        [RemainingText][Description(TranslationKey.desc_name_f)] string? name = null)
-        => this.SubscribeAsync(ctx, ctx.Channel, url.AbsoluteUri, name);
-    #endregion
+    [Command("search")]
+    [Alias("s")]
+    public Task AdvancedSearchAsync(int amount, [Remainder] string query)
+        => this.SearchAndSendResultsAsync(amount, query);
 
-    #region youtube unsubscribe
+    [Command("searchvideo")]
+    [Alias("searchvideos", "sv", "searchv", "video")]
+    public Task SearchVideoAsync([Remainder] string query)
+        => this.SearchAndSendResultsAsync(5, query, "video");
+
+    [Command("searchchannel")]
+    [Alias("searchchannels", "sc", "searchc", "channel")]
+    public Task SearchChannelAsync([Remainder] string query)
+        => this.SearchAndSendResultsAsync(5, query, "channel");
+
+    [Command("searchplaylist")]
+    [Alias("searchplaylists", "sp", "searchp", "playlist")]
+    public Task SearchPlaylistAsync([Remainder] string query)
+        => this.SearchAndSendResultsAsync(5, query, "playlist");
+
+    [Command("subscribe")]
+    [Priority(1)]
+    [Alias("sub", "follow")]
+    [RequireContext(ContextType.Guild)]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
+    public Task SubscribeAsync(ITextChannel channel, string usernameOrUrl, [Remainder] string? name = null)
+        => this.SubscribeInternalAsync(channel, usernameOrUrl, name);
+
+    [Command("subscribe")]
+    [Priority(0)]
+    [Alias("sub", "follow")]
+    [RequireContext(ContextType.Guild)]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
+    public Task SubscribeAsync(string usernameOrUrl, [Remainder] string? name = null)
+        => this.SubscribeInternalAsync((ITextChannel)this.Context.Channel, usernameOrUrl, name);
+
     [Command("unsubscribe")]
-    [Aliases("unfollow", "unsub")]
-    [RequireUserPermissions(Permissions.ManageGuild)]
-    public async Task UnsubscribeAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_sub_name_url)] string subscription)
+    [Alias("unfollow", "unsub")]
+    [RequireContext(ContextType.Guild)]
+    [RequireUserPermission(GuildPermission.ManageGuild)]
+    public async Task UnsubscribeAsync([Remainder] string subscription)
     {
-        string? url = await this.Service.GetRssUrlForChannel(subscription);
+        string? url = await this.youtube.GetRssUrlForChannel(subscription);
         if (url is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_yt);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_yt);
 
-        RssFeedsService rss = ctx.Services.GetRequiredService<RssFeedsService>();
-        RssSubscription? sub = await rss.Subscriptions.GetByNameAsync((ctx.Guild.Id, ctx.Channel.Id), subscription);
+        RssSubscription? sub = await this.rss.Subscriptions.GetByNameAsync((this.Context.Guild.Id, this.Context.Channel.Id), subscription);
         if (sub is null) {
-            RssFeed? feed = await rss.GetByUrlAsync(url);
+            RssFeed? feed = await this.rss.GetByUrlAsync(url);
             if (feed is null)
-                throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_fail(subscription));
-            sub = await rss.Subscriptions.GetAsync((ctx.Guild.Id, ctx.Channel.Id), feed.Id);
+                throw new LocalizedCommandException(TranslationKey.cmd_err_sub_fail(subscription));
+            sub = await this.rss.Subscriptions.GetAsync((this.Context.Guild.Id, this.Context.Channel.Id), feed.Id);
         }
 
         if (sub is null)
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_sub_fail(subscription));
-        await rss.Subscriptions.RemoveAsync(sub);
-        await ctx.InfoAsync(this.ModuleColor);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_fail(subscription));
+
+        await this.rss.Subscriptions.RemoveAsync(sub);
+        await this.InfoAsync(this.ModuleColor);
     }
-    #endregion
 
+    private async Task SubscribeInternalAsync(ITextChannel channel, string usernameOrUrl, string? name)
+    {
+        string? feed = await this.youtube.GetRssUrlForChannel(usernameOrUrl);
+        if (feed is null)
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_yt);
 
-    #region internals
-    private async Task SearchAndSendResultsAsync(CommandContext ctx, int amount, string query, string? type = null)
+        string subscriptionName = string.IsNullOrWhiteSpace(name) ? usernameOrUrl : name;
+        if (!await this.rss.SubscribeAsync(this.Context.Guild.Id, channel.Id, feed, subscriptionName))
+            throw new LocalizedCommandException(TranslationKey.cmd_err_sub_yt);
+
+        await this.InfoAsync(this.ModuleColor);
+    }
+
+    private async Task SearchAndSendResultsAsync(int amount, string query, string? type = null)
     {
         if (string.IsNullOrWhiteSpace(query))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_query);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_query);
 
-        IReadOnlyList<SearchResult>? res = await this.Service.SearchAsync(query, amount, type);
+        IReadOnlyList<Google.Apis.YouTube.v3.Data.SearchResult>? res = await this.youtube.SearchAsync(query, amount, type);
         if (res is null) {
-            await ctx.FailAsync(TranslationKey.cmd_err_res_none);
+            await this.FailAsync(TranslationKey.cmd_err_res_none);
             return;
         }
 
-        await ctx.PaginateAsync(res, (emb, r) => {
-            emb.WithTitle(r.Snippet.Title);
-            emb.WithColor(DiscordColor.Red);
-            emb.WithDescription(r.Snippet.Description, false);
+        await this.RespondPagedAsync(res, (emb, result) => {
+            emb.WithTitle(result.Snippet.Title);
+            emb.WithColor(Color.Red);
+            emb.WithDescription(result.Snippet.Description, false);
+            if (result.Snippet.Thumbnails is not null)
+                emb.WithThumbnail(result.Snippet.Thumbnails.Default__.Url);
+            emb.AddLocalizedField(TranslationKey.str_chn, result.Snippet.ChannelTitle, true);
+            emb.AddLocalizedField(TranslationKey.str_published, result.Snippet.PublishedAtDateTimeOffset, true);
 
-            if (r.Snippet.Thumbnails is not null)
-                emb.WithThumbnail(r.Snippet.Thumbnails.Default__.Url);
-
-            emb.AddLocalizedField(TranslationKey.str_chn, r.Snippet.ChannelTitle, true);
-            emb.AddLocalizedField(TranslationKey.str_published, r.Snippet.PublishedAtDateTimeOffset, true);
-
-            string? url = this.Service.GetUrlForResourceId(r.Id);
+            string? url = this.youtube.GetUrlForResourceId(result.Id);
             if (url is not null)
                 emb.WithUrl(url);
-
             return emb;
         });
     }
-    #endregion
 }

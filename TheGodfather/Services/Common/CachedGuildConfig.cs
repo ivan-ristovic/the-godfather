@@ -27,6 +27,8 @@ public sealed class CachedGuildConfig
     public bool SuggestionsEnabled { get; set; } = false;
     public bool ReactionResponse { get; set; } = false;
     public LinkfilterSettings LinkfilterSettings { get; set; } = new();
+    public AntifloodSettings AntifloodSettings { get; set; } = new();
+    public AntiInstantLeaveSettings AntiInstantLeaveSettings { get; set; } = new();
     public AntispamSettings AntispamSettings { get; set; } = new();
     public AntiMentionSettings AntiMentionSettings { get; set; } = new();
     public RatelimitSettings RatelimitSettings { get; set; } = new();

@@ -1,8 +1,5 @@
 ﻿using System.Diagnostics;
-using System.Reflection;
-using System.Threading;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 
 namespace TheGodfather;
 
@@ -12,17 +9,14 @@ internal static class TheGodfather
     public static string ApplicationVersion { get; }
 
     internal static TheGodfatherBot? Bot { get; private set; }
-    internal static OpenWebUiService? OpenWebUiService { get; private set; }
-    private static PeriodicTasksService? PeriodicService { get; set; }
 
-    
+
     static TheGodfather()
     {
         AssemblyName info = Assembly.GetExecutingAssembly().GetName();
         ApplicationName = info.Name ?? "TheGodfather";
         ApplicationVersion = $"v{info.Version?.ToString() ?? "<unknown>"}";
     }
-
 
     internal static async Task Main(string[] _)
     {
@@ -34,24 +28,30 @@ internal static class TheGodfather
             Log.Information("Logger created");
 
             DbContextBuilder dbb = await InitializeDatabaseAsync(cfg);
-                
-            await StartAsync(cfg, dbb);
+
+            Bot = new TheGodfatherBot(cfg, dbb);
+            await Bot.StartAsync();
             Log.Information("Booting complete!");
 
-            CancellationToken token = Bot?.Services.GetRequiredService<BotActivityService>().MainLoopCts.Token 
-                                      ?? throw new InvalidOperationException("Bot not initialized");
-            await Task.Delay(Timeout.Infinite, token);
+            Console.CancelKeyPress += (_, e) => {
+                e.Cancel = true;
+                Bot.Services.GetRequiredService<BotActivityService>().MainLoopCts.Cancel();
+            };
+
+            await Task.Delay(Timeout.Infinite, Bot.Services.GetRequiredService<BotActivityService>().MainLoopCts.Token);
         } catch (TaskCanceledException) {
-            Log.Information("Shutdown signal received!");
+            Log.Information("Shutdown signal received");
         } catch (Exception e) {
             Log.Fatal(e, "Critical exception occurred");
             Environment.ExitCode = 1;
         } finally {
-            await DisposeAsync();
+            if (Bot is not null)
+                await Bot.DisposeAsync();
+
+            Log.Information("Powering off");
+            await Log.CloseAndFlushAsync();
         }
 
-        Log.Information("Powering off");
-        Log.CloseAndFlush();
         Environment.Exit(Environment.ExitCode);
     }
 
@@ -63,7 +63,6 @@ internal static class TheGodfather
     }
 
 
-    #region Setup
     private static void PrintBuildInformation()
     {
         var fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
@@ -78,7 +77,6 @@ internal static class TheGodfather
         var cfg = new BotConfigService();
         await cfg.LoadConfigAsync();
 
-        // ReSharper disable once LocalizableElement
         Console.Write("\r");
         return cfg;
     }
@@ -91,32 +89,12 @@ internal static class TheGodfather
         Log.Information("Testing database context creation");
         await using TheGodfatherDbContext db = dbb.CreateContext();
         IEnumerable<string> pendingMigrations = await db.Database.GetPendingMigrationsAsync();
-        var mi = pendingMigrations.ToList();
-        if (!mi.Any()) 
+        var migrations = pendingMigrations.ToList();
+        if (!migrations.Any())
             return dbb;
-            
-        Log.Information("Applying pending database migrations: {PendingDbMigrations}", mi);
+
+        Log.Information("Applying pending database migrations: {PendingDbMigrations}", migrations);
         await db.Database.MigrateAsync();
         return dbb;
     }
-
-    private static Task StartAsync(BotConfigService cfg, DbContextBuilder dbb)
-    {
-        Bot = new TheGodfatherBot(cfg, dbb);
-        PeriodicService = new PeriodicTasksService(Bot, cfg.CurrentConfiguration);
-        OpenWebUiService = new OpenWebUiService(cfg.CurrentConfiguration);
-        return Bot.StartAsync();
-    }
-
-    private static async Task DisposeAsync()
-    {
-        Log.Information("Cleaning up ...");
-
-        PeriodicService?.Dispose();
-        if (Bot is not null)
-            await Bot.DisposeAsync();
-    
-        Log.Information("Cleanup complete");
-    }
-    #endregion
 }

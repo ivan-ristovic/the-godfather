@@ -1,78 +1,71 @@
-﻿using System.Text;
-using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
+using System.Text;
+using Discord.Commands;
+using TheGodfather.Attributes;
 
 namespace TheGodfather.Modules.Administration;
 
-[Group("role")][Module(ModuleType.Administration)][NotBlocked]
-[Aliases("roles", "rl")]
-[RequireGuild]
+[Group("role")]
+[Alias("roles", "rl")]
+[RequireContext(ContextType.Guild)]
 [Cooldown(3, 5, CooldownBucketType.Guild)]
 public sealed class RoleModule : TheGodfatherModule
 {
-    #region role
-    [GroupCommand][Priority(1)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_role)] DiscordRole role)
-        => this.InfoAsync(ctx, role);
+    public RoleModule(LocalizationService localization)
+        : base(localization, new Color(0x3498DB)) { }
 
-    [GroupCommand][Priority(0)]
-    public Task ExecuteGroupAsync(CommandContext ctx)
-        => this.ListAsync(ctx);
-    #endregion
 
-    #region role create
-    [Command("create")][Priority(1)][UsesInteractivity]
-    [Aliases("new", "add", "a", "+", "+=", "<<", "<", "<-", "<=")]
-    [RequirePermissions(Permissions.ManageRoles)]
-    public async Task CreateAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_name)] string name,
-        [Description(TranslationKey.desc_color)] DiscordColor? color = null,
-        [Description(TranslationKey.desc_hoisted)] bool hoisted = false,
-        [Description(TranslationKey.desc_mentionable)] bool mentionable = false,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
+    [Command("")]
+    [Priority(1)]
+    public Task ExecuteGroupAsync(IRole role)
+        => this.InfoAsync(role);
+
+    [Command("")]
+    [Priority(0)]
+    public Task ExecuteGroupAsync()
+        => this.ListAsync();
+
+    [Command("create")]
+    [Priority(1)]
+    [Alias("new", "add", "a", "+", "+=", "<<", "<", "<-", "<=")]
+    [RequireUserPermission(GuildPermission.ManageRoles)]
+    [RequireBotPermission(GuildPermission.ManageRoles)]
+    public async Task CreateAsync(string name, string? color = null, bool hoisted = false, bool mentionable = false)
     {
         if (string.IsNullOrWhiteSpace(name))
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_missing_name);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_missing_name);
 
-        if (ctx.Guild.Roles.Select(kvp => kvp.Value).Any(r => string.Compare(r.Name, name, true) == 0))
-            if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_role_exists))
-                return;
-
-        await ctx.Guild.CreateRoleAsync(name, null, color, hoisted, mentionable, ctx.BuildInvocationDetailsString(reason));
-        await ctx.InfoAsync(this.ModuleColor);
+        Color? parsedColor = ParseColor(color);
+        await this.Context.Guild.CreateRoleAsync(
+            name,
+            GuildPermissions.None,
+            parsedColor,
+            hoisted,
+            mentionable,
+            new RequestOptions { AuditLogReason = InvocationReason() }
+        );
+        await this.InfoAsync(this.ModuleColor);
     }
 
-    [Command("create")][Priority(0)]
-    public Task CreateAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_color)] DiscordColor color,
-        [RemainingText][Description(TranslationKey.desc_name)] string name)
-        => this.CreateAsync(ctx, name, color);
-    #endregion
+    [Command("create")]
+    [Priority(0)]
+    public Task CreateWithColorAsync(string color, [Remainder] string name)
+        => this.CreateAsync(name, color);
 
-    #region role delete
     [Command("delete")]
-    [Aliases("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
-    [RequirePermissions(Permissions.ManageRoles)]
-    public async Task DeleteAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_role)] DiscordRole role,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
+    [Alias("remove", "rm", "del", "d", "-", "-=", ">", ">>")]
+    [RequireUserPermission(GuildPermission.ManageRoles)]
+    [RequireBotPermission(GuildPermission.ManageRoles)]
+    public async Task DeleteAsync(IRole role, [Remainder] string? reason = null)
     {
-        await role.DeleteAsync(ctx.BuildInvocationDetailsString(reason));
-        await ctx.InfoAsync(this.ModuleColor);
+        await role.DeleteAsync(new RequestOptions { AuditLogReason = InvocationReason(reason) });
+        await this.InfoAsync(this.ModuleColor);
     }
-    #endregion
 
-    #region role info
     [Command("info")]
-    [Aliases("i")]
-    [RequirePermissions(Permissions.ManageRoles)]
-    public Task InfoAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_role)] DiscordRole role)
+    [Alias("i")]
+    public Task InfoAsync(IRole role)
     {
-        return ctx.RespondWithLocalizedEmbedAsync(emb => {
+        return this.RespondWithLocalizedEmbedAsync(emb => {
             emb.WithTitle(role.Name);
             emb.WithColor(this.ModuleColor);
             emb.AddLocalizedField(TranslationKey.str_pos, role.Position, true);
@@ -81,25 +74,22 @@ public sealed class RoleModule : TheGodfatherModule
             emb.AddLocalizedField(TranslationKey.str_mention, role.IsMentionable, true);
             emb.AddLocalizedField(TranslationKey.str_hoist, role.IsHoisted, true);
             emb.AddLocalizedField(TranslationKey.str_managed, role.IsManaged, true);
-            emb.AddLocalizedTimestampField(TranslationKey.str_created_at, role.CreationTimestamp, true);
-            emb.AddLocalizedField(TranslationKey.str_perms, role.Permissions.ToPermissionString(), true);
+            emb.AddLocalizedTimestampField(TranslationKey.str_created_at, role.CreatedAt, true);
+            emb.AddLocalizedField(TranslationKey.str_perms, role.Permissions.ToList().Select(p => p.ToString()).JoinWith(", "), false);
         });
     }
-    #endregion
 
-    #region role list
     [Command("list")]
-    [Aliases("print", "show", "view", "ls", "l", "p")]
-    public Task ListAsync(CommandContext ctx)
+    [Alias("print", "show", "view", "ls", "l", "p")]
+    public Task ListAsync()
     {
-        return ctx.PaginateAsync(
+        return this.RespondPagedAsync(
             TranslationKey.str_roles,
-            ctx.Guild.Roles.Select(kvp => kvp.Value).OrderByDescending(r => r.Position),
-            r => $"{Formatter.InlineCode(r.Id.ToString())} | {r.Mention} [{GetFlags(r)}]",
-            this.ModuleColor
+            this.Context.Guild.Roles.OrderByDescending(r => r.Position),
+            role => $"{InlineCode(role.Id)} | {role.Mention} [{GetFlags(role)}]"
         );
 
-        static string GetFlags(DiscordRole role)
+        static string GetFlags(IRole role)
         {
             var sb = new StringBuilder();
             if (role.IsHoisted)
@@ -112,108 +102,94 @@ public sealed class RoleModule : TheGodfatherModule
         }
     }
 
-    #endregion
-
-    #region role mention
     [Command("mention")]
-    [Aliases("mentionall", "@", "ma")]
-    [RequireUserPermissions(Permissions.Administrator)][RequireBotPermissions(Permissions.ManageRoles)]
-    public async Task MentionAllFromRoleAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_role)] DiscordRole role)
+    [Alias("mentionall", "@", "ma")]
+    [RequireUserPermission(GuildPermission.Administrator)]
+    [RequireBotPermission(GuildPermission.ManageRoles)]
+    public async Task MentionAllFromRoleAsync(IRole role)
     {
+        if (role is not SocketRole socketRole) {
+            await this.ReplyAsync(role.Mention);
+            return;
+        }
+
         if (role.IsMentionable) {
-            await ctx.RespondAsync(role.Mention);
-        } else {
-            await role.ModifyAsync(mentionable: true);
-            await ctx.RespondAsync(role.Mention);
-            await role.ModifyAsync(mentionable: false);
+            await this.ReplyAsync(role.Mention);
+            return;
+        }
+
+        await socketRole.ModifyAsync(props => props.Mentionable = true);
+        await this.ReplyAsync(role.Mention);
+        await socketRole.ModifyAsync(props => props.Mentionable = false);
+    }
+
+    [Command("setcolor")]
+    [Priority(1)]
+    [Alias("clr", "c", "sc", "setc")]
+    [RequireUserPermission(GuildPermission.ManageRoles)]
+    [RequireBotPermission(GuildPermission.ManageRoles)]
+    public async Task SetColorAsync(IRole role, string color, [Remainder] string? reason = null)
+    {
+        if (role is not SocketRole socketRole || ParseColor(color) is not Color parsed)
+            await this.FailAsync("Invalid role or color.");
+        else {
+            await socketRole.ModifyAsync(props => props.Color = parsed, new RequestOptions { AuditLogReason = InvocationReason(reason) });
+            await this.InfoAsync(this.ModuleColor);
         }
     }
-    #endregion
 
-    #region role setcolor
-    [Command("setcolor")][Priority(1)]
-    [Aliases("clr", "c", "sc", "setc")]
-    [RequirePermissions(Permissions.ManageRoles)]
-    public async Task SetColorAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_role)] DiscordRole role,
-        [Description(TranslationKey.desc_color)] DiscordColor color,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
+    [Command("setname")]
+    [Priority(1)]
+    [Alias("name", "rename", "n", "mv")]
+    [RequireUserPermission(GuildPermission.ManageRoles)]
+    [RequireBotPermission(GuildPermission.ManageRoles)]
+    public async Task RenameAsync(IRole role, [Remainder] string newName)
     {
-        await role.ModifyAsync(color: color, reason: ctx.BuildInvocationDetailsString(reason));
-        await ctx.InfoAsync(this.ModuleColor);
+        if (string.IsNullOrWhiteSpace(newName))
+            throw new LocalizedCommandException(TranslationKey.cmd_err_missing_name);
+        if (role is SocketRole socketRole)
+            await socketRole.ModifyAsync(props => props.Name = newName, new RequestOptions { AuditLogReason = InvocationReason() });
+        await this.InfoAsync(this.ModuleColor);
     }
 
-    [Command("setcolor")][Priority(0)]
-    public Task SetColorAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_color)] DiscordColor color,
-        [Description(TranslationKey.desc_role)] DiscordRole role,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
-        => this.SetColorAsync(ctx, role, color, reason);
-    #endregion
-
-    #region role setname
-    [Command("setname")][Priority(1)]
-    [Aliases("name", "rename", "n", "mv")]
-    [RequirePermissions(Permissions.ManageRoles)]
-    public async Task RenameAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_name_new)] string newname,
-        [Description(TranslationKey.desc_role)] DiscordRole role,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
+    [Command("setmentionable")]
+    [Priority(1)]
+    [Alias("mentionable", "m", "setm")]
+    [RequireUserPermission(GuildPermission.ManageRoles)]
+    [RequireBotPermission(GuildPermission.ManageRoles)]
+    public async Task SetMentionableAsync(IRole role, bool mentionable = true)
     {
-        if (string.IsNullOrWhiteSpace(newname))
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_missing_name);
-
-        await role.ModifyAsync(newname, reason: ctx.BuildInvocationDetailsString(reason));
-        await ctx.InfoAsync(this.ModuleColor);
+        if (role is SocketRole socketRole)
+            await socketRole.ModifyAsync(props => props.Mentionable = mentionable, new RequestOptions { AuditLogReason = InvocationReason() });
+        await this.InfoAsync(this.ModuleColor);
     }
 
-    [Command("setname")][Priority(0)]
-    public Task RenameAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_role)] DiscordRole role,
-        [RemainingText][Description(TranslationKey.desc_name_new)] string newname)
-        => this.RenameAsync(ctx, role, newname);
-    #endregion
-
-    #region role setmentionable
-    [Command("setmentionable")][Priority(1)]
-    [Aliases("mentionable", "m", "setm")]
-    [RequirePermissions(Permissions.ManageRoles)]
-    public async Task SetMentionableAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_role)] DiscordRole role,
-        [Description(TranslationKey.desc_mentionable)] bool mentionable = true,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
+    [Command("setvisibility")]
+    [Priority(1)]
+    [Alias("setvisible", "separate", "h", "seth", "hoist", "sethoist")]
+    [RequireUserPermission(GuildPermission.ManageRoles)]
+    [RequireBotPermission(GuildPermission.ManageRoles)]
+    public async Task SetVisibleAsync(IRole role, bool hoisted = true)
     {
-        await role.ModifyAsync(mentionable: mentionable, reason: ctx.BuildInvocationDetailsString(reason));
-        await ctx.InfoAsync(this.ModuleColor);
+        if (role is SocketRole socketRole)
+            await socketRole.ModifyAsync(props => props.Hoist = hoisted, new RequestOptions { AuditLogReason = InvocationReason() });
+        await this.InfoAsync(this.ModuleColor);
     }
 
-    [Command("setmentionable")][Priority(0)]
-    public Task SetMentionableAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_mentionable)] bool mentionable,
-        [Description(TranslationKey.desc_role)] DiscordRole role,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
-        => this.SetMentionableAsync(ctx, role, mentionable, reason);
-    #endregion
 
-    #region role setvisibility
-    [Command("setvisibility")][Priority(1)]
-    [Aliases("setvisible", "separate", "h", "seth", "hoist", "sethoist")]
-    [RequirePermissions(Permissions.ManageRoles)]
-    public async Task SetVisibleAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_role)] DiscordRole role,
-        [Description(TranslationKey.desc_hoisted)] bool hoisted = true,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
+    private static Color? ParseColor(string? color)
     {
-        await role.ModifyAsync(hoist: hoisted, reason: ctx.BuildInvocationDetailsString(reason));
-        await ctx.InfoAsync(this.ModuleColor);
+        if (string.IsNullOrWhiteSpace(color))
+            return null;
+
+        string normalized = color.Trim().TrimStart('#');
+        return uint.TryParse(normalized, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out uint value)
+            ? new Color(value)
+            : null;
     }
 
-    [Command("setvisibility")][Priority(0)]
-    public Task SetVisibleAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_hoisted)] bool hoisted,
-        [Description(TranslationKey.desc_role)] DiscordRole role,
-        [RemainingText][Description(TranslationKey.desc_rsn)] string? reason = null)
-        => this.SetVisibleAsync(ctx, role, hoisted, reason);
-    #endregion
+    private string InvocationReason(string? reason = null)
+        => string.IsNullOrWhiteSpace(reason)
+            ? $"Requested by {this.Context.User} ({this.Context.User.Id})"
+            : $"{reason} | Requested by {this.Context.User} ({this.Context.User.Id})";
 }

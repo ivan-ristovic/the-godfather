@@ -1,5 +1,4 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.Entities;
+﻿using Discord.Commands;
 
 namespace TheGodfather.Attributes;
 
@@ -10,7 +9,6 @@ public enum ModuleType
     Currency,
     Games,
     Misc,
-    Music,
     Owner,
     Polls,
     Reactions,
@@ -22,22 +20,21 @@ public enum ModuleType
 
 public static class ModuleTypeExtensions
 {
-    public static DiscordColor ToDiscordColor(this ModuleType type)
+    public static Color ToColor(this ModuleType type)
     {
         return type switch {
-            ModuleType.Administration => DiscordColor.SapGreen,
-            ModuleType.Chickens => DiscordColor.Orange,
-            ModuleType.Currency => DiscordColor.DarkGreen,
-            ModuleType.Games => DiscordColor.Teal,
-            ModuleType.Misc => DiscordColor.Azure,
-            ModuleType.Music => DiscordColor.Aquamarine,
-            ModuleType.Owner => DiscordColor.DarkButNotBlack,
-            ModuleType.Polls => DiscordColor.Orange,
-            ModuleType.Reactions => DiscordColor.Yellow,
-            ModuleType.Reminders => DiscordColor.DarkRed,
-            ModuleType.Uncategorized => DiscordColor.Gray,
-            ModuleType.Searches => DiscordColor.Turquoise,
-            _ => DiscordColor.Green
+            ModuleType.Administration => new Color(0x2ECC71),
+            ModuleType.Chickens => new Color(0xE67E22),
+            ModuleType.Currency => new Color(0x006400),
+            ModuleType.Games => Color.Teal,
+            ModuleType.Misc => new Color(0x007FFF),
+            ModuleType.Owner => new Color(0x2F3136),
+            ModuleType.Polls => new Color(0xF1C40F),
+            ModuleType.Reactions => Color.Gold,
+            ModuleType.Reminders => new Color(0x8B0000),
+            ModuleType.Uncategorized => Color.DarkGrey,
+            ModuleType.Searches => new Color(0x1ABC9C),
+            _ => Color.Green
         };
     }
 
@@ -52,7 +49,6 @@ public static class ModuleTypeExtensions
             ModuleType.Currency => TranslationKey.m_currency(cmdList),
             ModuleType.Games => TranslationKey.m_games(cmdList),
             ModuleType.Misc => TranslationKey.m_misc(cmdList),
-            ModuleType.Music => TranslationKey.m_music(cmdList),
             ModuleType.Owner => TranslationKey.m_owner(cmdList),
             ModuleType.Polls => TranslationKey.m_polls(cmdList),
             ModuleType.Reactions => TranslationKey.m_reactions(cmdList),
@@ -68,13 +64,19 @@ public static class ModuleTypeExtensions
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
 public sealed class ModuleAttribute : Attribute
 {
-    public static ModuleAttribute AttachedTo(Command cmd)
+    public static ModuleAttribute AttachedTo(CommandInfo cmd)
     {
-        var mattr = cmd.CustomAttributes.FirstOrDefault(attr => attr is ModuleAttribute) as ModuleAttribute;
-        if (cmd.Module is null)
-            return new ModuleAttribute(ModuleType.Uncategorized);
-        mattr ??= cmd.Module.ModuleType.GetCustomAttributes(typeof(ModuleAttribute), true).FirstOrDefault() as ModuleAttribute;
-        return mattr ?? (cmd.Parent is null ? new ModuleAttribute(ModuleType.Uncategorized) : AttachedTo(cmd.Parent));
+        ModuleAttribute? mattr = cmd.Attributes.OfType<ModuleAttribute>().FirstOrDefault();
+        if (mattr is not null)
+            return mattr;
+
+        for (ModuleInfo? module = cmd.Module; module is not null; module = module.Parent) {
+            mattr = module.Attributes.OfType<ModuleAttribute>().FirstOrDefault();
+            if (mattr is not null)
+                return mattr;
+        }
+
+        return new ModuleAttribute(ModuleType.Uncategorized);
     }
 
     public static ModuleAttribute AttachedTo(Type t)

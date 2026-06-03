@@ -1,25 +1,21 @@
-﻿using System.Text.RegularExpressions;
-using DSharpPlus.Entities;
+using System.Text.RegularExpressions;
 
 namespace TheGodfather.Modules.Administration.Common;
 
 public sealed class LinkfilterMatcher : Regex
 {
     public LinkfilterMatcher(params string[] items)
-        : base($@"\b({string.Join("|", items.Select(Escape))})\b", RegexOptions.IgnoreCase)
-    {
-        if (items is null || !items.Any())
-            throw new ArgumentException("No items provided for matching.");
-    }
+        : this((IEnumerable<string>)items) { }
 
     public LinkfilterMatcher(IEnumerable<string> items)
-        : base($@"\b({string.Join("|", items.Select(Escape))})\b", RegexOptions.IgnoreCase)
+        : base($@"\b({string.Join("|", items.Select(Escape))})\b", RegexOptions.IgnoreCase | RegexOptions.Compiled)
     {
-        if (items is null || !items.Any())
-            throw new ArgumentException("No items provided for matching.");
+        if (!items.Any())
+            throw new ArgumentException("No items provided for matching.", nameof(items));
     }
 
-    public LinkfilterMatch Match(DiscordMessage message) => new(this.Match(message.Content));
+    public LinkfilterMatch MatchContent(string content)
+        => new(this.Match(content));
 }
 
 public sealed class LinkfilterMatch
@@ -36,6 +32,6 @@ public sealed class LinkfilterMatch
     public LinkfilterMatch(Match match)
     {
         this.Success = match.Success;
-        this.Matched = match.Groups[0].Value;
+        this.Matched = match.Success ? match.Groups[0].Value : null;
     }
 }

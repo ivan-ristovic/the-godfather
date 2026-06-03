@@ -1,18 +1,28 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Discord.Commands;
+using TheGodfather.Modules.Owner.Services;
 
 namespace TheGodfather.Attributes;
 
 [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
-public sealed class RequirePrivilegedUserAttribute : CheckBaseAttribute
+public sealed class RequirePrivilegedUserAttribute : PreconditionAttribute
 {
-    public override Task<bool> ExecuteCheckAsync(CommandContext ctx, bool help)
+    public override async Task<PreconditionResult> CheckPermissionsAsync(ICommandContext context, CommandInfo command, IServiceProvider services)
     {
-        if (ctx.Client.IsOwnedBy(ctx.User))
-            return Task.FromResult(true);
+        if (await IsOwnerAsync(context))
+            return PreconditionResult.FromSuccess();
 
-        using TheGodfatherDbContext db = ctx.Services.GetRequiredService<DbContextBuilder>().CreateContext();
-        return Task.FromResult(db.PrivilegedUsers.Find((long)ctx.User.Id) is not null);
+        PrivilegedUserService privileged = services.GetRequiredService<PrivilegedUserService>();
+        if (await privileged.ContainsAsync(context.User.Id))
+            return PreconditionResult.FromSuccess();
+
+        LocalizationService localization = services.GetRequiredService<LocalizationService>();
+        string reason = localization.GetString(context.Guild?.Id, TranslationKey.cmd_chk_perms_priv);
+        return PreconditionResult.FromError(reason);
+    }
+
+    private static async Task<bool> IsOwnerAsync(ICommandContext context)
+    {
+        IApplication app = await context.Client.GetApplicationInfoAsync();
+        return app.Owner?.Id == context.User.Id;
     }
 }

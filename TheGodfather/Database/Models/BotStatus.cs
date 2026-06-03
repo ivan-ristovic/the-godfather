@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using DSharpPlus.Entities;
+using Discord;
 
 namespace TheGodfather.Database.Models;
 

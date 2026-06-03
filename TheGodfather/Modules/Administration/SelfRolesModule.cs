@@ -1,116 +1,89 @@
-﻿using DSharpPlus;
-using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
-using DSharpPlus.Entities;
-using TheGodfather.EventListeners.Common;
-using TheGodfather.Modules.Administration.Extensions;
-using TheGodfather.Modules.Administration.Services;
+﻿using Discord.Commands;
+using TheGodfather.Attributes;
 
 namespace TheGodfather.Modules.Administration;
 
-[Group("selfassignableroles")][Module(ModuleType.Administration)][NotBlocked]
-[Aliases("sar", "selfassignablerole", "selfroles", "selfrole", "sr", "srl", "srole")]
-[RequireGuild][RequireUserPermissions(Permissions.ManageGuild)]
+[Group("selfassignableroles")]
+[Alias("sar", "selfassignablerole", "selfroles", "selfrole", "sr", "srl", "srole")]
+[RequireContext(ContextType.Guild)]
+[RequireUserPermission(GuildPermission.ManageGuild)]
 [Cooldown(3, 5, CooldownBucketType.Guild)]
-public sealed class SelfRolesModule : TheGodfatherServiceModule<SelfRoleService>
+public sealed class SelfRolesModule : TheGodfatherModule
 {
-    #region selfassignableroles
-    [GroupCommand][Priority(1)]
-    public Task ExecuteGroupAsync(CommandContext ctx)
-        => this.ListAsync(ctx);
+    private readonly SelfRoleService selfRoles;
 
-    [GroupCommand][Priority(0)]
-    public Task ExecuteGroupAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_roles_add)] params DiscordRole[] roles)
-        => this.AddAsync(ctx, roles);
-    #endregion
+    public SelfRolesModule(LocalizationService localization, SelfRoleService selfRoles)
+        : base(localization, new Color(0x3498DB))
+    {
+        this.selfRoles = selfRoles;
+    }
 
-    #region selfassignableroles add
+    [Command("")]
+    [Priority(1)]
+    public Task ExecuteGroupAsync()
+        => this.ListAsync();
+
+    [Command("")]
+    [Priority(0)]
+    public Task ExecuteGroupAsync(params IRole[] roles)
+        => this.AddAsync(roles);
+
     [Command("add")]
-    [Aliases("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
-    public async Task AddAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_roles_add)] params DiscordRole[] roles)
+    [Alias("register", "reg", "a", "+", "+=", "<<", "<", "<-", "<=")]
+    public async Task AddAsync(params IRole[] roles)
     {
         if (roles is null || !roles.Any())
-            throw new CommandFailedException(ctx, TranslationKey.cmd_err_missing_roles);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_missing_roles);
 
-        await this.Service.AddAsync(ctx.Guild.Id, roles.Select(r => r.Id));
-
-        string roleStr = roles.OrderBy(r => r.Name).JoinWith();
-        await ctx.GuildLogAsync(emb => {
-            emb.WithLocalizedTitle(DiscordEventType.GuildRoleCreated, TranslationKey.evt_sr_change);
-            emb.AddLocalizedField(TranslationKey.str_roles_add, roleStr);
-        });
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_sr_add(roleStr));
+        await this.selfRoles.AddAsync(this.Context.Guild.Id, roles.Select(role => role.Id));
+        string roleString = roles.OrderBy(role => role.Name).Select(role => role.Mention).JoinWith();
+        await this.InfoAsync(this.ModuleColor, TranslationKey.fmt_sr_add(roleString));
     }
-    #endregion
 
-    #region selfassignableroles delete
     [Command("delete")]
-    [Aliases("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
-    public async Task RemoveAsync(CommandContext ctx,
-        [Description(TranslationKey.desc_roles_del)] params DiscordRole[] roles)
+    [Alias("unregister", "remove", "rm", "del", "d", "-", "-=", ">", ">>", "->", "=>")]
+    public async Task RemoveAsync(params IRole[] roles)
     {
         if (roles is null || !roles.Any()) {
-            await this.RemoveAllAsync(ctx);
+            await this.RemoveAllAsync();
             return;
         }
 
-        await this.Service.RemoveAsync(ctx.Guild.Id, roles.Select(r => r.Id));
-
-        string roleStr = roles.OrderBy(r => r.Name).JoinWith();
-        await ctx.GuildLogAsync(emb => {
-            emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_sr_change);
-            emb.AddLocalizedField(TranslationKey.str_roles_rem, roleStr);
-        });
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.fmt_sr_rem(roleStr));
+        await this.selfRoles.RemoveAsync(this.Context.Guild.Id, roles.Select(role => role.Id));
+        string roleString = roles.OrderBy(role => role.Name).Select(role => role.Mention).JoinWith();
+        await this.InfoAsync(this.ModuleColor, TranslationKey.fmt_sr_rem(roleString));
     }
-    #endregion
 
-    #region selfassignableroles deleteall
-    [Command("deleteall")][UsesInteractivity]
-    [Aliases("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
-    public async Task RemoveAllAsync(CommandContext ctx)
+    [Command("deleteall")]
+    [Alias("removeall", "rmrf", "rma", "clearall", "clear", "delall", "da", "cl", "-a", "--", ">>>")]
+    public async Task RemoveAllAsync()
     {
-        if (!await ctx.WaitForBoolReplyAsync(TranslationKey.q_sr_rem_all))
+        if (!await this.ConfirmAsync(TranslationKey.q_sr_rem_all))
             return;
 
-        await this.Service.ClearAsync(ctx.Guild.Id);
-        await ctx.GuildLogAsync(emb => emb.WithLocalizedTitle(TranslationKey.evt_sr_clear).WithColor(this.ModuleColor));
-        await ctx.InfoAsync(this.ModuleColor, TranslationKey.evt_sr_clear);
+        await this.selfRoles.ClearAsync(this.Context.Guild.Id);
+        await this.InfoAsync(this.ModuleColor, TranslationKey.evt_sr_clear);
     }
-    #endregion
 
-    #region selfassignableroles list
     [Command("list")]
-    [Aliases("print", "show", "view", "ls", "l", "p")]
-    public async Task ListAsync(CommandContext ctx)
+    [Alias("print", "show", "view", "ls", "l", "p")]
+    public async Task ListAsync()
     {
-        IReadOnlyList<ulong> rids = this.Service.GetIds(ctx.Guild.Id);
-        if (!rids.Any()) {
-            await ctx.ImpInfoAsync(this.ModuleColor, TranslationKey.cmd_err_sr_none);
+        IReadOnlyList<ulong> roleIds = this.selfRoles.GetIds(this.Context.Guild.Id);
+        if (!roleIds.Any()) {
+            await this.ImpInfoAsync(this.ModuleColor, TranslationKey.cmd_err_sr_none);
             return;
         }
 
-        var roles = rids.Select(rid => (rid, ctx.Guild.GetRole(rid))).ToList();
-        IEnumerable<ulong> missingRoles = roles.Where(kvp => kvp.Item2 is null).Select(kvp => kvp.rid);
+        var roles = roleIds.Select(roleId => (RoleId: roleId, Role: this.Context.Guild.GetRole(roleId))).ToList();
+        ulong[] missing = roles.Where(pair => pair.Role is null).Select(pair => pair.RoleId).ToArray();
+        if (missing.Any())
+            await this.selfRoles.RemoveAsync(this.Context.Guild.Id, missing);
 
-        if (missingRoles.Any()) {
-            await this.Service.RemoveAsync(ctx.Guild.Id, missingRoles);
-            await ctx.GuildLogAsync(
-                emb => {
-                    emb.WithLocalizedTitle(DiscordEventType.GuildRoleDeleted, TranslationKey.evt_sr_change);
-                    emb.AddLocalizedField(TranslationKey.str_roles_rem, missingRoles.JoinWith());
-                },
-                false
-            );
-        }
-        await ctx.PaginateAsync(
+        await this.RespondPagedAsync(
             TranslationKey.str_sr,
-            roles.Where(kvp => !missingRoles.Contains(kvp.rid)).Select(kvp => kvp.Item2).OrderByDescending(r => r.Position),
-            r => r.ToString(),
-            this.ModuleColor
+            roles.Where(pair => pair.Role is not null).Select(pair => pair.Role!).OrderByDescending(role => role.Position),
+            role => role.Mention
         );
     }
-    #endregion
 }

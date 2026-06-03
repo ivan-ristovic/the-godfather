@@ -80,6 +80,7 @@ public sealed class RandomService : ITheGodfatherService
 
     public void TryLoadData(string path)
     {
+        path = ContentPathResolver.Resolve(path);
         string alphabetPath = Path.Combine(path, "leet_alphabet.json");
         try {
             Log.Debug("Loading leet alphabet from {Path}", alphabetPath);

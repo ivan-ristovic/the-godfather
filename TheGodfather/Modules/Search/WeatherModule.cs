@@ -1,90 +1,89 @@
-﻿using DSharpPlus.CommandsNext;
-using DSharpPlus.CommandsNext.Attributes;
+﻿using Discord.Commands;
+using TheGodfather.Attributes;
 using TheGodfather.Modules.Search.Common;
 using TheGodfather.Modules.Search.Services;
-using TheGodfather.Services.Common;
 
 namespace TheGodfather.Modules.Search;
 
-[Group("weather")][Module(ModuleType.Searches)][NotBlocked]
-[Aliases("w")]
+[Group("weather")]
+[Alias("w")]
 [Cooldown(3, 5, CooldownBucketType.Channel)]
-public sealed class WeatherModule : TheGodfatherServiceModule<WeatherService>
+public sealed class WeatherModule : TheGodfatherModule
 {
-    #region weather
-    [GroupCommand]
-    public async Task ExecuteGroupAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_query)] string query)
+    private readonly WeatherService weather;
+
+
+    public WeatherModule(LocalizationService localization, WeatherService weather)
+        : base(localization, new Color(0x1abc9c))
+    {
+        this.weather = weather;
+    }
+
+
+    [Command("")]
+    public async Task ExecuteGroupAsync([Remainder] string query)
     {
         if (string.IsNullOrWhiteSpace(query))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_query);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_query);
 
-        string lang = this.Localization.GetGuildCulture(ctx.Guild?.Id).TwoLetterISOLanguageName;
-        WeatherResponse? data = await this.Service.GetAsync(query, lang);
+        string lang = this.Localization.GetGuildCulture(this.Context.Guild?.Id).TwoLetterISOLanguageName;
+        WeatherResponse? data = await this.weather.GetAsync(query, lang);
         if (data is null) {
-            await ctx.FailAsync(TranslationKey.cmd_err_weather);
+            await this.FailAsync(TranslationKey.cmd_err_weather);
             return;
         }
 
-        await ctx.RespondWithLocalizedEmbedAsync(emb => {
-            emb.AddLocalizedField(TranslationKey.str_w_location(Emojis.Globe), $"{data.Location.Name + ", " + data.Location.Country}", true);
+        await this.RespondWithLocalizedEmbedAsync(emb => {
+            emb.AddLocalizedField(TranslationKey.str_w_location(Emojis.Globe), $"{data.Location.Name}, {data.Location.Country}", true);
             emb.AddLocalizedField(TranslationKey.str_w_coordinates(Emojis.Ruler), $"{data.Lat}, {data.Lon}", true);
             this.AddCurrentDataToEmbed(emb, data.Current);
         });
     }
-    #endregion
 
-    #region weather forecast
     [Command("forecast")]
-    [Aliases("f", "daily")]
-    public async Task ForecastAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_query)] string query)
+    [Alias("f", "daily")]
+    public async Task ForecastAsync([Remainder] string query)
     {
         if (string.IsNullOrWhiteSpace(query))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_query);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_query);
 
-        string lang = this.Localization.GetGuildCulture(ctx.Guild?.Id).TwoLetterISOLanguageName;
-        WeatherResponse? data = await this.Service.GetAsync(query, lang);
+        string lang = this.Localization.GetGuildCulture(this.Context.Guild?.Id).TwoLetterISOLanguageName;
+        WeatherResponse? data = await this.weather.GetAsync(query, lang);
         if (data is null) {
-            await ctx.FailAsync(TranslationKey.cmd_err_weather);
+            await this.FailAsync(TranslationKey.cmd_err_weather);
             return;
         }
 
-        await ctx.PaginateAsync(data.Daily, (emb, d) => {
-            var date = DateTimeOffset.FromUnixTimeSeconds(d.Dt);
-            emb.WithLocalizedTitle(TranslationKey.fmt_weather_f(date.DayOfWeek, this.Localization.GetLocalizedTimeString(ctx.Guild?.Id, date, "d")));
-            emb.AddLocalizedField(TranslationKey.str_w_location(Emojis.Globe), $"{data.Location.Name + ", " + data.Location.Country}", true);
+        await this.RespondPagedAsync(data.Daily, (emb, daily) => {
+            var date = DateTimeOffset.FromUnixTimeSeconds(daily.Dt);
+            emb.WithLocalizedTitle(TranslationKey.fmt_weather_f(date.DayOfWeek, this.Localization.GetLocalizedTimeString(this.Context.Guild?.Id, date, "d")));
+            emb.AddLocalizedField(TranslationKey.str_w_location(Emojis.Globe), $"{data.Location.Name}, {data.Location.Country}", true);
             emb.AddLocalizedField(TranslationKey.str_w_coordinates(Emojis.Ruler), $"{data.Lat}, {data.Lon}", true);
-            this.AddDailyDataToEmbed(emb, d);
+            this.AddDailyDataToEmbed(emb, daily);
             return emb;
-        }, this.ModuleColor);
+        });
     }
-    #endregion
 
-    #region weather graph
     [Command("graph")]
-    [Aliases("g")]
-    public async Task GraphAsync(CommandContext ctx,
-        [RemainingText][Description(TranslationKey.desc_query)] string query)
+    [Alias("g")]
+    public async Task GraphAsync([Remainder] string query)
     {
         if (string.IsNullOrWhiteSpace(query))
-            throw new InvalidCommandUsageException(ctx, TranslationKey.cmd_err_query);
+            throw new LocalizedCommandException(TranslationKey.cmd_err_query);
 
-        string? data = this.Service.GraphFor(query);
+        string? data = this.weather.GraphFor(query);
         if (data is null) {
-            await ctx.FailAsync(TranslationKey.cmd_err_weather);
+            await this.FailAsync(TranslationKey.cmd_err_weather);
             return;
         }
 
-        await ctx.RespondWithLocalizedEmbedAsync(emb => {
+        await this.RespondWithLocalizedEmbedAsync(emb => {
             emb.WithColor(this.ModuleColor);
             emb.WithImageUrl(data);
             emb.WithLocalizedFooter(TranslationKey.fmt_powered_by(WeatherService.GraphServiceUrl), null);
         });
     }
-    #endregion
 
-    #region internals
     private LocalizedEmbedBuilder AddCurrentDataToEmbed(LocalizedEmbedBuilder emb, Current data)
     {
         emb.WithColor(this.ModuleColor);
@@ -97,7 +96,7 @@ public sealed class WeatherModule : TheGodfatherServiceModule<WeatherService>
         emb.WithLocalizedFooter(TranslationKey.fmt_powered_by(WeatherService.ServiceUrl), null);
         return emb;
     }
-    
+
     private LocalizedEmbedBuilder AddDailyDataToEmbed(LocalizedEmbedBuilder emb, Daily data)
     {
         emb.WithColor(this.ModuleColor);
@@ -111,5 +110,4 @@ public sealed class WeatherModule : TheGodfatherServiceModule<WeatherService>
         emb.WithLocalizedFooter(TranslationKey.fmt_powered_by(WeatherService.ServiceUrl), null);
         return emb;
     }
-    #endregion
 }
